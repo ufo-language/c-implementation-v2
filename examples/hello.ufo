@@ -1,0 +1,4 @@
+fun main() =
+  io:displn("Hello, World!")
+
+main()

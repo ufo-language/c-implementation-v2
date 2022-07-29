@@ -1,0 +1,8 @@
+#!/bin/bash
+
+dir=~/host/Dropbox/Backups/ufo-c
+latest=$(ls $dir | tail -n 1)
+rm -r src/* 2> /dev/null
+rm -r obj/* 2> /dev/null
+echo "Restoring $latest"
+tar zxf $dir/$latest

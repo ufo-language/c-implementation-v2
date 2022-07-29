@@ -1,0 +1,31 @@
+#include "test.h"
+
+#include "../src/?.h"
+
+static void localTestFunction(void);
+
+// List the unit tests to run here -----------------------------------
+
+static TestEntry testEntries[] = {
+    {"name", localTestFunction},
+    {0, 0}
+};
+
+// Before & after ----------------------------------------------------
+
+static void test_before(void) {}
+
+static void test_after(void) {}
+
+// Runs all the listed tests -----------------------------------------
+
+// Add this function declaration to tests.c.
+// Add this function name to the tests.c tests array.
+void test_?() {
+  runTests((char*)__func__, test_before, testEntries, test_after);
+}
+
+// Unit tests --------------------------------------------------------
+
+static void localTestFunction(void) {
+}

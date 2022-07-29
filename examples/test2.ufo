@@ -1,0 +1,9 @@
+let h = #{A=10,B=20}
+h
+hash:count(h)
+hash:remove(h,A)
+h
+hash:count(h)
+hash:remove(h, B)
+hash:count(h)
+let s = ${A,B,C}

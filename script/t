@@ -1,0 +1,2 @@
+c
+valgrind -s --leak-check=full --show-leak-kinds=all test-ufo

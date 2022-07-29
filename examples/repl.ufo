@@ -1,0 +1,30 @@
+fun logo() =
+do
+    io:displn("  _ _ ___ ___")
+    io:displn(" | | | __|   | UFO version 5-rc-1")
+    io:displn(" | | | _|| | | http://github.com/ufo-language")
+    io:displn(" |___|_| |___| type :? for help")
+end
+
+let replFields = {nothing, nothing, nothing}
+
+fun repl() =
+do
+    let prompt = "[UFO]> "
+    io:disp(prompt)
+    let line = io:readLine()
+    io:displn("Line = ", line)
+    if line == ":q" then
+        io:displn("Goodbye!")
+    else if line == ":tok" then
+        io:displn(tokens)
+    else
+        do
+            let tokens = lexer:tokenize(line)
+            io:displn("tokens = ", tokens)
+            let expr = parser:parse(tokens)
+            io:displn("expr = ", expr)
+            let it = any:eval(expr)
+            repl()
+        end
+end

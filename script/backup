@@ -1,0 +1,37 @@
+#!/bin/bash
+# NOTE: This must be run with bash and not sh.
+
+COPY_TO=~/host/Dropbox/Backups/ufo-c
+
+rm -f list-of-files
+find src -name '*.c'    >> list-of-files
+find src -name '*.h'    >> list-of-files
+find test -name '*.c'   >> list-of-files
+find test -name '*.h'   >> list-of-files
+find test -name '*.txt' >> list-of-files
+find doc -name '*.txt'  >> list-of-files
+ls *.ufo                >> list-of-files
+ls pmake.py             >> list-of-files
+ls backup               >> list-of-files
+ls rebuild              >> list-of-files
+ls c                    >> list-of-files
+ls ctest                >> list-of-files
+ls u                    >> list-of-files
+ls clean                >> list-of-files
+ls gdb-run              >> list-of-files
+ls restore-latest       >> list-of-files
+
+DESC="-$1"
+if [ "-$1-" == "--" ]; then
+  DESC=""
+fi
+NAME=`date +'%y%m%d-%H%M'${DESC}`.tgz
+echo ${NAME}
+tar --exclude=*~ -zcf .backups/${NAME} -T list-of-files
+
+if [ -d "$COPY_TO" ]
+then
+    cp .backups/${NAME} $COPY_TO
+else
+    echo "Not copying to $COPY_TO"
+fi

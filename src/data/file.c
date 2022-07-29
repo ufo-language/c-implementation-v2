@@ -1,0 +1,138 @@
+#include <limits.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "data/any.h"
+#include "data/array.h"
+#include "data/file.h"
+#include "data/integer.h"
+#include "data/string.h"
+#include "data/stringbuffer.h"
+#include "data/symbol.h"
+#include "etor/evaluator.h"
+#include "gc/gc.h"
+#include "main/globals.h"
+
+struct D_File {
+    struct Any obj;
+    struct D_String* fileName;
+    FILE* fp;
+    bool isOpen;
+};
+
+struct D_File* file_new(struct D_String* fileName) {
+    struct D_File* self = (struct D_File*)gc_alloc(T_File);
+    self->fileName = fileName;
+    self->fp = NULL;
+    return self;
+}
+
+struct D_File* file_new_charString(char* fileName) {
+    struct D_String* fileNameString = string_new(fileName);
+    return file_new(fileNameString);
+}
+
+void file_free(struct D_File* self) {
+    free(self);
+}
+
+bool file_boolValue(struct D_File* self) {
+    return file_isOpen(self);
+}
+
+void file_close(struct D_File* self, struct Evaluator* etor) {
+    if (fclose(self->fp) != 0) {
+        evaluator_throwException(
+            etor,
+            any_typeSymbol((struct Any*)self),
+            " unable to close file",
+            (struct Any*)self->fileName
+        );
+   }
+    else {
+        self->fp = NULL;
+    }
+}
+
+bool file_isOpen(struct D_File* self) {
+    return self->fp == NULL ? false : true;
+}
+
+void file_markChildren(struct D_File* self) {
+    any_mark((struct Any*)self->fileName);
+}
+
+void file_open(struct D_File* self, struct Evaluator* etor) {
+    char* fileName = string_getChars(self->fileName);
+    FILE* fp = fopen(fileName, "r");
+    if (fp == NULL) {
+        evaluator_throwException(
+            etor,
+            any_typeSymbol((struct Any*)self),
+            "unable to open file",
+            (struct Any*)self->fileName
+        );
+    }
+    self->fp = fp;
+}
+
+bool file_open_aux(struct D_File* self) {
+    char* fileName = string_getChars(self->fileName);
+    self->fp = fopen(fileName, "r");
+    return self->fp != NULL;
+}
+
+char file_readChar(struct D_File* self) {
+    return fgetc(self->fp);
+}
+
+struct D_Array* file_readAll(struct D_File* self, struct D_StringBuffer* stringBuffer, struct Evaluator* etor) {
+    size_t nBytesRead = file_readAll_stringBuffer(self, stringBuffer, etor);
+    int n1 = (int)(nBytesRead / INT_MAX);
+    int n2 = (int)(nBytesRead % INT_MAX);
+    struct D_Array* sizeAry = array_newN(2, n1, n2);
+    return sizeAry;
+}
+
+size_t file_readAll_stringBuffer(struct D_File* self, struct D_StringBuffer* stringBuffer, struct Evaluator* etor) {
+    FILE* fp = self->fp;
+    fseek(fp, 0L, SEEK_END);
+    long fileSize = ftell(fp);
+    fseek(fp, 0L, SEEK_SET);
+    char* buffer = (char*)malloc(fileSize + 1);
+    if (buffer == NULL) {
+        int n1 = (int)(fileSize / INT_MAX);
+        int n2 = (int)(fileSize % INT_MAX);
+        struct D_Array* sizeAry = array_newN(2, n1, n2);
+        evaluator_throwException(
+            etor,
+            any_typeSymbol((struct Any*)self),
+            "unable to allocate buffer",
+            (struct Any*)array_newN(2, self->fileName, (struct Any*)sizeAry)
+        );
+    }
+    size_t nBytesRead = fread(buffer, sizeof(char), fileSize, fp);
+    buffer[fileSize] = 0;
+    stringBuffer_writeChars(stringBuffer, buffer);
+    free(buffer);
+    return nBytesRead;
+}
+
+void file_show(struct D_File* self, FILE* fp) {
+    fprintf(fp, "File{name=\"%s\", isOpen=", string_getChars(self->fileName));
+    any_show((struct Any*)(self->fp == NULL ? FALSE : TRUE), fp);
+    fputc('}', fp);
+}
+
+long file_size(struct D_File* self) {
+    return ftell(self->fp);
+}
+
+size_t file_sizeOf(struct D_File* self) {
+    return sizeof(self);
+}
+
+size_t file_structSize() {
+    return sizeof(struct D_File);
+}

@@ -1,0 +1,4 @@
+record Foo = x :: Integer = 100, y :: Symbol = Abc
+let f1 = #Foo{x=100, y=Yes}
+rec:set(f1, quote(x), 99)
+io:showln(f1)
