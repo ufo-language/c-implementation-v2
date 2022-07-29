@@ -7,9 +7,10 @@ HEADER_DIR='src'
 SOURCE_DIR='src'
 OBJ_DIR='obj'
 C_VERSION='c11'
-COMPILE_OPTS=f"-g -ggdb -Wall -Wextra -Wswitch-enum -pedantic -std={C_VERSION} -fsanitize=address"
-#COMPILE_OPTS=f"-Os -Wall -Wextra -Wswitch-enum -pedantic -std={C_VERSION}"
-LINK_OPTS="-fsanitize=address -ldl"
+#COMPILE_OPTS=f"-g -ggdb -Wall -Wextra -Wswitch-enum -pedantic -std={C_VERSION} -fsanitize=address"
+COMPILE_OPTS=f"-Os -Wall -Wextra -Wswitch-enum -pedantic -std={C_VERSION}"
+#LINK_OPTS="-fsanitize=address -ldl"
+LINK_OPTS="-ldl"
 
 SourceFiles = {}
 HeaderFiles = {}

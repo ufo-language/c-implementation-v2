@@ -50,6 +50,10 @@ static int strToIntN(char* str, int nChars);
 
 static jmp_buf jumpBuf;
 
+char* NOTHING_WORD;
+char* TRUE_WORD;
+char* FALSE_WORD;
+
 void lexer_initialize(void) {
     NOTHING_WORD = "nothing";
     TRUE_WORD = "true";

@@ -20,7 +20,7 @@ struct E_Identifier {
     unsigned int hashCode;
 };
 
-struct D_HashTable* INTERNED_IDENTIFIERS;
+extern struct D_HashTable* INTERNED_IDENTIFIERS;
 
 static unsigned int _hashCode(char* name, int strLen);
 

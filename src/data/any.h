@@ -57,7 +57,7 @@ enum TypeId {
     T_FINAL
 };
 
-char* TYPE_NAMES[T_FINAL + 1];
+extern char* TYPE_NAMES[T_FINAL + 1];
 
 struct Evaluator;
 struct D_List;

@@ -10,7 +10,7 @@
 #include "main/typedefs.h"
 #include "utils/hash.h"
 
-struct D_HashTable* INTERNED_SYMBOLS;
+extern struct D_HashTable* INTERNED_SYMBOLS;
 
 struct D_Symbol {
     struct Any obj;

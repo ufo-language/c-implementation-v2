@@ -20,12 +20,8 @@ void ns_ufo_defineAll(struct D_HashTable* env) {
     primitive_define(nsHash, "exit", _exitUfo);
 }
 
-// TODO these two variables are defined in main.c, and I want these
-// two variables to be those two variables (in main.c). I should be
-// required to put 'extern' in front of both of these variables, but
-// that generates an 'undefined reference' compiler error. WHY?
-int ARGC;
-char** ARGV;
+extern int ARGC;
+extern char** ARGV;
 
 static void _args(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(0, NULL, args, NULL, etor);

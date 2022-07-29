@@ -40,9 +40,9 @@ struct ResultToken {
     double doubleValue;
 };
 
-char* NOTHING_WORD;
-char* TRUE_WORD;
-char* FALSE_WORD;
+extern char* NOTHING_WORD;
+extern char* TRUE_WORD;
+extern char* FALSE_WORD;
 
 void lex_nextToken(struct LexerState2* lexerState, struct ResultToken* result);
 
