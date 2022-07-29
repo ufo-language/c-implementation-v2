@@ -13,7 +13,7 @@ $ python3 pmake.py
 ## Running example programs
 
 ```
-$ ufo
+$ bin/ufo
 ▌▐ ▛▘▛▜ UFO version 5-rc-1
 ▙▟ ▛ ▙▟ http://github.com/ufo-language
 type :? for help
