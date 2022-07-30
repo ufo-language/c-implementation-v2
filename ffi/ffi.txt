@@ -1,0 +1,30 @@
+This works:
+
+// Compile with:
+// gcc -shared -o libhello.so -fPIC hello.c
+
+#include <stdio.h>
+
+void __attribute__ ((constructor)) fileStartup(void) {
+    printf("%s called\n", __func__);
+}
+
+void __attribute__ ((destructor)) fileShutdown(void) {
+    printf("%s called\n", __func__);
+}
+
+void hello(void) {
+    printf("Hello, world! from %s\n", __func__);
+}
+
+
+UFO> let dll = ffi:open("ffi/libhello.so")
+fileStartup called
+UFO> let f = ffi:sym(dll, "hello")
+UFO> f
+0x7f434cf4915f :: Address
+UFO> ffi:call(f)
+Hello, world! from hello
+UFO> ffi:close(dll)
+fileShutdown called
+UFO> 
