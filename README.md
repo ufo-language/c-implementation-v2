@@ -57,7 +57,7 @@ There's a REPL that lets you enter many of the data structures and a few of the 
   * integer, real, boolean, string
   * symbolic constant
   * array
-  * singly-linked list (for realsies, not a "we call it a list but it's actually an array" type of data structure) (shakes fist at Guido)l;
+  * singly-linked list (for realsies, not a "we call it a list but it's actually an array" type of data structure) (shakes fist at Guido)
   * finite map / hash table
   * set
   * queue
