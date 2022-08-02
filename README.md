@@ -13,7 +13,7 @@ $ python3 pmake.py
 ## Running example programs
 
 ```
-$ ufo
+$ bin/ufo
 ▌▐ ▛▘▛▜ UFO version 5-rc-1
 ▙▟ ▛ ▙▟ http://github.com/ufo-language
 type :? for help
@@ -39,7 +39,7 @@ This version of UFO is not yet compliant with the docs, and probably also diverg
 
 ## Current status
 
-There's a REPL that lets you enter many of the data structures and a few of the expressions, and there are a few namespaces with primitive function. Type `ns:global()` -- the output is messy, I'll try to clean that up. (Oh, oops, the output is empty. Bit rot is real. I'll try to fix that.)
+There's a REPL that lets you enter many of the data structures and a few of the expressions, and there are a few namespaces with primitive function. Type `ns:global()` -- the output is messy, I'll try to clean that up.
 
 ## Features
 

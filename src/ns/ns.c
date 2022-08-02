@@ -6,6 +6,8 @@
 
 #define NS_NAME "ns"
 
+struct D_HashTable* _globalEnv;
+
 static void _global(struct Evaluator* etor, struct D_List* args);
 
 void ns_ns_defineAll(struct D_HashTable* env) {
@@ -17,5 +19,6 @@ void ns_ns_defineAll(struct D_HashTable* env) {
 
 static void _global(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(0, NULL, args, NULL, etor);
-    evaluator_pushObj(etor, (struct Any*)evaluator_getEnv(etor));
+    //evaluator_pushObj(etor, (struct Any*)evaluator_getEnv(etor));
+    evaluator_pushObj(etor, (struct Any*)_globalEnv);
 }

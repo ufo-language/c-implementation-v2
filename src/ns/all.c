@@ -23,12 +23,13 @@ void ns_thread_defineAll(struct D_HashTable* env);
 void ns_type_defineAll(struct D_HashTable* env);
 void ns_ufo_defineAll(struct D_HashTable* env);
 
-static struct D_HashTable* _globalEnv;
+struct D_HashTable* _globalEnv;
 
 struct D_HashTable* ns_all_globalEnv(void) {
     return _globalEnv;
 }
 
+#include <stdio.h>
 void ns_all_rootObjects(void) {
     _globalEnv = hashTable_new();
     ns_any_defineAll(_globalEnv);
