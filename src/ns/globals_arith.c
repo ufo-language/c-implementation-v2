@@ -16,7 +16,7 @@ void globals_minus(struct Any* lhs, struct Any* rhs, struct Evaluator* etor) {
     else {
         evaluator_throwException(
             etor,
-            symbol_new("Add"),
+            symbol_new("Dash"),
             "left-hand side does not respond to operator '-'",
             (struct Any*)array_newN(2, lhs, rhs)
         );
@@ -35,7 +35,7 @@ void globals_plus(struct Any* lhs, struct Any* rhs, struct Evaluator* etor) {
     else {
         evaluator_throwException(
             etor,
-            symbol_new("Add"),
+            symbol_new("Plus"),
             "left-hand side does not respond to operator '+'",
             (struct Any*)array_newN(2, lhs, rhs)
         );
@@ -54,8 +54,8 @@ void globals_slash(struct Any* lhs, struct Any* rhs, struct Evaluator* etor) {
     else {
         evaluator_throwException(
             etor,
-            symbol_new("Add"),
-            "left-hand side does not respond to operator '-'",
+            symbol_new("Slash"),
+            "left-hand side does not respond to operator '/'",
             (struct Any*)array_newN(2, lhs, rhs)
         );
     }
@@ -73,8 +73,8 @@ void globals_star(struct Any* lhs, struct Any* rhs, struct Evaluator* etor) {
     else {
         evaluator_throwException(
             etor,
-            symbol_new("Add"),
-            "left-hand side does not respond to operator '-'",
+            symbol_new("Star"),
+            "left-hand side does not respond to operator '*'",
             (struct Any*)array_newN(2, lhs, rhs)
         );
     }
