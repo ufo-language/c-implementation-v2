@@ -51,7 +51,7 @@ static void _new(struct Evaluator* etor, struct D_List* args) {
 }
 
 void ns_array_get(struct Evaluator* etor, struct D_List* args) {
-    static enum TypeId paramTypes[] = {T_Array, T_Unsigned};
+    static enum TypeId paramTypes[] = {T_Array, T_Integer};
     struct Any* arrayObj;
     struct Any* countObj;
     struct Any** paramVars[] = {&arrayObj, &countObj};
