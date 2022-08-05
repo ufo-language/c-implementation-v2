@@ -39,7 +39,7 @@ This version of UFO is not yet compliant with the docs, and probably also diverg
 
 ## Current status
 
-There's a REPL that lets you enter many of the data structures and a few of the expressions, and there are a few namespaces with primitive function. Type `ns:global()` -- the output is messy, I'll try to clean that up.
+There's a REPL that lets you enter many of the data structures and a few of the expressions, and there are a few namespaces with primitive functions. Type `ns:global()` to see all the namespaces and their primitives (the output is really messy), or `hash:keys(ns:global())` to see just the namespace names. Type the name of a namespace to see the primitives defined in it.
 
 ## Features
 
