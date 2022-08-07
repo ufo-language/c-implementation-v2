@@ -15,8 +15,7 @@
 #include "parser/parser.h"
 #include "repl/coloncommand.h"
 #include "repl/repl.h"
-
-#define UFO_VERSION "5-rc-1"
+#include "version.h"
 
 struct REPL* repl_new(bool makeRoot) {
     struct REPL* self = (struct REPL*)gc_alloc(T_REPL);
