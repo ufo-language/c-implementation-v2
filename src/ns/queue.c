@@ -64,7 +64,7 @@ static void _enq(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(2, paramTypes, args, paramVars, etor);
     struct D_Queue* queue = (struct D_Queue*)queueObj;
     queue_enq(queue, elem);
-    evaluator_pushObj(etor, (struct Any*)NOTHING);
+    evaluator_pushObj(etor, (struct Any*)NIL);
 }
 
 static void _isEmpty(struct Evaluator* etor, struct D_List* args) {

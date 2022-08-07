@@ -10,7 +10,7 @@
 #include "data/hashtable.h"
 #include "data/integer.h"
 #include "data/list.h"
-#include "data/nothing.h"
+#include "data/nil.h"
 #include "data/primitive.h"
 #include "data/queue.h"
 #include "data/real.h"
@@ -129,8 +129,8 @@ void any_show(struct Any* obj, FILE* fp) {
     case T_List:
         list_show((struct D_List*)obj, fp);
         break;
-    case T_Nothing:
-        nothing_show((struct D_Nothing*)obj, fp);
+    case T_Nil:
+        nil_show((struct D_Nil*)obj, fp);
         break;
     case T_Primitive:
         primitive_show((struct D_Primitive*)obj, fp);

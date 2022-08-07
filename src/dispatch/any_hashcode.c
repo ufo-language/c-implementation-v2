@@ -6,7 +6,7 @@
 #include "data/binding.h"
 #include "data/boolean.h"
 #include "data/integer.h"
-#include "data/nothing.h"
+#include "data/nil.h"
 #include "data/primitive.h"
 #include "data/string.h"
 #include "data/symbol.h"
@@ -82,8 +82,8 @@ HashCode any_hashCode(struct Any* obj, struct Evaluator* etor) {
         return _noHash(obj, etor);
     case T_List:
         return _noHash(obj, etor);
-    case T_Nothing:
-        return nothing_hashCode((struct D_Nothing*)obj, etor);
+    case T_Nil:
+        return nil_hashCode((struct D_Nil*)obj, etor);
     case T_Primitive:
         return primitive_hashCode((struct D_Primitive*)obj, etor);
     case T_Protocol:

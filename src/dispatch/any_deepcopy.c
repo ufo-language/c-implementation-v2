@@ -38,7 +38,7 @@ struct Any* any_deepCopy(struct Any* obj) {
     case T_File:
     case T_Identifier:
     case T_Integer:
-    case T_Nothing:
+    case T_Nil:
     case T_Primitive:
     case T_Real:
     case T_String:

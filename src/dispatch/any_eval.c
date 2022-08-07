@@ -114,7 +114,7 @@ void any_eval(struct Any* obj, struct Evaluator* etor) {
     case T_List:
         list_eval((struct D_List*)obj, etor);
         break;
-    case T_Nothing:
+    case T_Nil:
         _self(obj, etor);
         break;
     case T_Primitive:

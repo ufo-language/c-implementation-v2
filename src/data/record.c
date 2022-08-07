@@ -96,7 +96,7 @@ void record_setFieldValue(struct D_Record* self, struct Any* fieldName, struct A
     struct D_Integer* indexInt = (struct D_Integer*)indexObj;
     int index = integer_getValue(indexInt);
     struct Any* fieldType = array_get_unsafe(recordDefinition_getFieldTypes(self->recordDefinition), index);
-    if (fieldType != (struct Any*)NOTHING && !any_hasType(value, fieldType)) {
+    if (fieldType != (struct Any*)NIL && !any_hasType(value, fieldType)) {
         evaluator_throwException(
             etor,
             symbol_new("Record"),

@@ -10,7 +10,7 @@
 #include "data/hashtable.h"
 #include "data/integer.h"
 #include "data/list.h"
-#include "data/nothing.h"
+#include "data/nil.h"
 #include "data/primitive.h"
 #include "data/queue.h"
 #include "data/real.h"
@@ -125,8 +125,8 @@ void any_free(struct Any* obj) {
     case T_List:
         list_free((struct D_List*)obj);
         break;
-    case T_Nothing:
-        nothing_free((struct D_Nothing*)obj);
+    case T_Nil:
+        nil_free((struct D_Nil*)obj);
         break;
     case T_Primitive:
         primitive_free((struct D_Primitive*)obj);

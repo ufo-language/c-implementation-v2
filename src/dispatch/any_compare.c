@@ -5,7 +5,7 @@
 #include "data/boolean.h"
 #include "data/integer.h"
 #include "data/list.h"
-#include "data/nothing.h"
+#include "data/nil.h"
 #include "data/queue.h"
 #include "data/real.h"
 #include "data/string.h"
@@ -76,8 +76,8 @@ int any_compare(struct Any* obj, struct Any* other, struct Evaluator* etor) {
         return _fail(obj, other, etor);
     case T_List:
         return list_compare((struct D_List*)obj, (struct D_List*)other, etor);
-    case T_Nothing:
-        return nothing_compare((struct D_Nothing*)obj, (struct D_Nothing*)other, etor);
+    case T_Nil:
+        return nil_compare((struct D_Nil*)obj, (struct D_Nil*)other, etor);
     case T_Primitive:
         return _fail(obj, other, etor);
     case T_Protocol:

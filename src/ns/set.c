@@ -34,7 +34,7 @@ static void _add(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(2, paramTypes, args, paramVars, etor);
     struct D_Set* set = (struct D_Set*)setObj;
     set_add(set, elem, etor);
-    evaluator_pushObj(etor, (struct Any*)NOTHING);
+    evaluator_pushObj(etor, (struct Any*)NIL);
 }
 
 void ns_set_has(struct Evaluator* etor, struct D_List* args) {

@@ -71,7 +71,7 @@ struct E_BracketExpr* bracketExpr_deepCopy(struct E_BracketExpr* self) {
 }
 
 void bracketExpr_eval(struct E_BracketExpr* self, struct Evaluator* etor) {
-    struct E_Continuation* contin = continuation_new(_evalContin, "BracketExpr", (struct Any*)NOTHING);
+    struct E_Continuation* contin = continuation_new(_evalContin, "BracketExpr", (struct Any*)NIL);
     evaluator_pushExpr(etor, (struct Any*)contin);
     evaluator_pushExpr(etor, self->index);
     evaluator_pushExpr(etor, self->lhs);

@@ -108,7 +108,7 @@ void list_eval(struct D_List* self, struct Evaluator* etor) {
         evaluator_pushObj(etor, (struct Any*)self);
     }
     else {
-        evaluator_pushExpr(etor, (struct Any*)continuation_new(list_contin, "list", (struct Any*)NOTHING));
+        evaluator_pushExpr(etor, (struct Any*)continuation_new(list_contin, "list", (struct Any*)NIL));
         evaluator_pushExpr(etor, self->rest);
         evaluator_pushExpr(etor, self->first);
     }

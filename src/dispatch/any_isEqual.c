@@ -87,7 +87,7 @@ bool any_isEqual(struct Any* obj, struct Any* other) {
         return _false(obj, other);
     case T_List:
         return list_isEqual((struct D_List*)obj, (struct D_List*)other);
-    case T_Nothing:
+    case T_Nil:
         return _false(obj, other);
     case T_Primitive:
         return _false(obj, other);

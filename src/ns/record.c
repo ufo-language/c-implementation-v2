@@ -108,5 +108,5 @@ static void _set(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(3, paramTypes, args, paramVars, etor);
     struct D_Record* record = (struct D_Record*)recordObj;
     record_setFieldValue(record, fieldName, value, etor);
-    evaluator_pushObj(etor, (struct Any*)NOTHING);
+    evaluator_pushObj(etor, (struct Any*)NIL);
 }

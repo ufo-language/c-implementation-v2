@@ -44,14 +44,14 @@ void cobegin_eval(struct E_Cobegin* self, struct Evaluator* etor) {
     printf("%s is incomplete\n", __func__);
     int nExprs = array_count(self->exprs);
     if (nExprs == 0) {
-        evaluator_pushObj(etor, (struct Any*)NOTHING);
+        evaluator_pushObj(etor, (struct Any*)NIL);
     }
     else {
         struct D_Integer* arg = integer_new(nExprs == 0 ? 0 : nExprs - 1);
         struct E_Continuation* contin = continuation_new(_contin, "cobegin", (struct Any*)arg);
-        evaluator_pushExprEnv(etor, (struct Any*)contin, (struct Any*)NOTHING);
+        evaluator_pushExprEnv(etor, (struct Any*)contin, (struct Any*)NIL);
         for (int n=nExprs - 1; n>=0; n--) {
-            evaluator_pushExprEnv(etor, array_get_unsafe(self->exprs, n), (struct Any*)NOTHING);
+            evaluator_pushExprEnv(etor, array_get_unsafe(self->exprs, n), (struct Any*)NIL);
         }
     }
 }

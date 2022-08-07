@@ -120,7 +120,7 @@ void any_mark(struct Any* obj) {
     case T_List:
         list_markChildren((struct D_List*)obj);
         break;
-    case T_Nothing:
+    case T_Nil:
         _mark(obj);
         break;
     case T_Primitive:

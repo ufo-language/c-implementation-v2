@@ -25,7 +25,7 @@ static char* reservedWords[] = {
     0
 };
 
-static int nothingLen;
+static int nilLen;
 static int trueLen;
 static int falseLen;
 
@@ -50,15 +50,15 @@ static int strToIntN(char* str, int nChars);
 
 static jmp_buf jumpBuf;
 
-char* NOTHING_WORD;
+char* NIL_WORD;
 char* TRUE_WORD;
 char* FALSE_WORD;
 
 void lexer_initialize(void) {
-    NOTHING_WORD = "nothing";
+    NIL_WORD = "nil";
     TRUE_WORD = "true";
     FALSE_WORD = "false";
-    nothingLen = strlen(NOTHING_WORD);
+    nilLen = strlen(NIL_WORD);
     trueLen = strlen(TRUE_WORD);
     falseLen = strlen(FALSE_WORD);
 }
@@ -206,6 +206,8 @@ static char getChar(struct LexerState2* lexerState, struct ResultToken* token) {
 
 static void ungetChar(struct LexerState2* lexerState, struct ResultToken* token) {
     lexerState->inputString--;
+    lexerState->pos--;
+    lexerState->col--;
     token->strLen--;
     if ('\n' == *lexerState->inputString) {
         lexerState->line--;
@@ -249,8 +251,8 @@ static void makeOperator(struct ResultToken* token) {
 static void makeWord(struct ResultToken* token) {
     char* word = token->strValue;
     int count  = token->strLen;
-    if (count == nothingLen && !strncmp(NOTHING_WORD, word, count)) {
-        token->tokenType = LT_Nothing;
+    if (count == nilLen && !strncmp(NIL_WORD, word, count)) {
+        token->tokenType = LT_Nil;
     }
     else if (count == trueLen && !strncmp(TRUE_WORD, word, count)) {
         token->tokenType = LT_Boolean;

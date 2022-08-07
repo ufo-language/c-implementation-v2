@@ -5,7 +5,6 @@
 #include "data/integer.h"
 #include "data/primitive.h"
 #include "data/string.h"
-#include "data/symbol.h"
 #include "etor/evaluator.h"
 #include "expr/identifier.h"
 #include "main/globals.h"

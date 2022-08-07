@@ -3,6 +3,7 @@
 #include <sys/prctl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "gc/gc.h"
@@ -21,12 +22,11 @@ void any_sanityCheck(void);
 int main(int argc, char* argv[]) {
     ARGC = argc;
     ARGV = argv;
-
     if (pipe(PARENT_TO_CHILD) == -1 || pipe(CHILD_TO_PARENT) == -1) {
         fprintf(stderr, "Unable to open parent/child pipe\n");
         exit(1);
     }
-
+    srand(time(0));
     //pid_t parentPid = getpid();
     pid_t pid = fork();
     if (pid == 0) {

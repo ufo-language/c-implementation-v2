@@ -10,7 +10,7 @@
 #include "etor/evaluator.h"
 #include "main/globals.h"
 
-#define NS_NAME "etor"
+#define NS_NAME "evaluator"
 
 static void _env(struct Evaluator* etor, struct D_List* args);
 

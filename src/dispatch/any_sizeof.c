@@ -10,7 +10,7 @@
 #include "data/hashtable.h"
 #include "data/integer.h"
 #include "data/list.h"
-#include "data/nothing.h"
+#include "data/nil.h"
 #include "data/primitive.h"
 #include "data/queue.h"
 #include "data/real.h"
@@ -101,8 +101,8 @@ size_t any_sizeOf(struct Any* obj) {
         return letRec_sizeOf((struct E_LetRec*)obj);
     case T_List:
         return list_sizeOf((struct D_List*)obj);
-    case T_Nothing:
-        return nothing_sizeOf((struct D_Nothing*)obj);
+    case T_Nil:
+        return nil_sizeOf((struct D_Nil*)obj);
     case T_Primitive:
         return primitive_sizeOf((struct D_Primitive*)obj);
     case T_Protocol:

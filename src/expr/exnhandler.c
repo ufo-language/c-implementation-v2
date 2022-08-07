@@ -57,7 +57,7 @@ void exceptionHandler_eval(struct E_ExceptionHandler* self, struct Evaluator* et
     (void)self;
     (void)etor;
     // By default an exception handler does nothing.
-    // It's not 'invoked' until an exception occurs that it matches.
+    // It's not 'invoked' until an exception occurs that matches the handler.
     // DO NOTHING.
 }
 

@@ -76,7 +76,7 @@ struct D_Triple* any_match(struct Any* obj, struct Any* other, struct D_Triple* 
         return _isEqual(obj, other, bindings);
     case T_List:
         return list_match((struct D_List*)obj, other, bindings);
-    case T_Nothing:
+    case T_Nil:
         return _isEqual(obj, other, bindings);
     case T_Primitive:
         return _isEqual(obj, other, bindings);

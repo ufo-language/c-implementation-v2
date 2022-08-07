@@ -6,11 +6,13 @@
 #include "data/string.h"
 #include "etor/evaluator.h"
 #include "expr/identifier.h"
+#include "version.h"
 
 #define NS_NAME "ufo"
 
 static void _args(struct Evaluator* etor, struct D_List* args);
 static void _exitUfo(struct Evaluator* etor, struct D_List* args);
+static void _version(struct Evaluator* etor, struct D_List* args);
 
 void ns_ufo_defineAll(struct D_HashTable* env) {
     struct E_Identifier* nsName = identifier_new(NS_NAME);
@@ -18,6 +20,7 @@ void ns_ufo_defineAll(struct D_HashTable* env) {
     hashTable_put_unsafe(env, (struct Any*)nsName, (struct Any*)nsHash);
     primitive_define(nsHash, "args", _args);
     primitive_define(nsHash, "exit", _exitUfo);
+    primitive_define(nsHash, "version", _version);
 }
 
 extern int ARGC;
@@ -39,4 +42,10 @@ static void _exitUfo(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     struct D_Integer* exitCodeInt = (struct D_Integer*)exitCodeObj;
     evaluator_exit(etor, integer_getValue(exitCodeInt));
+}
+
+static void _version(struct Evaluator* etor, struct D_List* args) {
+    primitive_checkArgs(0, NULL, args, NULL, etor);
+    struct D_String* versionString = string_new(UFO_VERSION);
+    evaluator_pushObj(etor, (struct Any*)versionString);
 }

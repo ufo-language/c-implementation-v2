@@ -6,7 +6,7 @@ enum LexerTokenType {
     LT_Boolean,
     LT_Identifier,
     LT_Integer,
-    LT_Nothing,
+    LT_Nil,
     LT_Operator,
     LT_Real,
     LT_Reserved,
@@ -40,7 +40,7 @@ struct ResultToken {
     double doubleValue;
 };
 
-extern char* NOTHING_WORD;
+extern char* NIL_WORD;
 extern char* TRUE_WORD;
 extern char* FALSE_WORD;
 
