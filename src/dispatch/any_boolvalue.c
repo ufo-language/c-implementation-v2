@@ -85,7 +85,7 @@ bool any_boolValue(struct Any* obj) {
         return _true(obj);
     case T_List:
         return list_boolValue((struct D_List*)obj);
-    case T_Nothing:
+    case T_Nil:
         return _false(obj);
     case T_Primitive:
         return _true(obj);

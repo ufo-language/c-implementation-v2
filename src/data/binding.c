@@ -54,7 +54,7 @@ struct D_Binding* binding_deepCopy(struct D_Binding* self) {
 }
 
 void binding_eval(struct D_Binding* self, struct Evaluator* etor) {
-    evaluator_pushExpr(etor, (struct Any*)continuation_new(binding_contin, "binding", (struct Any*)NOTHING));
+    evaluator_pushExpr(etor, (struct Any*)continuation_new(binding_contin, "binding", (struct Any*)NIL));
     evaluator_pushExpr(etor, self->value);
     evaluator_pushExpr(etor, self->key);
 }

@@ -36,7 +36,7 @@ void continuation_markChildren(struct E_Continuation* self) {
 
 void continuation_show(struct E_Continuation* self, FILE* fp) {
     fprintf(fp, "Continuation{%s", self->name);
-    if (self->arg != (struct Any*)NOTHING) {
+    if (self->arg != (struct Any*)NIL) {
         fputs(", ", fp);
         any_show(self->arg, fp);
     }

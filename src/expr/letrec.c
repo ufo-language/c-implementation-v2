@@ -51,7 +51,7 @@ void letRec_eval(struct E_LetRec* self, struct Evaluator* etor) {
     struct D_Queue* bindingListQueue = queue_new();
     struct E_Continuation* contin = continuation_new(_contin, "letRec", (struct Any*)bindingListQueue);
     // all expressions must use the dynamic environment
-    evaluator_pushExprEnv(etor, (struct Any*)contin, (struct Any*)NOTHING);
+    evaluator_pushExprEnv(etor, (struct Any*)contin, (struct Any*)NIL);
 
     // Collect all the free variables, and at the same time push each
     // RHS to be evaluated.
@@ -64,25 +64,25 @@ void letRec_eval(struct E_LetRec* self, struct Evaluator* etor) {
         struct Any* lhs = binding_getKey(binding);
         array_set_unsafe(lhsAry, n, lhs);
         struct Any* rhs = binding_getValue(binding);
-        evaluator_pushExprEnv(etor, rhs, (struct Any*)NOTHING);
+        evaluator_pushExprEnv(etor, rhs, (struct Any*)NIL);
         bindings = (struct D_List*)list_getRest(bindings);
     }
     struct D_Set* freeVarSet = set_new();
     array_freeVars(lhsAry, freeVarSet, etor);
 
-    // Bind all the free variables to nothing, This is done so that
+    // Bind all the free variables to nil, This is done so that
     // the identifiers are all in the environment before the RHSs are
     // evaluated.
     // The use of the dynamic environment ensures that when the RHSs
     // are evaluated, they are evaluated in the environment in which
-    // we just bound all the identifiers to nothing.
+    // we just bound all the identifiers to nil.
     struct D_Array* freeVarAry = set_toArray(freeVarSet);
     for (int n=0; n<array_count(freeVarAry); n++) {
         struct E_Identifier* ident = (struct E_Identifier*)array_get_unsafe(freeVarAry, n);
-        struct D_Triple* binding = evaluator_bind(etor, ident, (struct Any*)NOTHING);
+        struct D_Triple* binding = evaluator_bind(etor, ident, (struct Any*)NIL);
         queue_enq(bindingListQueue, (struct Any*)binding);
     }
-    evaluator_pushObj(etor, (struct Any*)NOTHING);
+    evaluator_pushObj(etor, (struct Any*)NIL);
 }
 
 void letRec_freeVars(struct E_LetRec* self, struct D_Set* freeVars, struct Evaluator* etor) {

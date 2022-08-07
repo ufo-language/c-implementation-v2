@@ -138,7 +138,7 @@ void gc_commit(void) {
 }
 
 // Call this function only one time after instantiating all permanent
-// values like 'nothing' and the empty list, and interned integers.
+// values like 'nil' and the empty list, and interned integers.
 void gc_commitPermanentObjects(void) {
     _permanentObjects = _spine;
     _committed = _spine;

@@ -42,7 +42,7 @@ void any_display(struct Any* obj, FILE* fp) {
     case T_LetIn:
     case T_LetRec:
     case T_List:
-    case T_Nothing:
+    case T_Nil:
     case T_Primitive:
     case T_Protocol:
     case T_Queue:

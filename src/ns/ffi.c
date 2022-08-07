@@ -43,7 +43,7 @@ static void _call(struct Evaluator* etor, struct D_List* args) {
     } functionPointer;
     functionPointer.pointer = address_getValue((struct D_Address*)functionAddress);
     functionPointer.functionCall();
-    evaluator_pushObj(etor, (struct Any*)NOTHING);
+    evaluator_pushObj(etor, (struct Any*)NIL);
 }
 
 static void _close(struct Evaluator* etor, struct D_List* args) {
@@ -53,7 +53,7 @@ static void _close(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     void* dlFile = address_getValue((struct D_Address*)dlFileAddress);
     dlclose(dlFile);
-    evaluator_pushObj(etor, (struct Any*)NOTHING);
+    evaluator_pushObj(etor, (struct Any*)NIL);
 }
 
 static void _open(struct Evaluator* etor, struct D_List* args) {
@@ -91,7 +91,7 @@ static void _sym(struct Evaluator* etor, struct D_List* args) {
             "Unable to locate function name in FFI file",
             (struct Any*)dlFunctionName
         );
-        evaluator_pushObj(etor, (struct Any*)NOTHING);
+        evaluator_pushObj(etor, (struct Any*)NIL);
     }
     else {
         struct D_Address* address = address_new(dlFunction);

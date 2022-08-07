@@ -10,7 +10,7 @@
 #include "data/hashtable.h"
 #include "data/integer.h"
 #include "data/list.h"
-#include "data/nothing.h"
+#include "data/nil.h"
 #include "data/primitive.h"
 #include "data/queue.h"
 #include "data/real.h"
@@ -101,8 +101,8 @@ size_t any_structSize(enum TypeId typeId) {
         return letRec_structSize();
     case T_List:
         return list_structSize();
-    case T_Nothing:
-        return nothing_structSize();
+    case T_Nil:
+        return nil_structSize();
     case T_Primitive:
         return primitive_structSize();
     case T_Protocol:

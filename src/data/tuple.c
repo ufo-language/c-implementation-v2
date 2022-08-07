@@ -23,7 +23,7 @@ struct D_Tuple* tuple_new(int count) {
     self->count = count;
     self->elems = elems;
     for (int n=0; n<count; n++) {
-        elems[n] = (struct Any*)NOTHING;
+        elems[n] = (struct Any*)NIL;
     }
     return self;
 }

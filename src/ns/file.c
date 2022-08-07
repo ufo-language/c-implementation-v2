@@ -39,7 +39,7 @@ static void _close(struct Evaluator* etor, struct D_List* args) {
     struct Any** paramVars[] = {&fileObj};
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     file_close((struct D_File*)fileObj, etor);
-    evaluator_pushObj(etor, (struct Any*)NOTHING);
+    evaluator_pushObj(etor, (struct Any*)NIL);
 }
 
 static void _isOpen(struct Evaluator* etor, struct D_List* args) {
@@ -73,7 +73,7 @@ static void _readChar(struct Evaluator* etor, struct D_List* args) {
         evaluator_throwException(etor, sym, "file is closed", (struct Any*)file);
     }
     int c = file_readChar((struct D_File*)file);
-    evaluator_pushObj(etor, (c == EOF) ? (struct Any*)NOTHING : (struct Any*)string_fromChar(c));
+    evaluator_pushObj(etor, (c == EOF) ? (struct Any*)NIL : (struct Any*)string_fromChar(c));
 }
 
 static void _readAll(struct Evaluator* etor, struct D_List* args) {

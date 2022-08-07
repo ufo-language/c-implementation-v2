@@ -32,7 +32,7 @@ enum TypeId {
     T_LetIn,
     T_LetRec,
     T_List,
-    T_Nothing,
+    T_Nil,
     T_Primitive,
     T_Protocol,
     T_Queue,

@@ -49,7 +49,7 @@ void recordDefinition_free(struct E_RecordDefinition* self) {
 void recordDefinition_eval(struct E_RecordDefinition* self, struct Evaluator* etor) {
     struct D_HashTable* recordNs = evaluator_getRecordNamespace(etor);
     hashTable_put(recordNs, (struct Any*)self->typeName, (struct Any*)self, etor);
-    evaluator_pushObj(etor, (struct Any*)NOTHING);
+    evaluator_pushObj(etor, (struct Any*)NIL);
 }
 
 void recordDefinition_freeVars(struct E_RecordDefinition* self, struct D_Set* freeVars, struct Evaluator* etor) {
@@ -95,12 +95,12 @@ void recordDefinition_show(struct E_RecordDefinition* self, FILE* fp) {
         }
         identifier_show((struct E_Identifier*)array_get_unsafe(self->fieldNames, n), fp);
         struct Any* fieldType = array_get_unsafe(self->fieldTypes, n);
-        if (fieldType != (struct Any*)NOTHING) {
+        if (fieldType != (struct Any*)NIL) {
             fputs(" :: ", fp);
             any_show(fieldType, fp);
         }
         struct Any* defaultValue = array_get_unsafe(self->defaultValues, n);
-        if (defaultValue != (struct Any*)NOTHING) {
+        if (defaultValue != (struct Any*)NIL) {
             fputs(" = ", fp);
             any_show(defaultValue, fp);
         }

@@ -27,10 +27,10 @@ struct REPL* repl_new(bool makeRoot) {
     self->string = EMPTY_STRING;
     self->tokens = EMPTY_LIST;
     self->colonTokens = EMPTY_LIST;
-    self->expr = (struct Any*)NOTHING;
-    self->value = (struct Any*)NOTHING;
+    self->expr = (struct Any*)NIL;
+    self->value = (struct Any*)NIL;
     self->etor = (struct Evaluator*)evaluator_new();
-    self->error = (struct Any*)NOTHING;
+    self->error = (struct Any*)NIL;
     self->fileWasLoaded = false;
     self->lastFileLoaded = NULL;
     return self;
@@ -140,7 +140,7 @@ void repl_run(struct REPL* self) {
                         evaluator_pushExpr(self->etor, self->expr);
                         evaluator_run(self->etor);
                         struct Any* error = evaluator_getException(self->etor);
-                        if (error != (struct Any*)NOTHING) {
+                        if (error != (struct Any*)NIL) {
                             self->error = error;
                             fputs("Evaluation error: ", stderr);
                             any_show(error, stderr);
@@ -148,10 +148,10 @@ void repl_run(struct REPL* self) {
                             evaluator_clearException(self->etor);
                         }
                         else {
-                            self->error = (struct Any*)NOTHING;
+                            self->error = (struct Any*)NIL;
                             struct Any* value = evaluator_popObj(self->etor);
                             self->value = value;
-                            if (value != (struct Any*)NOTHING) {
+                            if (value != (struct Any*)NIL) {
                                 any_show(self->value, stdout);
                                 printf(" :: %s\n", any_typeName(self->value));
                             }

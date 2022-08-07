@@ -53,7 +53,7 @@ static void _publish(struct Evaluator* etor, struct D_List* args) {
             }
         }
     }
-    evaluator_pushObj(etor, (struct Any*)NOTHING);
+    evaluator_pushObj(etor, (struct Any*)NIL);
 }
 
 static void _subscribe(struct Evaluator* etor, struct D_List* args) {
@@ -73,14 +73,14 @@ static void _subscribe(struct Evaluator* etor, struct D_List* args) {
         hashTable_put(subscriberTable, messagePattern, (struct Any*)subscriberQueue, etor);
     }
     queue_enq(subscriberQueue, subscriber);
-    evaluator_pushObj(etor, (struct Any*)NOTHING);
+    evaluator_pushObj(etor, (struct Any*)NIL);
 }
 
 static void _subscribers(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(0, NULL, args, NULL, etor);
     struct Any* subscribers = (struct Any*)evaluator_getSubscriberTable(etor);
     if (subscribers == NULL) {
-        subscribers = (struct Any*)NOTHING;
+        subscribers = (struct Any*)NIL;
     }
     evaluator_pushObj(etor, subscribers);
 }

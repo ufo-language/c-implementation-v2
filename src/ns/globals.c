@@ -61,7 +61,7 @@ static void _assert(struct Evaluator* etor, struct D_List* args) {
     switch(nArgs) {
         case 1:
             arg1 = list_getFirst(args);
-            arg2 = (struct Any*)NOTHING;
+            arg2 = (struct Any*)NIL;
             break;
         case 2:
             arg1 = list_getFirst(args);
@@ -75,7 +75,7 @@ static void _assert(struct Evaluator* etor, struct D_List* args) {
         evaluator_throwException(etor, argSym, "assertion failure", arg2);
     }
     else {
-        evaluator_pushObj(etor, (struct Any*)NOTHING);
+        evaluator_pushObj(etor, (struct Any*)NIL);
     }
 }
 

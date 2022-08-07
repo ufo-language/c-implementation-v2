@@ -111,5 +111,5 @@ static void _set(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(3, paramTypes, args, paramVars, etor);
     struct D_HashTable* hash = (struct D_HashTable*)hashObj;
     hashTable_put(hash, keyObj, valueObj, etor);
-    evaluator_pushObj(etor, (struct Any*)NOTHING);
+    evaluator_pushObj(etor, (struct Any*)NIL);
 }

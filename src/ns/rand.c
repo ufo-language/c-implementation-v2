@@ -54,7 +54,7 @@ static void _choose(struct Evaluator* etor, struct D_List* args) {
         obj = array_get_unsafe(ary, n);
     }
     else {
-        obj = (struct Any*)NOTHING;
+        obj = (struct Any*)NIL;
     }
     evaluator_pushObj(etor, obj);
 }
@@ -110,5 +110,5 @@ static void _seed(struct Evaluator* etor, struct D_List* args) {
         int seed = integer_getValue((struct D_Integer*)intObj);
         srand(seed);
     }
-    evaluator_pushObj(etor, (struct Any*)NOTHING);
+    evaluator_pushObj(etor, (struct Any*)NIL);
 }

@@ -3,7 +3,7 @@
 
 struct D_Array;
 struct D_HashTable;
-struct D_Nothing;
+struct D_Nil;
 struct D_List;
 struct D_String;
 struct D_Triple;
@@ -14,7 +14,7 @@ extern struct D_String*    EMPTY_STRING;
 extern struct D_Triple*    EMPTY_TRIPLE;
 extern struct D_HashTable* INTERNED_SYMBOLS;
 extern struct D_HashTable* INTERNED_IDENTIFIERS;
-extern struct D_Nothing*   NOTHING;
+extern struct D_Nil*       NIL;
 extern struct D_Boolean*   TRUE;
 extern struct D_Boolean*   FALSE;
 
@@ -24,7 +24,7 @@ extern struct D_Symbol*    SYM_ARRAY;
 extern struct D_Symbol*    SYM_BOOLEAN;
 extern struct D_Symbol*    SYM_IDENTIFIER;
 extern struct D_Symbol*    SYM_INTEGER;
-extern struct D_Symbol*    SYM_NOTHING;
+extern struct D_Symbol*    SYM_NIL;
 extern struct D_Symbol*    SYM_STRING;
 extern struct D_Symbol*    SYM_SYMBOL;
 

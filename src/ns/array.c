@@ -39,7 +39,7 @@ static void _count(struct Evaluator* etor, struct D_List* args) {
 static void _new(struct Evaluator* etor, struct D_List* args) {
     static enum TypeId paramTypes[] = {T_Integer, T_NULL};
     struct Any* countObj;
-    struct Any* initialValue = (struct Any*)NOTHING;
+    struct Any* initialValue = (struct Any*)NIL;
     struct Any** paramVars[] = {&countObj, &initialValue};
     primitive_checkArgs2(1, 2, paramTypes, args, paramVars, etor);
     int count = integer_getValue((struct D_Integer*)countObj);

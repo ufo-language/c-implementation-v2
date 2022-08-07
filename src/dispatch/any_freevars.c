@@ -116,7 +116,7 @@ void any_freeVars(struct Any* obj, struct D_Set* freeVars, struct Evaluator* eto
     case T_List:
         list_freeVars((struct D_List*)obj, freeVars, etor);
         break;
-    case T_Nothing:
+    case T_Nil:
         _simpleMatch(obj, freeVars, etor);
         break;
     case T_Primitive:

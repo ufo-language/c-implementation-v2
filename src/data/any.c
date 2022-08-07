@@ -30,7 +30,7 @@ char* TYPE_NAMES[] = {
     "LetIn",
     "LetRec",
     "List",
-    "Nothing",
+    "Nil",
     "Primitive",
     "Protocol",
     "Queue",

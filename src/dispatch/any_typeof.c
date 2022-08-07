@@ -11,7 +11,7 @@
 #include "data/hashtable.h"
 #include "data/integer.h"
 #include "data/list.h"
-#include "data/nothing.h"
+#include "data/nil.h"
 #include "data/primitive.h"
 #include "data/queue.h"
 #include "data/real.h"
@@ -79,7 +79,7 @@ struct Any* any_typeOf(struct Any* obj) {
     case T_LetIn:
     case T_LetRec:
     case T_List:
-    case T_Nothing:
+    case T_Nil:
     case T_Primitive:
     case T_Protocol:
     case T_Queue:

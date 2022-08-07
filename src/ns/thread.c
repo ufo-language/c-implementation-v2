@@ -34,7 +34,7 @@ static void _future(struct Evaluator* etor, struct D_List* args) {
     */
     (void)args;
     printf("%s is incomplete\n", __func__);
-    evaluator_pushObj(etor, (struct Any*)NOTHING);
+    evaluator_pushObj(etor, (struct Any*)NIL);
 }
 
 static void _self(struct Evaluator* etor, struct D_List* args) {

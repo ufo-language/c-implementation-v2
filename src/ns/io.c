@@ -35,19 +35,19 @@ static void _disp(struct Evaluator* etor, struct D_List* args) {
         any_display(list_getFirst(args), stdout);
         args = (struct D_List*)list_getRest(args);
     }
-    evaluator_pushObj(etor, (struct Any*)NOTHING);
+    evaluator_pushObj(etor, (struct Any*)NIL);
 }
 
 static void _dispLn(struct Evaluator* etor, struct D_List* args) {
     _disp(etor, args);
     putchar('\n');
-    evaluator_pushObj(etor, (struct Any*)NOTHING);
+    evaluator_pushObj(etor, (struct Any*)NIL);
 }
 
 static void _nl(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(0, NULL, args, NULL, etor);
     putchar('\n');
-    evaluator_pushObj(etor, (struct Any*)NOTHING);
+    evaluator_pushObj(etor, (struct Any*)NIL);
 }
 
 static void _readLine(struct Evaluator* etor, struct D_List* args) {
@@ -62,11 +62,11 @@ static void _show(struct Evaluator* etor, struct D_List* args) {
         any_show(list_getFirst(args), stdout);
         args = (struct D_List*)list_getRest(args);
     }
-    evaluator_pushObj(etor, (struct Any*)NOTHING);
+    evaluator_pushObj(etor, (struct Any*)NIL);
 }
 
 static void _showLn(struct Evaluator* etor, struct D_List* args) {
     _show(etor, args);
     putchar('\n');
-    evaluator_pushObj(etor, (struct Any*)NOTHING);
+    evaluator_pushObj(etor, (struct Any*)NIL);
 }

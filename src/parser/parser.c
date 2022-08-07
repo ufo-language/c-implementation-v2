@@ -288,7 +288,7 @@ Obj p_ignore(List* tokens, Parser parser) {
 
 Obj p_maybe(List* tokens, Parser parser) {
     Obj res = parser(tokens);
-    return res ? res : (Obj)NOTHING;
+    return res ? res : (Obj)NIL;
 }
 
 Obj p_oneOf(List* tokens, ...) {
@@ -385,8 +385,8 @@ Obj p_integer(List* tokens) {
     return p_spot(tokens, LEXER_SYMBOLS[LT_Integer]);
 }
 
-Obj p_nothing(List* tokens) {
-    return p_spot(tokens, LEXER_SYMBOLS[LT_Nothing]);
+Obj p_nil(List* tokens) {
+    return p_spot(tokens, LEXER_SYMBOLS[LT_Nil]);
 }
 
 Obj p_real(List* tokens) {
@@ -515,7 +515,7 @@ Obj p_list(List* tokens) {
         return NULL;
     }
     Obj rest = queue_deq_unsafe(elems);
-    if (rest == (Obj)NOTHING) {
+    if (rest == (Obj)NIL) {
         return (Obj)queue_asList(elems1);
     }
     struct D_Queue* finalElemQueue = (struct D_Queue*)rest;
@@ -822,7 +822,7 @@ Obj p_recordField(List* tokens) {
     }
     Obj typeSpec = p_typeSpec(tokens);
     if (typeSpec == NULL) {
-        typeSpec = (Obj)NOTHING;
+        typeSpec = (Obj)NIL;
     }
     Obj initialValue = NULL;
     if (p_equalSign(tokens)) {
@@ -832,7 +832,7 @@ Obj p_recordField(List* tokens) {
         }
     }
     else {
-        initialValue = (Obj)NOTHING;
+        initialValue = (Obj)NIL;
     }
     Array recordFieldAry = array_newN(3, ident, typeSpec, initialValue);
     return (Obj)recordFieldAry;
@@ -914,7 +914,7 @@ Obj p_any(List* tokens) {
         p_hashTable,
         p_symbol,
         p_identifier,
-        p_nothing,
+        p_nil,
         p_boolean,
         p_string,
         0

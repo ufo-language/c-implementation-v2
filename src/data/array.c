@@ -24,7 +24,7 @@ struct D_Array* array_new(int count) {
     self->count = count;
     self->elems = (struct Any**)malloc(count * sizeof(struct Any*));
     for (int n=0; n<count; n++) {
-        self->elems[n] = (struct Any*)NOTHING;
+        self->elems[n] = (struct Any*)NIL;
     }
     return self;
 }

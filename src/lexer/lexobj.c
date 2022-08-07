@@ -16,12 +16,12 @@
 
 struct D_Symbol* LEXER_SYMBOLS[LT_FINAL];
 
-static int nothingLen;
+static int nilLen;
 static int trueLen;
 static int falseLen;
 
 void parser_initialize(void) {
-    nothingLen = strlen("nothing");
+    nilLen = strlen("nil");
     trueLen = strlen("true");
     falseLen = strlen("false");
 }
@@ -29,7 +29,7 @@ void parser_initialize(void) {
 void lexObj_rootObjects(void) {
     LEXER_SYMBOLS[LT_None]       = symbol_new("None");
     LEXER_SYMBOLS[LT_Boolean]    = symbol_new("Boolean");
-    LEXER_SYMBOLS[LT_Nothing]    = symbol_new("Nothing");
+    LEXER_SYMBOLS[LT_Nil]    = symbol_new("Nil");
     LEXER_SYMBOLS[LT_Identifier] = symbol_new("Identifier");
     LEXER_SYMBOLS[LT_Integer]    = symbol_new("Integer");
     LEXER_SYMBOLS[LT_Operator]   = symbol_new("Operator");
@@ -79,14 +79,14 @@ struct D_List* lexObj_string(struct D_String* string) {
         struct Any* lexemeObj;
         switch (token.tokenType) {
             case LT_EOI:
-                lexemeObj = (struct Any*)NOTHING;
+                lexemeObj = (struct Any*)NIL;
                 contin = false;
                 break;
             case LT_Boolean:
                 lexemeObj = (struct Any*)(strncmp("true", token.strValue, 4) ? FALSE : TRUE);
                 break;
-            case LT_Nothing:
-                lexemeObj = (struct Any*)NOTHING;
+            case LT_Nil:
+                lexemeObj = (struct Any*)NIL;
                 break;
             case LT_Operator: {
                     int len = token.strLen;

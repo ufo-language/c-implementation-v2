@@ -50,7 +50,7 @@ static void _contin(struct Evaluator* etor, struct Any* arg) {
         bindings = (struct D_List*)list_getRest(bindings);
     }
     evaluator_setEnv(etor, env);
-    evaluator_pushObj(etor, (struct Any*)NOTHING);
+    evaluator_pushObj(etor, (struct Any*)NIL);
 }
 
 struct E_Let* let_deepCopy(struct E_Let* self) {

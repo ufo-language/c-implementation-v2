@@ -55,7 +55,7 @@ void evaluator_initialize(struct Evaluator* self) {
     self->env = EMPTY_TRIPLE;
     self->globalEnv = ns_all_globalEnv();
     self->recordNamespace = hashTable_new();
-    self->exception = (struct Any*)NOTHING;
+    self->exception = (struct Any*)NIL;
     self->savedEnvList = EMPTY_LIST;
     self->subscriberTable = NULL;
     self->showSteps = false;
@@ -72,7 +72,7 @@ struct D_Triple* evaluator_bind(struct Evaluator* self, struct E_Identifier* key
 }
 
 void evaluator_clearException(struct Evaluator* self) {
-    self->exception = (struct Any*)NOTHING;
+    self->exception = (struct Any*)NIL;
 }
 
 #include "data/integer.h"
@@ -133,7 +133,7 @@ void evaluator_handleException(struct Evaluator* self) {
     struct D_Triple* env = self->env;
     evaluator_initialize(self);
     self->env = env;
-    evaluator_pushObj(self, (struct Any*)NOTHING);
+    evaluator_pushObj(self, (struct Any*)NIL);
 }
 
 struct Any* evaluator_lookup(struct Evaluator* self, struct E_Identifier* key) {
@@ -175,9 +175,9 @@ struct Any* evaluator_popExpr(struct Evaluator* self) {
     struct Any* expr = (struct Any*)triple_getFirst(self->estack);
     struct D_Triple* env = (struct D_Triple*)triple_getSecond(self->estack);
     if (any_isA((struct Any*)env, T_Triple)) {
-        // the env value is either a T_Triple or its T_Nothing, which
+        // the env value is either a T_Triple or its T_Nil, which
         // means "use the dynamic environment"
-        // TODO change to check for 'env == NOTHING'?
+        // TODO change to check for 'env == NIL'?
         self->env = env;
     }
     self->estack = (struct D_Triple*)triple_getNext(self->estack);
