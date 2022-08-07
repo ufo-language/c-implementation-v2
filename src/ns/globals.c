@@ -12,6 +12,7 @@
 #include "expr/identifier.h"
 #include "main/globals.h"
 
+static void _assert(struct Evaluator* etor, struct D_List* args);
 static void _colon(struct Evaluator* etor, struct D_List* args);
 static void _equalTo(struct Evaluator* etor, struct D_List* args);
 static void _minus(struct Evaluator* etor, struct D_List* args);
@@ -39,15 +40,43 @@ static void _defMacro(struct D_HashTable* env, char* name, PrimitiveFunction fun
 }
 
 void ns_globals_defineAll(struct D_HashTable* env) {
+    // functions
     _defFun(env, "==", _equalTo);
     _defFun(env, "+", _plus);
     _defFun(env, "-", _minus);
     _defFun(env, "*", _star);
     _defFun(env, "/", _slash);
+    _defFun(env, "assert", _assert);
     _defFun(env, "throw", _throw);
+    // macros
     _defMacro(env, ":", _colon);
-    _defMacro(env, "quote", _quote);
     _defMacro(env, ":=", _reassign);
+    _defMacro(env, "quote", _quote);
+}
+
+static void _assert(struct Evaluator* etor, struct D_List* args) {
+    struct Any* arg1 = NULL;
+    struct Any* arg2 = NULL;
+    int nArgs = list_count(args);
+    switch(nArgs) {
+        case 1:
+            arg1 = list_getFirst(args);
+            arg2 = (struct Any*)NOTHING;
+            break;
+        case 2:
+            arg1 = list_getFirst(args);
+            arg2 = list_getSecond(args);
+            break;
+        default:
+            primitive_argCountException(1, args, etor);
+    }
+    if (!any_boolValue(arg1)) {
+        struct D_Symbol* argSym = symbol_new("Assertion");
+        evaluator_throwException(etor, argSym, "assertion failure", arg2);
+    }
+    else {
+        evaluator_pushObj(etor, (struct Any*)NOTHING);
+    }
 }
 
 static void _colon_contin(struct Evaluator* etor, struct Any* arg) {
