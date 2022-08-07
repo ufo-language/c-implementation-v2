@@ -206,6 +206,8 @@ static char getChar(struct LexerState2* lexerState, struct ResultToken* token) {
 
 static void ungetChar(struct LexerState2* lexerState, struct ResultToken* token) {
     lexerState->inputString--;
+    lexerState->pos--;
+    lexerState->col--;
     token->strLen--;
     if ('\n' == *lexerState->inputString) {
         lexerState->line--;
