@@ -61,11 +61,9 @@ def scanTree_aux():
                 if fileName.startswith("."):
                     continue
                 (name, ext) = os.path.splitext(fileName)
-
                 longFileName = root + '/' + fileName
                 timeStamp = os.path.getmtime(longFileName)
                 longExtensionlessFileName = root + '/' + name
-
                 # strip ./ from beginning
                 if longExtensionlessFileName.startswith('./'):
                     longExtensionlessFileName = longExtensionlessFileName[2:]
