@@ -1,25 +1,27 @@
 #!/bin/bash
 # NOTE: This must be run with bash and not sh.
 
+# This script creates a tgz backup of the whole project.
+
 COPY_TO=~/host/Dropbox/Backups/ufo-c
 
 rm -f list-of-files
-find src -name '*.c'    >> list-of-files
-find src -name '*.h'    >> list-of-files
-find test -name '*.c'   >> list-of-files
-find test -name '*.h'   >> list-of-files
-find test -name '*.txt' >> list-of-files
-find doc -name '*.txt'  >> list-of-files
-ls *.ufo                >> list-of-files
-ls pmake.py             >> list-of-files
-ls backup               >> list-of-files
-ls rebuild              >> list-of-files
-ls c                    >> list-of-files
-ls ctest                >> list-of-files
-ls u                    >> list-of-files
-ls clean                >> list-of-files
-ls gdb-run              >> list-of-files
-ls restore-latest       >> list-of-files
+find src -name '*.c'          >> list-of-files
+find src -name '*.h'          >> list-of-files
+find test -name '*.c'         >> list-of-files
+find test -name '*.h'         >> list-of-files
+find test -name '*.txt'       >> list-of-files
+find doc-local -name '*.txt'  >> list-of-files
+ls examples/*.ufo             >> list-of-files
+ls pmake.py                   >> list-of-files
+ls script/backup              >> list-of-files
+ls script/rebuild             >> list-of-files
+ls script/c                   >> list-of-files
+ls script/ctest               >> list-of-files
+ls script/u                   >> list-of-files
+ls script/clean               >> list-of-files
+ls script/gdb-run             >> list-of-files
+ls script/restore-latest      >> list-of-files
 
 DESC="-$1"
 if [ "-$1-" == "--" ]; then

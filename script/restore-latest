@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This script restores the project from the latest tgz backup
+# that was made with the backup script.
+
 dir=~/host/Dropbox/Backups/ufo-c
 latest=$(ls $dir | tail -n 1)
 rm -r src/* 2> /dev/null
