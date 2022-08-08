@@ -6,7 +6,7 @@
 
 #define NS_NAME "ns"
 
-struct D_HashTable* _globalEnv;
+extern struct D_HashTable* _globalEnv;
 
 static void _global(struct Evaluator* etor, struct D_List* args);
 
