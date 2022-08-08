@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdlib.h>
 
 #include "data/any.h"
@@ -43,6 +44,7 @@ static void _mark(struct Any* obj) {
 }
 
 void any_mark(struct Any* obj) {
+    assert(obj != NULL);
     if (obj->isMarked) {
         return;
     }
