@@ -25,7 +25,6 @@ struct REPL* repl_new(bool makeRoot) {
     }
     self->inputStringBuffer = stringBuffer_new();
     self->inputString = EMPTY_STRING;
-    self->string = EMPTY_STRING;
     self->tokens = EMPTY_LIST;
     self->colonTokens = EMPTY_LIST;
     self->expr = (struct Any*)NIL;
@@ -43,13 +42,13 @@ void repl_free(struct REPL* self) {
 }
 
 struct D_String* repl_getInputString(struct REPL* self) {
-    return self->string;
+    return self->inputString;
 }
 
 void repl_markChildren(struct REPL* self) {
     any_mark((struct Any*)self->inputStringBuffer);
     any_mark((struct Any*)self->inputString);
-    any_mark((struct Any*)self->string);
+    any_mark((struct Any*)self->inputString);
     any_mark((struct Any*)self->tokens);
     any_mark((struct Any*)self->colonTokens);
     any_mark((struct Any*)self->expr);
@@ -128,10 +127,8 @@ static int repl_readLines(struct REPL* self) {
 
 // Reads a string from stdin or from a file
 static int repl_read(struct REPL* self) {
-    int nChars;
-    repl_prompt();
     stringBuffer_clear(self->inputStringBuffer);
-    nChars = repl_readLine(self->inputStringBuffer);
+    int nChars = repl_readLine(self->inputStringBuffer);
     if (nChars > 0) {
         self->inputString = stringBuffer_asString(self->inputStringBuffer);
         char* chars = string_getChars(self->inputString);
@@ -140,6 +137,7 @@ static int repl_read(struct REPL* self) {
             enum ReadAction readAction = colonCommand_run(self->colonTokens, self);
             switch (readAction) {
                 case KEEP_LOOPING:
+                    nChars = 0;
                     break;
                 case QUIT:
                     self->keepRunning = false;
@@ -151,13 +149,14 @@ static int repl_read(struct REPL* self) {
                     nChars = repl_readFile(self);
                     break;
             }
+            self->inputString = stringBuffer_asString(self->inputStringBuffer);
         }
     }
     return nChars;
 }
 
 static bool repl_tokenize(struct REPL* self) {
-    struct D_List* tokens = lexObj_string(self->string);
+    struct D_List* tokens = lexObj_string(self->inputString);
     if (tokens == NULL) {
         self->tokens = EMPTY_LIST;
         return false;
@@ -212,15 +211,24 @@ static bool repl_printValue(struct REPL* self) {
 void repl_run(struct REPL* self) {
     repl_intro();
     while (true) {
+        repl_prompt();
         int nChars = repl_read(self);
+        if (nChars == -1) {
+            break;
+        }
+        if (nChars == 0) {
+            continue;
+        }
         if (!self->keepRunning) {
             break;
         }
-        bool res =
-            repl_tokenize(self)
-            && repl_parse(self)
-            && repl_eval(self);
-        if (res) {
+        if (!repl_tokenize(self)) {
+            continue;
+        }
+        if (!repl_parse(self)) {
+            continue;
+        }
+        if (!repl_eval(self)) {
             repl_printError(self);
         }
         else {
@@ -231,84 +239,11 @@ void repl_run(struct REPL* self) {
     fputc('\n', stdout);
 }
 
-#if 0
-void repl_run_X(struct REPL* self) {
-    repl_intro();
-    bool keepLooping = true;
-    while (keepLooping) {
-        int nChars;
-        if (!self->fileWasLoaded) {
-            stringBuffer_clear(self->inputStringBuffer);
-            repl_prompt();
-            int res = repl_readLine(self->inputStringBuffer);
-            if (res == -1) {
-                break;
-            }
-        }
-        self->fileWasLoaded = false;
-        nChars = stringBuffer_count(self->inputStringBuffer);
-        if (nChars > 0) {
-            self->inputString = stringBuffer_asString(self->inputStringBuffer);
-            stringBuffer_clear(self->inputStringBuffer);
-            char* chars = string_getChars(self->inputString);
-            if (':' == chars[0]) {
-                // TODO I'm pretty sure these tokens don't need to be attached to the REPL.
-                // I created the colonTokens field in order to diagnose GC bugs.
-                self->colonTokens = string_split(self->inputString, ' ');
-                keepLooping = colonCommand_run(self->colonTokens, self);
-            }
-            else {
-                // tokenize the string
-                self->string = self->inputString;
-                struct D_List* tokens = lexObj_string(self->string);
-                if (tokens != NULL) {
-                    // parse the tokens
-                    self->tokens = tokens;
-                    while (true) {
-                        struct D_Array* firstToken = (struct D_Array*)list_getFirst(tokens);
-                        if (array_get_unsafe(firstToken, 0) == (struct Any*)LEXER_SYMBOLS[LT_EOI]) {
-                            break;
-                        }
-                        struct Any* expr = parser_parse(&tokens, self->etor);
-                        if (expr == NULL) {
-                            break;
-                        }
-                        // evaluate the expression
-                        self->expr = expr;
-                        evaluator_pushExpr(self->etor, self->expr);
-                        evaluator_run(self->etor);
-                        struct Any* error = evaluator_getException(self->etor);
-                        if (error != (struct Any*)NIL) {
-                            self->error = error;
-                            fputs("Evaluation error: ", stderr);
-                            any_show(error, stderr);
-                            fputc('\n', stderr);
-                            evaluator_clearException(self->etor);
-                        }
-                        else {
-                            self->error = (struct Any*)NIL;
-                            struct Any* value = evaluator_popObj(self->etor);
-                            self->value = value;
-                            if (value != (struct Any*)NIL) {
-                                any_show(self->value, stdout);
-                                printf(" :: %s\n", any_typeName(self->value));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        gc_commit();
-    }
-    fputc('\n', stdout);
-}
-#endif
-
 void repl_show(struct REPL* self, FILE* fp) {
     (void)self;
     fprintf(fp, "REPL{inputStringBuffer="); any_show((struct Any*)self->inputStringBuffer, fp);
     fprintf(fp, ", inputString="); any_show((struct Any*)self->inputString, fp);
-    fprintf(fp, ", string="); any_show((struct Any*)self->string, fp);
+    fprintf(fp, ", string="); any_show((struct Any*)self->inputString, fp);
     fprintf(fp, ", tokens="); any_show((struct Any*)self->tokens, fp);
     fprintf(fp, ", colonTokens="); any_show((struct Any*)self->colonTokens, fp);
     fprintf(fp, ", expr="); any_show((struct Any*)self->expr, fp);
