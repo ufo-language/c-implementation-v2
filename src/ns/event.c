@@ -41,11 +41,11 @@ static void _publish(struct Evaluator* etor, struct D_List* args) {
             struct Any* key = array_get_unsafe(keyArray, n);
             if (any_match(key, message, EMPTY_TRIPLE) != NULL) {
                 struct D_Queue* handlerQueue = (struct D_Queue*)hashTable_get_unsafe(subscriberTable, key);
-                struct D_List* args = list_new(message, (struct Any*)EMPTY_LIST);
+                struct D_List* args1 = list_new(message, (struct Any*)EMPTY_LIST);
                 struct D_List* handlerList = queue_asList(handlerQueue);
                 while (!list_isEmpty(handlerList)) {
                     struct Any* handler = list_getFirst(handlerList);
-                    struct E_Apply* app = apply_new(handler, args);
+                    struct E_Apply* app = apply_new(handler, args1);
                     evaluator_pushExpr(etor, (struct Any*)app);
                     handlerList = (struct D_List*)list_getRest(handlerList);
                 }

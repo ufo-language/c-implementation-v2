@@ -175,7 +175,6 @@ static bool repl_parse(struct REPL* self) {
     return true;
 }
 
-// Evaluates the object.
 static bool repl_eval(struct REPL* self) {
     evaluator_pushExpr(self->etor, self->expr);
     evaluator_run(self->etor);
@@ -187,7 +186,6 @@ static bool repl_eval(struct REPL* self) {
     return true;
 }
 
-// Displays the result.
 static void repl_printError(struct REPL* self) {
     fputs("Evaluation error: ", stderr);
     any_show(self->error, stderr);
@@ -196,7 +194,6 @@ static void repl_printError(struct REPL* self) {
     self->error = (struct Any*)NIL;
 }
 
-// Displays the result.
 static bool repl_printValue(struct REPL* self) {
     struct Any* value = evaluator_popObj(self->etor);
     self->value = value;
@@ -207,7 +204,6 @@ static bool repl_printValue(struct REPL* self) {
     return true;
 }
 
-// This is the rewrite of the repl_run function below.
 void repl_run(struct REPL* self) {
     repl_intro();
     while (true) {

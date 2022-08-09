@@ -83,13 +83,13 @@ static void _colon_contin(struct Evaluator* etor, struct Any* arg) {
     struct Any* obj = evaluator_popObj(etor);
     if (any_isA(obj, T_HashTable)) {
         struct D_HashTable* hash = (struct D_HashTable*)obj;
-        struct Any* obj = hashTable_get(hash, arg, etor);
-        evaluator_pushObj(etor, obj);
+        struct Any* obj1 = hashTable_get(hash, arg, etor);
+        evaluator_pushObj(etor, obj1);
     }
     else if (any_isA(obj, T_Record)) {
         struct D_Record* record = (struct D_Record*)obj;
-        struct Any* obj = record_getFieldValue(record, arg, etor);
-        evaluator_pushObj(etor, obj);
+        struct Any* obj1 = record_getFieldValue(record, arg, etor);
+        evaluator_pushObj(etor, obj1);
     }
     else {
         evaluator_throwException(

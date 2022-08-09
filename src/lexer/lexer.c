@@ -177,8 +177,10 @@ void lex_nextToken(struct LexerState2* lexerState, struct ResultToken* token) {
             }
             break;
         case S_PlusMinus:
-            if (c >= '0' && c <= '9') { state = S_Number; }
-            if (c == '\0') {
+            if (c >= '0' && c <= '9') {
+                state = S_Number;
+            }
+            else if (c == '\0') {
                 ungetChar(lexerState, token);
                 state = S_Initial;
             }

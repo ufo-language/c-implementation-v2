@@ -17,7 +17,7 @@ static struct D_Triple* _error(struct Any* obj, struct Any* other, struct D_Trip
     (void)bindings;
     fprintf(stderr, "ERROR: call to 'any_match' is not valid for type ID %d (%0x)\n", obj->typeId, obj->typeId);
     exit(1);
-    return false;
+    return NULL;
 }
 
 static struct D_Triple* _isEqual(struct Any* obj, struct Any* other, struct D_Triple* bindings) {
