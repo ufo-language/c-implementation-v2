@@ -195,9 +195,8 @@ static void repl_printError(struct REPL* self) {
 }
 
 static bool repl_printValue(struct REPL* self) {
-    struct Any* value = evaluator_popObj(self->etor);
-    self->value = value;
-    if (value != (struct Any*)NIL) {
+    self->value = evaluator_popObj(self->etor);
+    if (self->value != (struct Any*)NIL) {
         any_show(self->value, stdout);
         printf(" :: %s\n", any_typeName(self->value));
     }
