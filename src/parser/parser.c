@@ -179,7 +179,7 @@ static Obj p_spot(List* tokens, Symbol tokenType) {
         *tokens = (List)list_getRest(*tokens);
         return array_get_unsafe(firstToken, 1);
     }
-    return false;
+    return NULL;
 }
 
 static Obj p_spotValue(List* tokens, Symbol tokenType, Obj value) {
@@ -296,15 +296,16 @@ Obj p_oneOf(List* tokens, ...) {
     va_start(argList, tokens);
     Parser parser;
     List savedTokens = *tokens;
+    Obj value = NULL;
     while ((parser = va_arg(argList, Parser))) {
-        Obj value = parser(tokens);
+        value = parser(tokens);
         if (value) {
-            return value;
+            break;
         }
         *tokens = savedTokens;
     }
     va_end(argList);
-    return NULL;
+    return value;
 }
 
 struct D_Queue* p_sepBy(List* tokens, Parser parser, Parser separator) {
@@ -338,6 +339,7 @@ struct D_Queue* p_seq(List* tokens, ...) {
     while ((parser = va_arg(argList, Parser))) {
         Obj value = parser(tokens);
         if (value == NULL) {
+            va_end(argList);
             return NULL;
         }
         if (value != (Obj)IGNORE) {

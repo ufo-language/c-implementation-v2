@@ -5,6 +5,7 @@
 
 #include "data/any.h"
 #include "data/array.h"
+#include "data/file.h"
 #include "data/list.h"
 #include "data/string.h"
 #include "data/stringbuffer.h"
@@ -24,7 +25,6 @@ struct REPL* repl_new(bool makeRoot) {
     }
     self->inputStringBuffer = stringBuffer_new();
     self->inputString = EMPTY_STRING;
-    self->string = EMPTY_STRING;
     self->tokens = EMPTY_LIST;
     self->colonTokens = EMPTY_LIST;
     self->expr = (struct Any*)NIL;
@@ -32,7 +32,8 @@ struct REPL* repl_new(bool makeRoot) {
     self->etor = (struct Evaluator*)evaluator_new();
     self->error = (struct Any*)NIL;
     self->fileWasLoaded = false;
-    self->lastFileLoaded = NULL;
+    self->loadFileName = EMPTY_STRING;
+    self->keepRunning = true;
     return self;
 }
 
@@ -41,22 +42,20 @@ void repl_free(struct REPL* self) {
 }
 
 struct D_String* repl_getInputString(struct REPL* self) {
-    return self->string;
+    return self->inputString;
 }
 
 void repl_markChildren(struct REPL* self) {
     any_mark((struct Any*)self->inputStringBuffer);
     any_mark((struct Any*)self->inputString);
-    any_mark((struct Any*)self->string);
+    any_mark((struct Any*)self->inputString);
     any_mark((struct Any*)self->tokens);
     any_mark((struct Any*)self->colonTokens);
     any_mark((struct Any*)self->expr);
     any_mark((struct Any*)self->value);
     any_mark((struct Any*)self->etor);
     any_mark((struct Any*)self->error);
-    if (self->lastFileLoaded != NULL) {
-        any_mark((struct Any*)self->lastFileLoaded);
-    }
+    any_mark((struct Any*)self->loadFileName);
 }
 
 static void repl_intro(void) {
@@ -72,8 +71,19 @@ static void repl_prompt(void) {
 
 extern volatile sig_atomic_t SIGNAL_STATUS;
 
+static int repl_readFile(struct REPL* self) {
+    char* fileName = string_getChars(self->loadFileName);
+    struct D_File* file = file_new_charString(fileName);
+    if (file_open_aux(file)) {
+        file_readAll_stringBuffer(file, self->inputStringBuffer, self->etor);
+        file_close(file, self->etor);
+        return stringBuffer_count(self->inputStringBuffer);
+    }
+    return -1;
+}
+
 // Returns the number of characters read, or -1 on EOF (^D)
-static int repl_getLine(struct D_StringBuffer* sb) {
+static int repl_readLine(struct D_StringBuffer* line) {
     while (true) {
         int c = getchar();
         if (c == '\n') {
@@ -89,76 +99,136 @@ static int repl_getLine(struct D_StringBuffer* sb) {
             }
             return -1;
         }
-        stringBuffer_writeChar(sb, c);
+        stringBuffer_writeChar(line, c);
     }
-    return stringBuffer_count(sb);
+    return stringBuffer_count(line);
+}
+
+static int repl_readLines(struct REPL* self) {
+    stringBuffer_clear(self->inputStringBuffer);
+    struct D_StringBuffer* line = stringBuffer_new();
+    int nCharsLines = 0;
+    while (true) {
+        int nCharsLine = repl_readLine(line);
+        if (nCharsLine == -1) {
+            return -1;
+        }
+        if (nCharsLine == 0) {
+            break;
+        }
+        struct D_String* lineString = stringBuffer_asString(line);
+        stringBuffer_write(self->inputStringBuffer, lineString);
+        stringBuffer_writeChar(self->inputStringBuffer, '\n');
+        nCharsLines += nCharsLine + 1;
+        stringBuffer_clear(line);
+    }
+    return nCharsLines;
+}
+
+// Reads a string from stdin or from a file
+static int repl_read(struct REPL* self) {
+    stringBuffer_clear(self->inputStringBuffer);
+    int nChars = repl_readLine(self->inputStringBuffer);
+    if (nChars > 0) {
+        self->inputString = stringBuffer_asString(self->inputStringBuffer);
+        char* chars = string_getChars(self->inputString);
+        if (':' == chars[0]) {
+            self->colonTokens = string_split(self->inputString, ' ');
+            enum ReadAction readAction = colonCommand_run(self->colonTokens, self);
+            switch (readAction) {
+                case KEEP_LOOPING:
+                    nChars = 0;
+                    break;
+                case QUIT:
+                    self->keepRunning = false;
+                    break;
+                case READ_LINES:
+                    nChars = repl_readLines(self);
+                    break;
+                case READ_FILE:
+                    nChars = repl_readFile(self);
+                    break;
+            }
+            self->inputString = stringBuffer_asString(self->inputStringBuffer);
+        }
+    }
+    return nChars;
+}
+
+static bool repl_tokenize(struct REPL* self) {
+    struct D_List* tokens = lexObj_string(self->inputString);
+    if (tokens == NULL) {
+        self->tokens = EMPTY_LIST;
+        return false;
+    }
+    self->tokens = tokens;
+    return true;
+}
+
+static bool repl_parse(struct REPL* self) {
+    struct Any* expr = parser_parse(&self->tokens, self->etor);
+    if (expr == NULL) {
+        self->expr = (struct Any*)NIL;
+        return false;
+    }
+    self->expr = expr;
+    return true;
+}
+
+static bool repl_eval(struct REPL* self) {
+    evaluator_pushExpr(self->etor, self->expr);
+    evaluator_run(self->etor);
+    struct Any* error = evaluator_getException(self->etor);
+    if (error != (struct Any*)NIL) {
+        self->error = error;
+        return false;
+    }
+    return true;
+}
+
+static void repl_printError(struct REPL* self) {
+    fputs("Evaluation error: ", stderr);
+    any_show(self->error, stderr);
+    fputc('\n', stderr);
+    evaluator_clearException(self->etor);
+    self->error = (struct Any*)NIL;
+}
+
+static bool repl_printValue(struct REPL* self) {
+    struct Any* value = evaluator_popObj(self->etor);
+    self->value = value;
+    if (value != (struct Any*)NIL) {
+        any_show(self->value, stdout);
+        printf(" :: %s\n", any_typeName(self->value));
+    }
+    return true;
 }
 
 void repl_run(struct REPL* self) {
     repl_intro();
-    bool contin = true;
-    while (contin) {
-        int nChars;
-        if (!self->fileWasLoaded) {
-            stringBuffer_clear(self->inputStringBuffer);
-            repl_prompt();
-            int res = repl_getLine(self->inputStringBuffer);
-            if (res == -1) {
-                break;
-            }
+    while (true) {
+        repl_prompt();
+        int nChars = repl_read(self);
+        if (nChars == -1) {
+            break;
         }
-        self->fileWasLoaded = false;
-        nChars = stringBuffer_count(self->inputStringBuffer);
-        if (nChars > 0) {
-            self->inputString = stringBuffer_asString(self->inputStringBuffer);
-            stringBuffer_clear(self->inputStringBuffer);
-            char* chars = string_getChars(self->inputString);
-            if (':' == chars[0]) {
-                // TODO I'm pretty sure these tokens don't need to be attached to the REPL.
-                // I made the colonTokens field to diagnose GC bugs.
-                self->colonTokens = string_split(self->inputString, ' ');
-                contin = colonCommand_run(self->colonTokens, self);
-            }
-            else {
-                // tokenize the string
-                self->string = self->inputString;
-                struct D_List* tokens = lexObj_string(self->string);
-                if (tokens != NULL) {
-                    // parse the tokens
-                    self->tokens = tokens;
-                    while (true) {
-                        struct D_Array* firstToken = (struct D_Array*)list_getFirst(tokens);
-                        if (array_get_unsafe(firstToken, 0) == (struct Any*)LEXER_SYMBOLS[LT_EOI]) {
-                            break;
-                        }
-                        struct Any* expr = parser_parse(&tokens, self->etor);
-                        if (expr == NULL) {
-                            break;
-                        }
-                        // evaluate the expression
-                        self->expr = expr;
-                        evaluator_pushExpr(self->etor, self->expr);
-                        evaluator_run(self->etor);
-                        struct Any* error = evaluator_getException(self->etor);
-                        if (error != (struct Any*)NIL) {
-                            self->error = error;
-                            fputs("Evaluation error: ", stderr);
-                            any_show(error, stderr);
-                            fputc('\n', stderr);
-                            evaluator_clearException(self->etor);
-                        }
-                        else {
-                            self->error = (struct Any*)NIL;
-                            struct Any* value = evaluator_popObj(self->etor);
-                            self->value = value;
-                            if (value != (struct Any*)NIL) {
-                                any_show(self->value, stdout);
-                                printf(" :: %s\n", any_typeName(self->value));
-                            }
-                        }
-                    }
-                }
-            }
+        if (nChars == 0) {
+            continue;
+        }
+        if (!self->keepRunning) {
+            break;
+        }
+        if (!repl_tokenize(self)) {
+            continue;
+        }
+        if (!repl_parse(self)) {
+            continue;
+        }
+        if (!repl_eval(self)) {
+            repl_printError(self);
+        }
+        else {
+            repl_printValue(self);
         }
         gc_commit();
     }
@@ -169,14 +239,14 @@ void repl_show(struct REPL* self, FILE* fp) {
     (void)self;
     fprintf(fp, "REPL{inputStringBuffer="); any_show((struct Any*)self->inputStringBuffer, fp);
     fprintf(fp, ", inputString="); any_show((struct Any*)self->inputString, fp);
-    fprintf(fp, ", string="); any_show((struct Any*)self->string, fp);
+    fprintf(fp, ", string="); any_show((struct Any*)self->inputString, fp);
     fprintf(fp, ", tokens="); any_show((struct Any*)self->tokens, fp);
     fprintf(fp, ", colonTokens="); any_show((struct Any*)self->colonTokens, fp);
     fprintf(fp, ", expr="); any_show((struct Any*)self->expr, fp);
     fprintf(fp, ", value="); any_show((struct Any*)self->value, fp);
     fprintf(fp, ", etor="); any_show((struct Any*)self->etor, fp);
     fprintf(fp, ", error="); any_show((struct Any*)self->error, fp);
-    fprintf(fp, ", lastFile="); any_show((struct Any*)self->lastFileLoaded, fp);
+    fprintf(fp, ", fileName="); any_show((struct Any*)self->loadFileName, fp);
     fputc('}', fp);
 }
 

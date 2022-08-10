@@ -25,7 +25,7 @@ struct D_Primitive {
 
 union FunctionPointerUnion {
     PrimitiveFunction function;
-    void* pointer;
+    //void* pointer;
     HashCode hashCode;
 };
 

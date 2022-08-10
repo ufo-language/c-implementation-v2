@@ -291,21 +291,21 @@ void gc_startFunctions(void (*setupPermanentObjects)(void),
 void gc_showStats(void) {
     printf("WARNING: these numbers are not correct\n");
     printf("[Current]\n");
-    printf("      Collections: %lu\n", _totalCollections);
-    printf(" Resident objects: %lu\n", _nObjsResident);
-    printf("   Resident bytes: %lu\n", _nBytesResident);
-    printf("  Objects trigger: %lu\n", objsCreatedTrigger);
-    printf("    Bytes trigger: %lu\n", bytesAllocatedTrigger);
+    printf("      Collections: %lu\n", (unsigned long)_totalCollections);
+    printf(" Resident objects: %lu\n", (unsigned long)_nObjsResident);
+    printf("   Resident bytes: %lu\n", (unsigned long)_nBytesResident);
+    printf("  Objects trigger: %lu\n", (unsigned long)objsCreatedTrigger);
+    printf("    Bytes trigger: %lu\n", (unsigned long)bytesAllocatedTrigger);
     printf("[Total]\n");
-    printf("  Objects created: %lu\n", _totalObjsCreated);
-    printf("  Bytes allocated: %lu\n", _totalBytesAllocated);
-    printf("    Objects freed: %lu\n", _totalObjsFreed);
-    printf("      Bytes freed: %lu\n", _totalBytesFreed);
+    printf("  Objects created: %lu\n", (unsigned long)_totalObjsCreated);
+    printf("  Bytes allocated: %lu\n", (unsigned long)_totalBytesAllocated);
+    printf("    Objects freed: %lu\n", (unsigned long)_totalObjsFreed);
+    printf("      Bytes freed: %lu\n", (unsigned long)_totalBytesFreed);
     printf("[Since last GC]\n");
-    printf("  Objects created: %lu\n", _iterObjsCreated);
-    printf("  Bytes allocated: %lu\n", _iterBytesAllocated);
-    printf("    Objects freed: %lu\n", _iterObjsFreed);
-    printf("      Bytes freed: %lu\n", _iterBytesFreed);
+    printf("  Objects created: %lu\n", (unsigned long)_iterObjsCreated);
+    printf("  Bytes allocated: %lu\n", (unsigned long)_iterBytesAllocated);
+    printf("    Objects freed: %lu\n", (unsigned long)_iterObjsFreed);
+    printf("      Bytes freed: %lu\n", (unsigned long)_iterBytesFreed);
 }
 
 void gc_stop(void) {

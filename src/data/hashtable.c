@@ -280,7 +280,7 @@ void hashTable_put(struct D_HashTable* self, struct Any* key, struct Any* value,
         }
         else {
             struct Any* keyCopy = any_deepCopy(key);
-            struct BucketLink* link = _bucketLink_new(keyCopy, value, self->buckets[bucketNum]);
+            link = _bucketLink_new(keyCopy, value, self->buckets[bucketNum]);
             self->buckets[bucketNum] = link;
             self->count++;
         }

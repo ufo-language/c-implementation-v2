@@ -3,9 +3,11 @@
 
 #include <stdbool.h>
 
+#include "repl.h"
+
 struct D_List;
 struct REPL;
 
-bool colonCommand_run(struct D_List* tokens, struct REPL* repl);
+enum ReadAction colonCommand_run(struct D_List* tokens, struct REPL* repl);
 
 #endif
