@@ -70,9 +70,10 @@ void primitive_checkArgs(int nParams, enum TypeId paramTypes[], struct D_List* a
     }
 }
 
-void primitive_checkArgs2(int nParams1, int nParams2, enum TypeId paramTypes[], struct D_List* argList, struct Any** paramVars[], struct Evaluator* etor) {
+int primitive_checkArgs2(int nParams1, int nParams2, enum TypeId paramTypes[], struct D_List* argList, struct Any** paramVars[], struct Evaluator* etor) {
     struct D_List* savedArgList = argList;
-    for (int n=0; n<nParams2; n++) {
+    int n;
+    for (n=0; n<nParams2; n++) {
         if (list_isEmpty(argList)) {
             if (n < nParams1) {
                 primitive_argCountException(nParams1, savedArgList, etor);
@@ -89,6 +90,7 @@ void primitive_checkArgs2(int nParams1, int nParams2, enum TypeId paramTypes[], 
     if (!list_isEmpty(argList)){
         primitive_argCountException(nParams2, savedArgList, etor);
     }
+    return n;
 }
 
 void primitive_define(struct D_HashTable* namespace, char* name, PrimitiveFunction prim) {
