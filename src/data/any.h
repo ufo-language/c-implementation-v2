@@ -42,6 +42,7 @@ enum TypeId {
     T_RecordDefinition,
     T_RecordSpec,
     T_SavedEnv,
+    T_Sequence,
     T_Set,
     T_String,
     T_StringBuffer,

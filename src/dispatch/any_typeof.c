@@ -54,57 +54,57 @@ static struct Any* _error(struct Any* obj) {
 
 struct Any* any_typeOf(struct Any* obj) {
     switch (obj->typeId) {
-    case T_NULL:
-        return _error(obj);
-    case T_Abstraction:
-    case T_Address:
-    case T_Apply:
-    case T_Array:
-    case T_Binding:
-    case T_BinOp:
-    case T_Boolean:
-    case T_BracketExpr:
-    case T_Closure:
-    case T_Cobegin:
-    case T_Continuation:
-    case T_Do:
-    case T_Evaluator:
-    case T_ExceptionHandler:
-    case T_File:
-    case T_HashTable:
-    case T_Identifier:
-    case T_If:
-    case T_Integer:
-    case T_Let:
-    case T_LetIn:
-    case T_LetRec:
-    case T_List:
-    case T_Nil:
-    case T_Primitive:
-    case T_Protocol:
-    case T_Queue:
-    case T_Real:
-    case T_RecordDefinition:
-    case T_RecordSpec:
-    case T_REPL:
-    case T_SavedEnv:
-    case T_Set:
-    case T_String:
-    case T_StringBuffer:
-    case T_StringStream:
-    case T_Symbol:
-    case T_Term:
-    case T_Triple:
-    case T_TryCatch:
-    case T_Tuple:
-    case T_Unsigned:
-        return (struct Any*)any_typeSymbol(obj);
-    case T_Record:
-        return record_typeOf((struct D_Record*)obj);
-    case T_FINAL:
-        return _error(obj);
-    default:
-        return 0;
+        case T_NULL:
+            return _error(obj);
+        case T_Abstraction:
+        case T_Address:
+        case T_Apply:
+        case T_Array:
+        case T_Binding:
+        case T_BinOp:
+        case T_Boolean:
+        case T_BracketExpr:
+        case T_Closure:
+        case T_Cobegin:
+        case T_Continuation:
+        case T_Do:
+        case T_Evaluator:
+        case T_ExceptionHandler:
+        case T_File:
+        case T_HashTable:
+        case T_Identifier:
+        case T_If:
+        case T_Integer:
+        case T_Let:
+        case T_LetIn:
+        case T_LetRec:
+        case T_List:
+        case T_Nil:
+        case T_Primitive:
+        case T_Protocol:
+        case T_Queue:
+        case T_Real:
+        case T_RecordDefinition:
+        case T_RecordSpec:
+        case T_REPL:
+        case T_SavedEnv:
+        case T_Sequence:
+        case T_Set:
+        case T_String:
+        case T_StringBuffer:
+        case T_StringStream:
+        case T_Symbol:
+        case T_Term:
+        case T_Triple:
+        case T_TryCatch:
+        case T_Tuple:
+        case T_Unsigned:
+            return (struct Any*)any_typeSymbol(obj);
+        case T_Record:
+            return record_typeOf((struct D_Record*)obj);
+        case T_FINAL:
+            return _error(obj);
+        default:
+            return 0;
     }
 }
-

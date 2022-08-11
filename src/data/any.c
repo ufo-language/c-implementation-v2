@@ -40,6 +40,7 @@ char* TYPE_NAMES[] = {
     "RecordDefinition",
     "RecordSpec",
     "SavedEnv",
+    "Sequence",
     "Set",
     "String",
     "StringBuffer",
