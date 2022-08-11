@@ -19,6 +19,7 @@ static void _minus(struct Evaluator* etor, struct D_List* args);
 static void _plus(struct Evaluator* etor, struct D_List* args);
 static void _quote(struct Evaluator* etor, struct D_List* args);
 static void _reassign(struct Evaluator* etor, struct D_List* args);
+static void _sequence(struct Evaluator* etor, struct D_List* args);
 static void _slash(struct Evaluator* etor, struct D_List* args);
 static void _star(struct Evaluator* etor, struct D_List* args);
 static void _throw(struct Evaluator* etor, struct D_List* args);
@@ -46,6 +47,7 @@ void ns_globals_defineAll(struct D_HashTable* env) {
     _defFun(env, "-", _minus);
     _defFun(env, "*", _star);
     _defFun(env, "/", _slash);
+    _defFun(env, "..", _sequence);
     _defFun(env, "assert", _assert);
     _defFun(env, "throw", _throw);
     // macros
@@ -147,6 +149,11 @@ static void _quote(struct Evaluator* etor, struct D_List* args) {
 static void _reassignContin(struct Evaluator* etor, struct Any* arg) {
     struct Any* rhs = evaluator_popObj(etor);
     globals_reassign(arg, rhs, etor);
+}
+
+static void _sequence(struct Evaluator* etor, struct D_List* args) {
+    printf("globals.c _sequence got args "); any_show((struct Any*)args, stdout); printf("\n");
+    evaluator_pushObj(etor, (struct Any*)NIL);
 }
 
 static void _reassign(struct Evaluator* etor, struct D_List* args) {

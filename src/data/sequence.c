@@ -10,6 +10,7 @@
 #include "utils/hash.h"
 
 struct D_Sequence {
+    struct Any obj;
     int from;
     int to;
     int by;
