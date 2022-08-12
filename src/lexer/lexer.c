@@ -6,7 +6,7 @@
 
 #include "lexer/lexer.h"
 
-static char* operChars = ".:+-*/=";
+static char* operChars = ".:+-*/=%";
 
 static char* reservedWords[] = {
     "catch",
@@ -86,7 +86,8 @@ void lex_nextToken(struct LexerState2* lexerState, struct ResultToken* token) {
         S_String,     // 4
         S_Operator,   // 5
         S_PlusMinus,  // 6
-        S_Dot         // 7
+        S_Dot,        // 7
+        S_Real        // 8
     };
     enum StateId state = S_Initial;
     while (true) {
@@ -146,6 +147,15 @@ void lex_nextToken(struct LexerState2* lexerState, struct ResultToken* token) {
             }
             break;
         case S_Dot:
+            if      (c >= '0' && c <= '9')  { state = S_Real; }
+            else {
+                ungetChar(lexerState, token);
+                ungetChar(lexerState, token);
+                makeInteger(token);
+                return;
+            }
+            break;
+        case S_Real:
             if      (c >= '0' && c <= '9')  {}
             else {
                 ungetChar(lexerState, token);
