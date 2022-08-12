@@ -56,8 +56,8 @@ struct D_List* lexObj_string(struct D_String* string) {
         /* pos         */ 0,
         /* col         */ 0,
         /* line        */ 1,
-        /* strValue    */ lexerState.inputString,
-        /* strLen      */ 0,
+        /* lexeme      */ lexerState.inputString,
+        /* lexemeLen   */ 0,
         /* intValue    */ 0,
         /* charValue   */ 0,
         /* doubleValue */ 0.0
@@ -66,8 +66,8 @@ struct D_List* lexObj_string(struct D_String* string) {
     while (contin) {
         token.tokenType = LT_None;
         token.error = NULL;
-        token.strValue = lexerState.inputString;
-        token.strLen = 0;
+        token.lexeme = lexerState.inputString;
+        token.lexemeLen = 0;
         token.intValue = 0;
         token.charValue = '\0';
         token.doubleValue = 0.0;
@@ -83,23 +83,23 @@ struct D_List* lexObj_string(struct D_String* string) {
                 contin = false;
                 break;
             case LT_Boolean:
-                lexemeObj = (struct Any*)(strncmp("true", token.strValue, 4) ? FALSE : TRUE);
+                lexemeObj = (struct Any*)(strncmp("true", token.lexeme, 4) ? FALSE : TRUE);
                 break;
             case LT_Nil:
                 lexemeObj = (struct Any*)NIL;
                 break;
             case LT_Operator: {
-                    int len = token.strLen;
+                    int len = token.lexemeLen;
                     char* lexeme = (char*)malloc(len + 1);
-                    strncpy(lexeme, token.strValue, len);
+                    strncpy(lexeme, token.lexeme, len);
                     lexeme[len] = 0;
                     lexemeObj = (struct Any*)identifier_new_move(lexeme, len);
                 }
                 break;
             case LT_Identifier: {
-                    int len = token.strLen;
+                    int len = token.lexemeLen;
                     char* lexeme = (char*)malloc(len + 1);
-                    strncpy(lexeme, token.strValue, len);
+                    strncpy(lexeme, token.lexeme, len);
                     lexeme[len] = 0;
                     lexemeObj = (struct Any*)identifier_new_move(lexeme, len);
                 }
@@ -113,17 +113,17 @@ struct D_List* lexObj_string(struct D_String* string) {
             case LT_String:
             case LT_Special:
             case LT_Reserved: {
-                    int len = token.strLen;
+                    int len = token.lexemeLen;
                     char* lexeme = (char*)malloc(len + 1);
-                    strncpy(lexeme, token.strValue, len);
+                    strncpy(lexeme, token.lexeme, len);
                     lexeme[len] = 0;
                     lexemeObj = (struct Any*)string_new_move(lexeme, len);
                 }
                 break;
             case LT_Symbol: {
-                    int len = token.strLen;
+                    int len = token.lexemeLen;
                     char* lexeme = (char*)malloc(len + 1);
-                    strncpy(lexeme, token.strValue, len);
+                    strncpy(lexeme, token.lexeme, len);
                     lexeme[len] = 0;
                     lexemeObj = (struct Any*)symbol_new_move(lexeme, len);
                 }

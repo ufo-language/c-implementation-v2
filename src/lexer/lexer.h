@@ -31,8 +31,8 @@ struct ResultToken {
     int pos;
     int col;
     int line;
-    char* strValue;  // TODO rename this "lexeme"
-    int strLen;
+    char* lexeme;
+    int lexemeLen;
     // lexeme values: only one will be needed
     // TODO make these three fields a union?
     int intValue;

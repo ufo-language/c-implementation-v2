@@ -79,14 +79,14 @@ void lex_nextToken(struct LexerState2* lexerState, struct ResultToken* token) {
         return;
     }
     enum StateId {
-        S_Initial,
-        S_Word,
-        S_Number,
-        S_Symbol,
-        S_String,
-        S_Operator,
-        S_PlusMinus,
-        S_Dot
+        S_Initial,    // 0
+        S_Word,       // 1
+        S_Number,     // 2
+        S_Symbol,     // 3
+        S_String,     // 4
+        S_Operator,   // 5
+        S_PlusMinus,  // 6
+        S_Dot         // 7
     };
     enum StateId state = S_Initial;
     while (true) {
@@ -197,7 +197,7 @@ void lex_nextToken(struct LexerState2* lexerState, struct ResultToken* token) {
 }
 
 static char getChar(struct LexerState2* lexerState, struct ResultToken* token) {
-    token->strLen++;
+    token->lexemeLen++;
     char c = *lexerState->inputString++;
     token->charValue = c;
     // increment character position
@@ -210,7 +210,7 @@ static void ungetChar(struct LexerState2* lexerState, struct ResultToken* token)
     lexerState->inputString--;
     lexerState->pos--;
     lexerState->col--;
-    token->strLen--;
+    token->lexemeLen--;
     if ('\n' == *lexerState->inputString) {
         lexerState->line--;
     }
@@ -224,13 +224,13 @@ static void nextLine(struct LexerState2* lexerState, struct ResultToken* token) 
 }
 
 static void ignoreChar(struct LexerState2* lexerState, struct ResultToken* token) {
-    token->strValue = lexerState->inputString;
-    token->strLen = 0;
+    token->lexeme = lexerState->inputString;
+    token->lexemeLen = 0;
 }
 
 static bool isReserved(struct ResultToken* token) {
-    char* word = token->strValue;
-    int count  = token->strLen;
+    char* word = token->lexeme;
+    int count = token->lexemeLen;
     for (int n=0; reservedWords[n]; n++) {
         char* reservedWord = reservedWords[n];
         if (!strncmp(reservedWord, word, count) && reservedWord[count] == 0) {
@@ -242,8 +242,8 @@ static bool isReserved(struct ResultToken* token) {
 
 static void makeEOI(struct ResultToken* token) {
     token->tokenType = LT_EOI;
-    token->strValue = NULL;
-    token->strLen = 0;
+    token->lexeme = NULL;
+    token->lexemeLen = 0;
 }
 
 static void makeOperator(struct ResultToken* token) {
@@ -251,8 +251,8 @@ static void makeOperator(struct ResultToken* token) {
 }
 
 static void makeWord(struct ResultToken* token) {
-    char* word = token->strValue;
-    int count  = token->strLen;
+    char* word = token->lexeme;
+    int count = token->lexemeLen;
     if (count == nilLen && !strncmp(NIL_WORD, word, count)) {
         token->tokenType = LT_Nil;
     }
@@ -272,12 +272,12 @@ static void makeWord(struct ResultToken* token) {
 
 static void makeInteger(struct ResultToken* token) {
     token->tokenType = LT_Integer;
-    token->intValue = strToIntN(token->strValue, token->strLen);;
+    token->intValue = strToIntN(token->lexeme, token->lexemeLen);;
 }
 
 static void makeReal(struct ResultToken* token) {
     token->tokenType = LT_Real;
-    token->doubleValue = strToRealN(token->strValue, token->strLen);;
+    token->doubleValue = strToRealN(token->lexeme, token->lexemeLen);;
 }
 
 static void makeSpecial(struct ResultToken* token) {
@@ -286,9 +286,9 @@ static void makeSpecial(struct ResultToken* token) {
 
 static void makeString(struct ResultToken* token) {
     // skip over leading quote
-    token->strValue++;
+    token->lexeme++;
     // ignore leading and trailing quotes
-    token->strLen -= 2;
+    token->lexemeLen -= 2;
     token->tokenType = LT_String;
 }
 
@@ -299,10 +299,19 @@ static void makeSymbol(struct ResultToken* token) {
 // This converts the first nChars characters in str into an int.
 static int strToIntN(char* str, int nChars) {
     int num = 0;
-    for (int n=0; n<nChars; n++) {
+    int n = 0;
+    int sign = 1;
+    if (str[n] == '+') {
+        n++;
+    }
+    else if (str[n] == '-') {
+        sign = -1;
+        n++;
+    }
+    for (; n<nChars; n++) {
         num = num * 10 + (str[n] - '0');
     }
-    return num;
+    return num * sign;
 }
 
 // This converts the first nChars characters in str into a double.
