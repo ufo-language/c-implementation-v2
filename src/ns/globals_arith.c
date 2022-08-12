@@ -2,6 +2,7 @@
 #include "data/array.h"
 #include "data/integer.h"
 #include "data/sequence.h"
+#include "data/string.h"
 #include "data/symbol.h"
 #include "etor/evaluator.h"
 
@@ -58,6 +59,13 @@ void globals_plus(struct Any* lhs, struct Any* rhs, struct Evaluator* etor) {
         int rhsInt = integer_getValue((struct D_Integer*)rhs);
         struct D_Integer* modulus = integer_new(lhsInt + rhsInt);
         evaluator_pushObj(etor, (struct Any*)modulus);
+        return;
+    }
+    if (typeIdLhs == T_String && typeIdRhs == T_String) {
+        struct D_String* string1 = (struct D_String*)lhs;
+        struct D_String* string2 = (struct D_String*)rhs;
+        struct D_String* newString = string_join(string1, string2);
+        evaluator_pushObj(etor, (struct Any*)newString);
         return;
     }
     evaluator_throwException(
