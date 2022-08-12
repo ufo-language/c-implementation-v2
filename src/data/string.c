@@ -116,6 +116,14 @@ HashCode string_hashCode(struct D_String* self, struct Evaluator* etor) {
     return hashCode ^ HASH_PRIMES[T_String];
 }
 
+struct D_String* string_join(struct D_String* self, struct D_String* other) {
+    int newLen = self->count + other->count;
+    char* chars = (char*)malloc(newLen + 1);
+    strcpy(chars, self->chars);
+    strcpy(&chars[self->count], other->chars);
+    return string_new_move(chars, newLen);
+}
+
 bool string_isEqual(struct D_String* self, struct D_String* other) {
     if (self->count != other->count) {
         return false;

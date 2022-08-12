@@ -13,6 +13,7 @@
 
 void ns_string_get(struct Evaluator* etor, struct D_List* args);
 static void _isEmpty(struct Evaluator* etor, struct D_List* args);
+static void _join(struct Evaluator* etor, struct D_List* args);
 
 void ns_string_defineAll(struct D_HashTable* env) {
     struct E_Identifier* nsName = identifier_new(NS_NAME);
@@ -20,6 +21,7 @@ void ns_string_defineAll(struct D_HashTable* env) {
     hashTable_put_unsafe(env, (struct Any*)nsName, (struct Any*)nsHash);
     primitive_define(nsHash, "get", ns_string_get);
     primitive_define(nsHash, "isEmpty", _isEmpty);
+    primitive_define(nsHash, "join", _join);
 }
 
 void ns_string_get(struct Evaluator* etor, struct D_List* args) {
@@ -42,4 +44,16 @@ static void _isEmpty(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     struct D_String* string = (struct D_String*)stringObj;
     evaluator_pushObj(etor, (struct Any*)boolean_from(0 == string_count(string)));
+}
+
+static void _join(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_String, T_String};
+    struct Any* string1Obj;
+    struct Any* string2Obj;
+    struct Any** paramVars[] = {&string1Obj, &string2Obj};
+    primitive_checkArgs(2, paramTypes, args, paramVars, etor);
+    struct D_String* string1 = (struct D_String*)string1Obj;
+    struct D_String* string2 = (struct D_String*)string2Obj;
+    struct D_String* string3 = string_join(string1, string2);
+    evaluator_pushObj(etor, (struct Any*)string3);
 }
