@@ -59,6 +59,6 @@ size_t tryCatch_sizeOf(struct E_TryCatch* self) {
     return sizeof(self);
 }
 
-size_t tryCatch_structSize() {
+size_t tryCatch_structSize(void) {
     return sizeof(struct E_TryCatch);
 }

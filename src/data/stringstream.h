@@ -15,6 +15,6 @@ void stringStream_getPos(struct D_StringStream* self, int* pos, int* col, int* l
 void stringStream_show(struct D_StringStream* self, FILE* fp);
 void stringStream_unget(struct D_StringStream* self);
 size_t stringStream_sizeOf(struct D_StringStream* self);
-size_t stringStream_structSize();
+size_t stringStream_structSize(void);
 
 #endif

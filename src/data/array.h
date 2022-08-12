@@ -30,6 +30,6 @@ void array_set_unsafe(struct D_Array* self, int n, struct Any* elem);
 void array_show(struct D_Array* self, FILE* fp);
 void array_showWith(struct D_Array* self, char* open, char* sep, char* close, FILE* fp);
 size_t array_sizeOf(struct D_Array* self);
-size_t array_structSize();
+size_t array_structSize(void);
 
 #endif

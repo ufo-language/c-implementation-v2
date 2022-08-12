@@ -150,6 +150,6 @@ size_t primitive_sizeOf(struct D_Primitive* self) {
     return sizeof(self);
 }
 
-size_t primitive_structSize() {
+size_t primitive_structSize(void) {
     return sizeof(struct D_Primitive);
 }

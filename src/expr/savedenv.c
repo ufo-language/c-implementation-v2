@@ -43,6 +43,6 @@ size_t savedEnv_sizeOf(struct E_SavedEnv* self) {
     return sizeof(self);
 }
 
-size_t savedEnv_structSize() {
+size_t savedEnv_structSize(void) {
     return sizeof(struct E_SavedEnv);
 }

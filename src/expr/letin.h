@@ -19,6 +19,6 @@ void letIn_freeVars(struct E_LetIn* self, struct D_Set* freeVars, struct Evaluat
 void letIn_markChildren(struct E_LetIn* self);
 void letIn_show(struct E_LetIn* self, FILE* fp);
 size_t letIn_sizeOf(struct E_LetIn* self);
-size_t letIn_structSize();
+size_t letIn_structSize(void);
 
 #endif

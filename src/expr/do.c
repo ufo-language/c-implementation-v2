@@ -71,6 +71,6 @@ size_t do_sizeOf(struct E_Do* self) {
     return sizeof(self);
 }
 
-size_t do_structSize() {
+size_t do_structSize(void) {
     return sizeof(struct E_Do);
 }

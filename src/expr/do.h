@@ -17,6 +17,6 @@ void do_freeVars(struct E_Do* self, struct D_Set* freeVars, struct Evaluator* et
 void do_markChildren(struct E_Do* self);
 void do_show(struct E_Do* self, FILE* fp);
 size_t do_sizeOf(struct E_Do* self);
-size_t do_structSize();
+size_t do_structSize(void);
 
 #endif

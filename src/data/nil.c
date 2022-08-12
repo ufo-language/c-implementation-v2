@@ -11,7 +11,7 @@ struct D_Nil {
     struct Any obj;
 };
 
-struct D_Nil* nil_new() {
+struct D_Nil* nil_new(void) {
     struct D_Nil* self = (struct D_Nil*)gc_alloc(T_Nil);
     return self;
 }
@@ -43,6 +43,6 @@ size_t nil_sizeOf(struct D_Nil* self) {
     return sizeof(struct D_Nil);
 }
 
-size_t nil_structSize() {
+size_t nil_structSize(void) {
     return sizeof(struct D_Nil);
 }

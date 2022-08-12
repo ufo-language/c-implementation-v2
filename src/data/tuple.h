@@ -27,6 +27,6 @@ struct D_Triple* tuple_match(struct D_Tuple* self, struct Any* other, struct D_T
 void tuple_show(struct D_Tuple* self, FILE* fp);
 void tuple_showWith(struct D_Tuple* self, char* open, char* sep, char* close, FILE* fp);
 size_t tuple_sizeOf(struct D_Tuple* self);
-size_t tuple_structSize();
+size_t tuple_structSize(void);
 
 #endif

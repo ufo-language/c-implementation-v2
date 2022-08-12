@@ -20,6 +20,6 @@ int integer_getValue(struct D_Integer* self);
 HashCode integer_hashCode(struct D_Integer* self, struct Evaluator* etor);
 void integer_show(struct D_Integer* self, FILE* fp);
 size_t integer_sizeOf(struct D_Integer* self);
-size_t integer_structSize();
+size_t integer_structSize(void);
 
 #endif

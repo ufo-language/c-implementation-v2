@@ -89,6 +89,6 @@ size_t let_sizeOf(struct E_Let* self) {
     return sizeof(self);
 }
 
-size_t let_structSize() {
+size_t let_structSize(void) {
     return sizeof(struct E_Let);
 }

@@ -18,6 +18,6 @@ void apply_freeVars(struct E_Apply* self, struct D_Set* freeVars, struct Evaluat
 void apply_markChildren(struct E_Apply* self);
 void apply_show(struct E_Apply* self, FILE* fp);
 size_t apply_sizeOf(struct E_Apply* self);
-size_t apply_structSize();
+size_t apply_structSize(void);
 
 #endif

@@ -30,6 +30,6 @@ long file_size(struct D_File* self);
 // returns the size of the file object
 size_t file_sizeOf(struct D_File* self);
 // returns the size of the file structure
-size_t file_structSize();
+size_t file_structSize(void);
 
 #endif

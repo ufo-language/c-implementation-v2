@@ -111,6 +111,6 @@ size_t recordDefinition_sizeOf(struct E_RecordDefinition* self) {
     return sizeof(self);
 }
 
-size_t recordDefinition_structSize() {
+size_t recordDefinition_structSize(void) {
     return sizeof(struct E_RecordDefinition);
 }

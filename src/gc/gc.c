@@ -154,7 +154,7 @@ void gc_commitRootObjects(void) {
     }
 }
 
-void gc_dump() {
+void gc_dump(void) {
     struct Any* root = _roots;
     while (root) {
         printf("root = ");

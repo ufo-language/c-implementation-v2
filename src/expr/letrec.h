@@ -19,6 +19,6 @@ void letRec_freeVars(struct E_LetRec* self, struct D_Set* freeVars, struct Evalu
 void letRec_markChildren(struct E_LetRec* self);
 void letRec_show(struct E_LetRec* self, FILE* fp);
 size_t letRec_sizeOf(struct E_LetRec* self);
-size_t letRec_structSize();
+size_t letRec_structSize(void);
 
 #endif

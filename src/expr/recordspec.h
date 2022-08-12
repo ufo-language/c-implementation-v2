@@ -20,6 +20,6 @@ void recordSpec_markChildren(struct E_RecordSpec* self);
 struct D_Triple* recordSpec_match(struct E_RecordSpec* self, struct Any* other, struct D_Triple* bindings);
 void recordSpec_show(struct E_RecordSpec* self, FILE* fp);
 size_t recordSpec_sizeOf(struct E_RecordSpec* self);
-size_t recordSpec_structSize();
+size_t recordSpec_structSize(void);
 
 #endif

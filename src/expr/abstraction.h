@@ -22,6 +22,6 @@ struct D_List* abstraction_getParams(struct E_Abstraction* self);
 void abstraction_setNext(struct E_Abstraction* self, struct E_Abstraction* next);
 void abstraction_show(struct E_Abstraction* self, FILE* fp);
 size_t abstraction_sizeOf(struct E_Abstraction* self);
-size_t abstraction_structSize();
+size_t abstraction_structSize(void);
 
 #endif

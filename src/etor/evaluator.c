@@ -277,7 +277,7 @@ size_t evaluator_sizeOf(struct Evaluator* self) {
     return sizeof(self);
 }
 
-size_t evaluator_structSize() {
+size_t evaluator_structSize(void) {
     return sizeof(struct Evaluator);
 }
 

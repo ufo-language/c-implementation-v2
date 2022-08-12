@@ -29,6 +29,6 @@ bool primitive_isMacro(struct D_Primitive* self);
 HashCode primitive_hashCode(struct D_Primitive* self, struct Evaluator* etor);
 void primitive_show(struct D_Primitive* self, FILE* fp);
 size_t primitive_sizeOf(struct D_Primitive* self);
-size_t primitive_structSize();
+size_t primitive_structSize(void);
 
 #endif

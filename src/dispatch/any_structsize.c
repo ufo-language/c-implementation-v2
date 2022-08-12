@@ -15,6 +15,7 @@
 #include "data/queue.h"
 #include "data/real.h"
 #include "data/record.h"
+#include "data/sequence.h"
 #include "data/set.h"
 #include "data/string.h"
 #include "data/stringbuffer.h"
@@ -44,8 +45,6 @@
 #include "expr/savedenv.h"
 #include "expr/trycatch.h"
 #include "repl/repl.h"
-
-size_t sequence_structSize();
 
 static size_t _error(void) {
     fprintf(stderr, "ERROR: call to 'any_structSize' called with illegal typeId\n");

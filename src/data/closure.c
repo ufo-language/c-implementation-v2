@@ -73,6 +73,6 @@ size_t closure_sizeOf(struct D_Closure* self) {
     return sizeof(struct D_Closure);
 }
 
-size_t closure_structSize() {
+size_t closure_structSize(void) {
     return sizeof(struct D_Closure);
 }

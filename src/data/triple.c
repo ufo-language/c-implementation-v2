@@ -144,6 +144,6 @@ size_t triple_sizeOf(struct D_Triple* self) {
     return sizeof(struct D_Triple);
 }
 
-size_t triple_structSize() {
+size_t triple_structSize(void) {
     return sizeof(struct D_Triple);
 }

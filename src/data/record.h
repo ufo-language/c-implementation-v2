@@ -28,7 +28,7 @@ struct D_Triple* record_match(struct D_Record* self, struct Any* other, struct D
 void record_setFieldValue(struct D_Record* self, struct Any* fieldName, struct Any* value, struct Evaluator* etor);
 void record_show(struct D_Record* self, FILE* fp);
 size_t record_sizeOf(struct D_Record* self);
-size_t record_structSize();
+size_t record_structSize(void);
 struct Any* record_typeOf(struct D_Record* self);
 
 #endif

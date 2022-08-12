@@ -20,6 +20,6 @@ int boolean_compare(struct D_Boolean* self, struct D_Boolean* other, struct Eval
 HashCode boolean_hashCode(struct D_Boolean* self, struct Evaluator* etor);
 void boolean_show(struct D_Boolean* self, FILE* fp);
 size_t boolean_sizeOf(struct D_Boolean* self);
-size_t boolean_structSize();
+size_t boolean_structSize(void);
 
 #endif

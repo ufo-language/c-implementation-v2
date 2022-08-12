@@ -158,6 +158,6 @@ size_t stringBuffer_sizeOf(struct D_StringBuffer* self) {
     return sizeof(self) + self->nSegments * sizeof(struct BufferSegment);
 }
 
-size_t stringBuffer_structSize() {
+size_t stringBuffer_structSize(void) {
     return sizeof(struct D_StringBuffer);
 }

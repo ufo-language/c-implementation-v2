@@ -92,6 +92,6 @@ size_t stringStream_sizeOf(struct D_StringStream* self) {
     return sizeof(self);
 }
 
-size_t stringStream_structSize() {
+size_t stringStream_structSize(void) {
     return sizeof(struct D_StringStream);
 }

@@ -253,6 +253,6 @@ size_t repl_sizeOf(struct REPL* self) {
     return sizeof(self);
 }
 
-size_t repl_structSize() {
+size_t repl_structSize(void) {
     return sizeof(struct REPL);
 }

@@ -86,6 +86,6 @@ size_t symbol_sizeOf(struct D_Symbol* self) {
     return sizeof(struct D_Symbol);
 }
 
-size_t symbol_structSize() {
+size_t symbol_structSize(void) {
     return sizeof(struct D_Symbol);
 }

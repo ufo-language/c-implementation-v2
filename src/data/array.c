@@ -187,6 +187,6 @@ size_t array_sizeOf(struct D_Array* self) {
     return sizeof(self) + sizeof(self->elems);
 }
 
-size_t array_structSize() {
+size_t array_structSize(void) {
     return sizeof(struct D_Array);
 }

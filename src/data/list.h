@@ -34,7 +34,7 @@ void list_setRest(struct D_List* self, struct Any* rest);
 void list_show(struct D_List* self, FILE* fp);
 void list_showWith(struct D_List* self, char* open, char* sep, char* close, FILE* fp);
 size_t list_sizeOf(struct D_List* self);
-size_t list_structSize();
+size_t list_structSize(void);
 struct D_Array* list_toArray(struct D_List* self, int nElems);
 
 #endif

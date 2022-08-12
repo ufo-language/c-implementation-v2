@@ -123,6 +123,6 @@ size_t recordSpec_sizeOf(struct E_RecordSpec* self) {
     return sizeof(self);
 }
 
-size_t recordSpec_structSize() {
+size_t recordSpec_structSize(void) {
     return sizeof(struct E_RecordSpec);
 }

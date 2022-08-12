@@ -17,6 +17,6 @@ void cobegin_freeVars(struct E_Cobegin* self, struct D_Set* freeVars, struct Eva
 void cobegin_markChildren(struct E_Cobegin* self);
 void cobegin_show(struct E_Cobegin* self, FILE* fp);
 size_t cobegin_sizeOf(struct E_Cobegin* self);
-size_t cobegin_structSize();
+size_t cobegin_structSize(void);
 
 #endif

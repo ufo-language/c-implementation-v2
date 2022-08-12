@@ -21,6 +21,6 @@ size_t unsigned_getValue(struct D_Unsigned* self);
 HashCode unsigned_hashCode(struct D_Unsigned* self, struct Evaluator* etor);
 void unsigned_show(struct D_Unsigned* self, FILE* fp);
 size_t unsigned_sizeOf(struct D_Unsigned* self);
-size_t unsigned_structSize();
+size_t unsigned_structSize(void);
 
 #endif

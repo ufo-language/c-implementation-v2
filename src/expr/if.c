@@ -73,6 +73,6 @@ size_t if_sizeOf(struct E_If* self) {
     return sizeof(self);
 }
 
-size_t if_structSize() {
+size_t if_structSize(void) {
     return sizeof(struct E_If);
 }

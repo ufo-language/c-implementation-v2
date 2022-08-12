@@ -22,6 +22,6 @@ HashCode address_hashCode(struct D_Address* self, struct Evaluator* etor);
 void address_setValue(struct D_Address* self, void* value);
 void address_show(struct D_Address* self, FILE* fp);
 size_t address_sizeOf(struct D_Address* self);
-size_t address_structSize();
+size_t address_structSize(void);
 
 #endif

@@ -22,6 +22,6 @@ void stringBuffer_write(struct D_StringBuffer* self, struct D_String* string);
 void stringBuffer_writeChar(struct D_StringBuffer* self, char c);
 void stringBuffer_writeChars(struct D_StringBuffer* self, char* chars);
 size_t stringBuffer_sizeOf(struct D_StringBuffer* self);
-size_t stringBuffer_structSize();
+size_t stringBuffer_structSize(void);
 
 #endif

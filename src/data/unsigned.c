@@ -61,6 +61,6 @@ size_t unsigned_sizeOf(struct D_Unsigned* self) {
     return sizeof(struct D_Unsigned);
 }
 
-size_t unsigned_structSize() {
+size_t unsigned_structSize(void) {
     return sizeof(struct D_Unsigned);
 }

@@ -18,6 +18,6 @@ void let_freeVars(struct E_Let* self, struct D_Set* freeVars, struct Evaluator* 
 void let_markChildren(struct E_Let* self);
 void let_show(struct E_Let* self, FILE* fp);
 size_t let_sizeOf(struct E_Let* self);
-size_t let_structSize();
+size_t let_structSize(void);
 
 #endif

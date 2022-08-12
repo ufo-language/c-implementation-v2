@@ -19,7 +19,7 @@ struct D_Queue {
     struct D_List* tail;
 };
 
-struct D_Queue* queue_new() {
+struct D_Queue* queue_new(void) {
     struct D_Queue* self = (struct D_Queue*)gc_alloc(T_Queue);
     self->head = EMPTY_LIST;
     self->tail = EMPTY_LIST;
@@ -155,6 +155,6 @@ size_t queue_sizeOf(struct D_Queue* self) {
     return sizeof(struct D_Queue);
 }
 
-size_t queue_structSize() {
+size_t queue_structSize(void) {
     return sizeof(struct D_Queue);
 }

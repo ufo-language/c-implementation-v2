@@ -47,6 +47,6 @@ size_t continuation_sizeOf(struct E_Continuation* self) {
     return sizeof(self);
 }
 
-size_t continuation_structSize() {
+size_t continuation_structSize(void) {
     return sizeof(struct E_Continuation);
 }

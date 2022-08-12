@@ -43,6 +43,6 @@ void repl_markChildren(struct REPL* self);
 void repl_run(struct REPL* self);
 void repl_show(struct REPL* self, FILE* fp);
 size_t repl_sizeOf(struct REPL* self);
-size_t repl_structSize();
+size_t repl_structSize(void);
 
 #endif

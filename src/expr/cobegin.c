@@ -72,6 +72,6 @@ size_t cobegin_sizeOf(struct E_Cobegin* self) {
     return sizeof(self);
 }
 
-size_t cobegin_structSize() {
+size_t cobegin_structSize(void) {
     return sizeof(struct E_Cobegin);
 }

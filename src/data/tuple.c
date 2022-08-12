@@ -129,6 +129,6 @@ size_t tuple_sizeOf(struct D_Tuple* self) {
     return sizeof(self) + sizeof(self->elems);
 }
 
-size_t tuple_structSize() {
+size_t tuple_structSize(void) {
     return sizeof(struct D_Tuple);
 }

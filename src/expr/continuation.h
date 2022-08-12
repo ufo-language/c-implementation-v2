@@ -16,6 +16,6 @@ void continuation_eval(struct E_Continuation* self, struct Evaluator* etor);
 void continuation_markChildren(struct E_Continuation* self);
 void continuation_show(struct E_Continuation* self, FILE* fp);
 size_t continuation_sizeOf(struct E_Continuation* self);
-size_t continuation_structSize();
+size_t continuation_structSize(void);
 
 #endif

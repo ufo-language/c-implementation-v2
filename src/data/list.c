@@ -254,7 +254,7 @@ size_t list_sizeOf(struct D_List* self) {
     return sizeof(self);
 }
 
-size_t list_structSize() {
+size_t list_structSize(void) {
     return sizeof(struct D_List);
 }
 

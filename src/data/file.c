@@ -133,6 +133,6 @@ size_t file_sizeOf(struct D_File* self) {
     return sizeof(self);
 }
 
-size_t file_structSize() {
+size_t file_structSize(void) {
     return sizeof(struct D_File);
 }

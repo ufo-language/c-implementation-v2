@@ -93,6 +93,6 @@ size_t abstraction_sizeOf(struct E_Abstraction* self) {
     return sizeof(self);
 }
 
-size_t abstraction_structSize() {
+size_t abstraction_structSize(void) {
     return sizeof(struct E_Abstraction);
 }

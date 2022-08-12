@@ -103,6 +103,6 @@ size_t sequence_sizeOf(struct D_Sequence* self) {
     return sizeof(struct D_Sequence);
 }
 
-size_t sequence_structSize() {
+size_t sequence_structSize(void) {
     return sizeof(struct D_Sequence);
 }

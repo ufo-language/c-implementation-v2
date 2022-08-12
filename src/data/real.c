@@ -47,6 +47,6 @@ size_t real_sizeOf(struct D_Real* self) {
     return sizeof(struct D_Real);
 }
 
-size_t real_structSize() {
+size_t real_structSize(void) {
     return sizeof(struct D_Real);
 }

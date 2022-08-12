@@ -132,7 +132,7 @@ size_t record_sizeOf(struct D_Record* self) {
     return sizeof(self);
 }
 
-size_t record_structSize() {
+size_t record_structSize(void) {
     return sizeof(struct D_Record);
 }
 

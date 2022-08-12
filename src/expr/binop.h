@@ -19,6 +19,6 @@ void binOp_freeVars(struct E_BinOp* self, struct D_Set* freeVars, struct Evaluat
 void binOp_markChildren(struct E_BinOp* self);
 void binOp_show(struct E_BinOp* self, FILE* fp);
 size_t binOp_sizeOf(struct E_BinOp* self);
-size_t binOp_structSize();
+size_t binOp_structSize(void);
 
 #endif

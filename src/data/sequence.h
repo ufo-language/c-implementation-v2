@@ -22,6 +22,6 @@ HashCode sequence_hashCode(struct D_Sequence* self, struct Evaluator* etor);
 bool sequence_isEqual(struct D_Sequence* self, struct D_Sequence* other);
 void sequence_show(struct D_Sequence* self, FILE* fp);
 size_t sequence_sizeOf(struct D_Sequence* self);
-size_t sequence_structSize();
+size_t sequence_structSize(void);
 
 #endif

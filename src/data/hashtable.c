@@ -361,6 +361,6 @@ size_t hashTable_sizeOf(struct D_HashTable* self) {
     return sizeof(self) + sizeof(self->buckets);
 }
 
-size_t hashTable_structSize() {
+size_t hashTable_structSize(void) {
     return sizeof(struct D_HashTable);
 }
