@@ -8,6 +8,7 @@
 #include "data/nil.h"
 #include "data/queue.h"
 #include "data/real.h"
+#include "data/sequence.h"
 #include "data/string.h"
 #include "data/symbol.h"
 #include "data/unsigned.h"
@@ -97,7 +98,7 @@ int any_compare(struct Any* obj, struct Any* other, struct Evaluator* etor) {
         case T_SavedEnv:
             return _fail(obj, other, etor);
         case T_Sequence:
-            return _fail(obj, other, etor);
+            return sequence_compare((struct D_Sequence*)obj, (struct D_Sequence*)other, etor);
         case T_Set:
             return _fail(obj, other, etor);
         case T_String:

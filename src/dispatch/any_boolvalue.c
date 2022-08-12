@@ -11,6 +11,7 @@
 #include "data/list.h"
 #include "data/queue.h"
 #include "data/real.h"
+#include "data/sequence.h"
 #include "data/set.h"
 #include "data/string.h"
 #include "data/stringbuffer.h"
@@ -106,7 +107,7 @@ bool any_boolValue(struct Any* obj) {
         case T_SavedEnv:
             return _true(obj);
         case T_Sequence:
-            return _true(obj);
+            return sequence_boolValue((struct D_Sequence*)obj);
         case T_Set:
             return set_boolValue((struct D_Set*)obj);
         case T_String:
