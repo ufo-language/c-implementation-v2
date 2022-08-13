@@ -653,7 +653,7 @@ struct E_BinOp* p_colonExpr(List* tokens) {
     }
     Obj rhs = p_colonRhs(tokens);
     if (rhs == NULL) {
-        p_fail(tokens, "Expression expected after '.'", NULL);
+        p_fail(tokens, "Expression expected after ':'", NULL);
     }
     struct E_BinOp* binOp = binOp_new(lhs, (Identifier)colonOp, rhs);
     return binOp;
