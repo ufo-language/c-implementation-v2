@@ -29,7 +29,7 @@ void parser_initialize(void) {
 void lexObj_rootObjects(void) {
     LEXER_SYMBOLS[LT_None]       = symbol_new("None");
     LEXER_SYMBOLS[LT_Boolean]    = symbol_new("Boolean");
-    LEXER_SYMBOLS[LT_Nil]    = symbol_new("Nil");
+    LEXER_SYMBOLS[LT_Nil]        = symbol_new("Nil");
     LEXER_SYMBOLS[LT_Identifier] = symbol_new("Identifier");
     LEXER_SYMBOLS[LT_Integer]    = symbol_new("Integer");
     LEXER_SYMBOLS[LT_Operator]   = symbol_new("Operator");
