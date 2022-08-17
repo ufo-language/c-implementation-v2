@@ -17,7 +17,7 @@ enum LexerTokenType {
     LT_FINAL
 };
 
-struct LexerState2 {
+struct LexerState {
     char* inputString;
     int pos;
     int col;
@@ -44,6 +44,6 @@ extern char* NIL_WORD;
 extern char* TRUE_WORD;
 extern char* FALSE_WORD;
 
-void lex_nextToken(struct LexerState2* lexerState, struct ResultToken* result);
+void lex_nextToken(struct LexerState* lexerState, struct ResultToken* result);
 
 #endif

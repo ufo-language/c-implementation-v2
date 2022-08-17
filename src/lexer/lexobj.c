@@ -43,7 +43,7 @@ void lexObj_rootObjects(void) {
 
 struct D_List* lexObj_string(struct D_String* string) {
     struct D_Queue* tokenQueue = queue_new();
-    struct LexerState2 lexerState = {
+    struct LexerState lexerState = {
         /* inputString */ string_getChars(string),
         /* pos         */ 0,
         /* col         */ 0,

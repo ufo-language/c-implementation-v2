@@ -31,10 +31,10 @@ static int falseLen;
 
 static bool isReserved(struct ResultToken* token);
 
-static char getChar(struct LexerState2* lexerState, struct ResultToken* token);
-static void ungetChar(struct LexerState2* lexerState, struct ResultToken* token);
-static void ignoreChar(struct LexerState2* lexerState, struct ResultToken* token);
-static void nextLine(struct LexerState2* lexerState, struct ResultToken* token);
+static char getChar(struct LexerState* lexerState, struct ResultToken* token);
+static void ungetChar(struct LexerState* lexerState, struct ResultToken* token);
+static void ignoreChar(struct LexerState* lexerState, struct ResultToken* token);
+static void nextLine(struct LexerState* lexerState, struct ResultToken* token);
 
 static void makeEOI(struct ResultToken* token);
 static void makeInteger(struct ResultToken* token);
@@ -73,7 +73,7 @@ bool isIn(char c, char* chars) {
     return strchr(chars, c) != NULL;
 }
 
-void lex_nextToken(struct LexerState2* lexerState, struct ResultToken* token) {
+void lex_nextToken(struct LexerState* lexerState, struct ResultToken* token) {
     int jumpRes = setjmp(jumpBuf);
     if (jumpRes > 0) {
         return;
@@ -206,7 +206,7 @@ void lex_nextToken(struct LexerState2* lexerState, struct ResultToken* token) {
     }
 }
 
-static char getChar(struct LexerState2* lexerState, struct ResultToken* token) {
+static char getChar(struct LexerState* lexerState, struct ResultToken* token) {
     token->lexemeLen++;
     char c = *lexerState->inputString++;
     token->charValue = c;
@@ -216,7 +216,7 @@ static char getChar(struct LexerState2* lexerState, struct ResultToken* token) {
     return c;
 }
 
-static void ungetChar(struct LexerState2* lexerState, struct ResultToken* token) {
+static void ungetChar(struct LexerState* lexerState, struct ResultToken* token) {
     lexerState->inputString--;
     lexerState->pos--;
     lexerState->col--;
@@ -226,14 +226,14 @@ static void ungetChar(struct LexerState2* lexerState, struct ResultToken* token)
     }
 }
 
-static void nextLine(struct LexerState2* lexerState, struct ResultToken* token) {
+static void nextLine(struct LexerState* lexerState, struct ResultToken* token) {
     (void)lexerState;
     (void)token;
     lexerState->line++;
     lexerState->col = 0;
 }
 
-static void ignoreChar(struct LexerState2* lexerState, struct ResultToken* token) {
+static void ignoreChar(struct LexerState* lexerState, struct ResultToken* token) {
     token->lexeme = lexerState->inputString;
     token->lexemeLen = 0;
 }
