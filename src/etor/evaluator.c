@@ -287,6 +287,7 @@ void evaluator_throwException(struct Evaluator* self, struct D_Symbol* symbol, c
 }
 
 void evaluator_throwExceptionObj(struct Evaluator* self, struct Any* exceptionObj) {
+    printf("%s got here, obj = ", __func__); any_show((struct Any*)exceptionObj, stdout); printf("\n");
     self->exception = exceptionObj;
     longjmp(self->jumpBuf, 1);
 }

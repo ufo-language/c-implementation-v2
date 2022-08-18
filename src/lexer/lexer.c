@@ -3,6 +3,7 @@
 
 #include "data/any.h"
 #include "data/array.h"
+#include "data/binding.h"
 #include "data/boolean.h"
 #include "data/integer.h"
 #include "data/queue.h"
@@ -17,7 +18,7 @@
 
 static bool contains(char* str, char c);
 static bool isReserved(char* word);
-static struct D_Queue* tokenize_aux(struct D_StringStream* inputString);
+static struct Any* tokenize_aux(struct D_StringStream* inputString);
 
 static char* operChars = ".:+-*/=%";
 static char* ignoreChars = " \n\r\t";
@@ -140,14 +141,18 @@ struct D_Array* makeToken(enum LexerTokenType tokenType, struct D_StringBuffer* 
     return array_newN(5, tokenTypeSym, token, integer_new(pos), integer_new(col), integer_new(line));
 }
 
-struct D_List* lexer_tokenize(struct D_String* inputString) {
+struct Any* lexer_tokenize(struct D_String* inputString) {
     char* chars = string_getChars(inputString);
     struct D_StringStream* inputStream = stringStream_new(chars);
-    struct D_Queue* tokenQueue = tokenize_aux(inputStream);
-    return queue_asList(tokenQueue);
+    struct Any* res = tokenize_aux(inputStream);
+    if (res->typeId == T_Queue) {
+        return (struct Any*)queue_asList((struct D_Queue*)res);
+    }
+    return res;
 }
 
-static struct D_Queue* tokenize_aux(struct D_StringStream* inputString) {
+// Returns a D_Queue on success, a D_Array on error
+static struct Any* tokenize_aux(struct D_StringStream* inputString) {
     enum StateId {
         S_Initial,     // 0
         S_Word,        // 1
@@ -233,8 +238,17 @@ static struct D_Queue* tokenize_aux(struct D_StringStream* inputString) {
                 if      (chr == '\\') { state = S_EscapedChar; }
                 else if (chr == '"')  { tokenType = LTT_String; }
                 else if (chr == '\0') {
-                    printf("lexer.c string error starting at pos %d: col %d, line %d\n", pos, col, line);
-                    //tokenType = LTT_Error;
+                    struct D_Binding* posBinding = binding_new((struct Any*)symbol_new("Pos"), (struct Any*)integer_new(pos));
+                    struct D_Binding* lineBinding = binding_new((struct Any*)symbol_new("Line"), (struct Any*)integer_new(line));
+                    struct D_Binding* colBinding = binding_new((struct Any*)symbol_new("Col"), (struct Any*)integer_new(col));
+                    struct D_Array* exn = array_newN(3,
+                                                     (struct Any*)symbol_new("Lexer"),
+                                                     (struct Any*)string_new("unterminated string"),
+                                                     (struct Any*)array_newN(3,
+                                                                             (struct Any*)posBinding,
+                                                                             (struct Any*)lineBinding,
+                                                                             (struct Any*)colBinding));
+                    return (struct Any*)exn;
                 }
                 else { accumulateChar = true; }
                 break;
@@ -310,7 +324,7 @@ static struct D_Queue* tokenize_aux(struct D_StringStream* inputString) {
     }
     struct D_Array* token = makeToken(LTT_EOI, lexeme, pos, col, line);
     queue_enq(tokens, (struct Any*)token);
-    return tokens;
+    return (struct Any*)tokens;
 }
 
 // support functions =================================================

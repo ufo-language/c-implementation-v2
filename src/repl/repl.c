@@ -156,12 +156,14 @@ static int repl_read(struct REPL* self) {
 }
 
 static bool repl_tokenize(struct REPL* self) {
-    struct D_List* tokens = lexer_tokenize(self->inputString);
-    if (tokens == NULL) {
-        self->tokens = EMPTY_LIST;
+    struct Any* res = lexer_tokenize(self->inputString);
+    if (res->typeId == T_Array) {
+        fprintf(stderr, "Exception: ");
+        any_show(res, stderr);
+        fprintf(stderr, "\n");
         return false;
     }
-    self->tokens = tokens;
+    self->tokens = (struct D_List*)res;
     return true;
 }
 

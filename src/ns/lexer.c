@@ -24,6 +24,11 @@ static void _tokenize(struct Evaluator* etor, struct D_List* args) {
     struct Any** paramVars[] = {&stringObj};
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     struct D_String* string = (struct D_String*)stringObj;
-    struct D_List* tokens = lexer_tokenize(string);
-    evaluator_pushObj(etor, (struct Any*)tokens);
+    struct Any* res = lexer_tokenize(string);
+    if (res->typeId == T_List) {
+        evaluator_pushObj(etor, res);
+    }
+    else {
+        evaluator_throwExceptionObj(etor, res);
+    }
 }

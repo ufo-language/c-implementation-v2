@@ -4,6 +4,7 @@
 struct D_List;
 struct D_String;
 struct D_Symbol;
+struct Evaluator;
 
 enum LexerTokenType {
     LTT_None,
@@ -24,6 +25,7 @@ enum LexerTokenType {
 
 extern struct D_Symbol* LEXER_SYMBOLS[];
 
-struct D_List* lexer_tokenize(struct D_String* inputString);
+// Returns a D_Queue on success, a D_Array on error
+struct Any* lexer_tokenize(struct D_String* inputString);
 
 #endif
