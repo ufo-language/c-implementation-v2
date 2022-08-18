@@ -4,6 +4,7 @@
 
 #include "data/any.h"
 #include "data/array.h"
+#include "data/binding.h"
 #include "data/hashtable.h"
 #include "data/integer.h"
 #include "data/list.h"
@@ -42,12 +43,10 @@ void primitive_argCountException(int nParams, struct D_List* argList, struct Eva
 }
 
 void primitive_argTypeException(enum TypeId expectedTypeId, enum TypeId foundTypeId, struct Any* argument, struct Evaluator* etor) {
-    struct D_Array* exn = array_newN(5,
-                                     symbol_new("Expected"),
-                                     symbol_new(TYPE_NAMES[expectedTypeId]),
-                                     symbol_new("Found"),
-                                     symbol_new(TYPE_NAMES[foundTypeId]),
-                                     argument);
+    struct D_Binding* exp = binding_new((struct Any*)symbol_new("Excpected"), (struct Any*)symbol_new(TYPE_NAMES[expectedTypeId]));
+    struct D_Array* argAry = array_newN(2, argument, (struct Any*)symbol_new(TYPE_NAMES[foundTypeId]));
+    struct D_Binding* act = binding_new((struct Any*)symbol_new("Actual"), (struct Any*)argAry);
+    struct D_Array* exn = array_newN(2, (struct Any*)exp, (struct Any*)act);
     struct D_Symbol* argSym = symbol_new("Argument");
     evaluator_throwException(etor, argSym, "type mismatch", (struct Any*)exn);
 }
