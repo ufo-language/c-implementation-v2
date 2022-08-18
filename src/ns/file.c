@@ -88,7 +88,7 @@ static void _readAll(struct Evaluator* etor, struct D_List* args) {
     }
     struct D_StringBuffer* sb = stringBuffer_new();
     struct D_Array* sizeAry = file_readAll((struct D_File*)file, sb, etor);
-    struct D_Array* resAry = array_newN(2, sizeAry, sb);
+    struct D_Array* resAry = array_newN(2, sizeAry, stringBuffer_asString(sb));
     evaluator_pushObj(etor, (struct Any*)resAry);
 }
 
