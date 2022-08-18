@@ -4,7 +4,7 @@
 #include "data/string.h"
 #include "etor/evaluator.h"
 #include "expr/identifier.h"
-#include "json/json.h"
+#include "json/json_parser.h"
 #include "main/globals.h"
 
 #define NS_NAME "json"
@@ -19,14 +19,11 @@ void ns_json_defineAll(struct D_HashTable* env) {
 }
 
 static void _parse(struct Evaluator* etor, struct D_List* args) {
-    printf("%s got args ", __func__); any_show((struct Any*)args, stdout); printf("\n");
     static enum TypeId paramTypes[] = {T_String};
     struct Any* stringObj;
     struct Any** paramVars[] = {&stringObj};
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     struct D_String* string = (struct D_String*)stringObj;
-    char* chars = string_getChars(string);
-    printf("  chars = '%s'\n", chars);
-    json_parse(chars);
-    evaluator_pushObj(etor, (struct Any*)NIL);
+    struct Any* jsonObj = json_parse(string);
+    evaluator_pushObj(etor, jsonObj);
 }
