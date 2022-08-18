@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
         ufo_start();
         ufo_stop();
         gc_stop();
-        ipc_writeString(CHILD_TO_PARENT[1], 12, "DGoodbye!\n\0");
+        ipc_writeString(CHILD_TO_PARENT[1], 16, "DShutting down\n\0");
         ipc_writeString(CHILD_TO_PARENT[1], 2, "UQ");
     }
     else {
