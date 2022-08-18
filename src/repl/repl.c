@@ -11,8 +11,7 @@
 #include "data/stringbuffer.h"
 #include "etor/evaluator.h"
 #include "gc/gc.h"
-#include "lexer/lexobj.h"
-#include "lexer/lexer2.h"
+#include "lexer/lexer.h"
 #include "main/globals.h"
 #include "parser/parser.h"
 #include "repl/coloncommand.h"
@@ -157,11 +156,7 @@ static int repl_read(struct REPL* self) {
 }
 
 static bool repl_tokenize(struct REPL* self) {
-#if 0
-    struct D_List* tokens = lexObj_string(self->inputString);
-#else
-    struct D_List* tokens = lexer2_tokenize(self->inputString);
-#endif
+    struct D_List* tokens = lexer_tokenize(self->inputString);
     if (tokens == NULL) {
         self->tokens = EMPTY_LIST;
         return false;

@@ -5,7 +5,7 @@
 #include "data/string.h"
 #include "etor/evaluator.h"
 #include "expr/identifier.h"
-#include "lexer/lexobj.h"
+#include "lexer/lexer.h"
 
 #define NS_NAME "lexer"
 
@@ -24,6 +24,6 @@ static void _tokenize(struct Evaluator* etor, struct D_List* args) {
     struct Any** paramVars[] = {&stringObj};
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     struct D_String* string = (struct D_String*)stringObj;
-    struct D_List* tokens = lexObj_string(string);
+    struct D_List* tokens = lexer_tokenize(string);
     evaluator_pushObj(etor, (struct Any*)tokens);
 }

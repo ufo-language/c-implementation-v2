@@ -28,7 +28,6 @@
 #include "expr/trycatch.h"
 #include "main/globals.h"
 #include "lexer/lexer.h"
-#include "lexer/lexobj.h"
 
 // NOTES
 // Write this in the simplest way possible.
@@ -265,11 +264,11 @@ Obj p_tilde(List* tokens) {
 }
 
 Obj p_equalSign(List* tokens) {
-    return p_spotValue(tokens, LEXER_SYMBOLS[LT_Operator], (Obj)EQUAL_SIGN) ? (Obj)IGNORE : NULL;
+    return p_spotValue(tokens, LEXER_SYMBOLS[LTT_Operator], (Obj)EQUAL_SIGN) ? (Obj)IGNORE : NULL;
 }
 
 Obj p_equalSign_required(List* tokens) {
-    if (p_spotValue(tokens, LEXER_SYMBOLS[LT_Operator], (Obj)EQUAL_SIGN)) {
+    if (p_spotValue(tokens, LEXER_SYMBOLS[LTT_Operator], (Obj)EQUAL_SIGN)) {
         return (Obj)IGNORE;
     }
     p_fail(tokens, "Expected '='", NULL);
@@ -376,31 +375,31 @@ struct D_Queue* p_commaSepElems(List* tokens) {
 // literals ==========================================================
 
 Obj p_boolean(List* tokens) {
-    return p_spot(tokens, LEXER_SYMBOLS[LT_Boolean]);
+    return p_spot(tokens, LEXER_SYMBOLS[LTT_Boolean]);
 }
 
 Obj p_identifier(List* tokens) {
-    return p_spot(tokens, LEXER_SYMBOLS[LT_Identifier]);
+    return p_spot(tokens, LEXER_SYMBOLS[LTT_Identifier]);
 }
 
 Obj p_integer(List* tokens) {
-    return p_spot(tokens, LEXER_SYMBOLS[LT_Integer]);
+    return p_spot(tokens, LEXER_SYMBOLS[LTT_Integer]);
 }
 
 Obj p_nil(List* tokens) {
-    return p_spot(tokens, LEXER_SYMBOLS[LT_Nil]);
+    return p_spot(tokens, LEXER_SYMBOLS[LTT_Nil]);
 }
 
 Obj p_real(List* tokens) {
-    return p_spot(tokens, LEXER_SYMBOLS[LT_Real]);
+    return p_spot(tokens, LEXER_SYMBOLS[LTT_Real]);
 }
 
 Obj p_reserved(List* tokens, String word) {
-    return p_spotValue(tokens, LEXER_SYMBOLS[LT_Reserved], (Obj)word) ? (Obj)IGNORE : NULL;
+    return p_spotValue(tokens, LEXER_SYMBOLS[LTT_Reserved], (Obj)word) ? (Obj)IGNORE : NULL;
 }
 
 Obj p_reserved_required(List* tokens, String word) {
-    if (p_spotValue(tokens, LEXER_SYMBOLS[LT_Reserved], (Obj)word)) {
+    if (p_spotValue(tokens, LEXER_SYMBOLS[LTT_Reserved], (Obj)word)) {
         return (Obj)IGNORE;
     }
     p_fail(tokens, "expected a reserved word", (Obj)word);
@@ -408,19 +407,19 @@ Obj p_reserved_required(List* tokens, String word) {
 }
 
 Obj p_special(List* tokens, String str) {
-    return p_spotValue(tokens, LEXER_SYMBOLS[LT_Special], (Obj)str);
+    return p_spotValue(tokens, LEXER_SYMBOLS[LTT_Special], (Obj)str);
 }
 
 Obj p_string(List* tokens) {
-    return p_spot(tokens, LEXER_SYMBOLS[LT_String]);
+    return p_spot(tokens, LEXER_SYMBOLS[LTT_String]);
 }
 
 Obj p_symbol(List* tokens) {
-    return p_spot(tokens, LEXER_SYMBOLS[LT_Symbol]);
+    return p_spot(tokens, LEXER_SYMBOLS[LTT_Symbol]);
 }
 
 Obj p_symbol_required(List* tokens) {
-    Obj res = p_spot(tokens, LEXER_SYMBOLS[LT_Symbol]);
+    Obj res = p_spot(tokens, LEXER_SYMBOLS[LTT_Symbol]);
     if (res != NULL) {
         return res;
     }
@@ -632,7 +631,7 @@ Obj p_TRY(List* tokens) {
 // expressions =======================================================
 
 Obj p_colonOperator(List* tokens) {
-    return p_spotValue(tokens, LEXER_SYMBOLS[LT_Operator], (Obj)COLON);
+    return p_spotValue(tokens, LEXER_SYMBOLS[LTT_Operator], (Obj)COLON);
 }
 
 Obj p_colonRhs(List* tokens) {
@@ -806,7 +805,7 @@ Obj p_parenExpr(List* tokens) {
 
 // for record definition
 Obj p_doubleColon(List* tokens) {
-    return p_spotValue(tokens, LEXER_SYMBOLS[LT_Operator], (Obj)DOUBLE_COLON) ? (Obj)IGNORE : NULL;
+    return p_spotValue(tokens, LEXER_SYMBOLS[LTT_Operator], (Obj)DOUBLE_COLON) ? (Obj)IGNORE : NULL;
 }
 
 Obj p_typeSpec(List* tokens) {
@@ -923,7 +922,7 @@ Obj p_any(List* tokens) {
     );
     // check for an operator and a RHS expression
     struct D_List* savedTokens = *tokens;
-    Obj oper = p_spot(tokens, LEXER_SYMBOLS[LT_Operator]);
+    Obj oper = p_spot(tokens, LEXER_SYMBOLS[LTT_Operator]);
     if (oper == NULL) {
         // this expression is not a binary operator, just return the original result
         *tokens = savedTokens;
