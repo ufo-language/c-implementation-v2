@@ -36,7 +36,7 @@ static void _resize(struct D_HashTable* self, struct Evaluator* etor);
 
 // allocate and free bucket links ------------------------------------
 
-// TODO get enable bucket recycling (I don't remember if it works or not, I think it does)
+// TODO enable bucket recycling (I don't remember if it works or not, I think it does)
 #define RECYCLE_BUCKETS 0
 
 #if RECYCLE_BUCKETS
