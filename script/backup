@@ -8,20 +8,19 @@ COPY_TO=~/host/Dropbox/Backups/ufo-c
 rm -f list-of-files
 find src -name '*.c'          >> list-of-files
 find src -name '*.h'          >> list-of-files
+find ffi -name '*.c'          >> list-of-files
+find ffi -name '*.txt'        >> list-of-files
 find test -name '*.c'         >> list-of-files
 find test -name '*.h'         >> list-of-files
 find test -name '*.txt'       >> list-of-files
 find doc-local -name '*.txt'  >> list-of-files
 ls examples/*.ufo             >> list-of-files
+ls script/*                   >> list-of-files
+ls LICENSE                    >> list-of-files
+ls Makefile                   >> list-of-files
 ls pmake.py                   >> list-of-files
-ls script/backup              >> list-of-files
-ls script/rebuild             >> list-of-files
-ls script/c                   >> list-of-files
-ls script/ctest               >> list-of-files
-ls script/u                   >> list-of-files
-ls script/clean               >> list-of-files
-ls script/gdb-run             >> list-of-files
-ls script/restore-latest      >> list-of-files
+ls README.md                  >> list-of-files
+ls .gitignore                 >> list-of-files
 
 DESC="-$1"
 if [ "-$1-" == "--" ]; then
