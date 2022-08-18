@@ -87,11 +87,14 @@ char file_readChar(struct D_File* self) {
     return fgetc(self->fp);
 }
 
+// This returns the number of bytes read, but since the number is an int
+// and the number of bytes read can be an unsigned long, the integer is
+// split into two parts returned as an array.
 struct D_Array* file_readAll(struct D_File* self, struct D_StringBuffer* stringBuffer, struct Evaluator* etor) {
     size_t nBytesRead = file_readAll_stringBuffer(self, stringBuffer, etor);
     int n1 = (int)(nBytesRead / INT_MAX);
     int n2 = (int)(nBytesRead % INT_MAX);
-    struct D_Array* sizeAry = array_newN(2, n1, n2);
+    struct D_Array* sizeAry = array_newN(2, integer_new(n1), integer_new(n2));
     return sizeAry;
 }
 
@@ -104,7 +107,7 @@ size_t file_readAll_stringBuffer(struct D_File* self, struct D_StringBuffer* str
     if (buffer == NULL) {
         int n1 = (int)(fileSize / INT_MAX);
         int n2 = (int)(fileSize % INT_MAX);
-        struct D_Array* sizeAry = array_newN(2, n1, n2);
+        struct D_Array* sizeAry = array_newN(2, integer_new(n1), integer_new(n2));
         evaluator_throwException(
             etor,
             any_typeSymbol((struct Any*)self),
