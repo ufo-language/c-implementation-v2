@@ -116,7 +116,7 @@ static String HASH_MARK;
 static String PAREN_CLOSE;
 static String PAREN_OPEN;
 static String TILDE;
-static Symbol IGNORE;
+Symbol IGNORE;  // needed by json_parser.c
 
 static String CATCH;
 static String DO;
@@ -171,7 +171,7 @@ void parser_rootObjects(void) {
 
 // primitive parsers =================================================
 
-static Obj p_spot(List* tokens, Symbol tokenType) {
+Obj p_spot(List* tokens, Symbol tokenType) {
     Array firstToken = (Array)list_getFirst(*tokens);
     Symbol tokenSym = (Symbol)array_get_unsafe(firstToken, 0);
     if (tokenSym == tokenType) {
@@ -181,7 +181,7 @@ static Obj p_spot(List* tokens, Symbol tokenType) {
     return NULL;
 }
 
-static Obj p_spotValue(List* tokens, Symbol tokenType, Obj value) {
+Obj p_spotValue(List* tokens, Symbol tokenType, Obj value) {
     Array firstToken = (Array)list_getFirst(*tokens);
     Symbol tokenSym = (Symbol)array_get_unsafe(firstToken, 0);
     if (tokenSym == tokenType) {
@@ -215,7 +215,7 @@ Obj p_braceClose(List* tokens) {
     if (p_special(tokens, BRACE_CLOSE)) {
         return (Obj)IGNORE;
     }
-    p_fail(tokens, "Epected '}' or ','", NULL);
+    p_fail(tokens, "Expected '}' or ','", NULL);
     return  NULL;
 }
 
@@ -227,7 +227,7 @@ Obj p_bracketClose(List* tokens) {
     if (p_special(tokens, BRACKET_CLOSE)) {
         return (Obj)IGNORE;
     }
-    p_fail(tokens, "Epected ']'", NULL);
+    p_fail(tokens, "Expected ']'", NULL);
     return  NULL;
 }
 
@@ -247,15 +247,15 @@ Obj p_parenOpen_required(List* tokens) {
     if (p_special(tokens, PAREN_OPEN)) {
         return (Obj)IGNORE;
     }
-    p_fail(tokens, "Epected '('", NULL);
-    return  NULL;
+    p_fail(tokens, "Expected '('", NULL);
+    return NULL;
 }
 
 Obj p_parenClose_required(List* tokens) {
     if (p_special(tokens, PAREN_CLOSE)) {
         return (Obj)IGNORE;
     }
-    p_fail(tokens, "Epected ')'", NULL);
+    p_fail(tokens, "Expected ')'", NULL);
     return  NULL;
 }
 
@@ -402,7 +402,7 @@ Obj p_reserved_required(List* tokens, String word) {
     if (p_spotValue(tokens, LEXER_SYMBOLS[LTT_Reserved], (Obj)word)) {
         return (Obj)IGNORE;
     }
-    p_fail(tokens, "expected a reserved word", (Obj)word);
+    p_fail(tokens, "Expected a reserved word", (Obj)word);
     return NULL;
 }
 
@@ -423,7 +423,7 @@ Obj p_symbol_required(List* tokens) {
     if (res != NULL) {
         return res;
     }
-    p_fail(tokens, "Epected a symbol", NULL);
+    p_fail(tokens, "Expected a symbol", NULL);
     return  NULL;
 }
 
