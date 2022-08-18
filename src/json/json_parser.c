@@ -135,7 +135,11 @@ static struct Any* p_json(struct D_List** tokens) {
 }
 
 struct Any* json_parse(struct D_String* string) {
-    struct D_List* tokens = lexer_tokenize(string);
+    struct Any* res = lexer_tokenize(string);
+    if (res->typeId != T_List) {
+        return res;
+    }
+    struct D_List* tokens = (struct D_List*)res;
     struct Any* jsonRes = p_json(&tokens);
     if (jsonRes == NULL) {
         jsonRes = (struct Any*)NIL;
