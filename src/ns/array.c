@@ -12,18 +12,24 @@
 #define NS_NAME "array"
 
 static void _count(struct Evaluator* etor, struct D_List* args);
+static void _delete(struct Evaluator* etor, struct D_List* args);
+static void _insert(struct Evaluator* etor, struct D_List* args);
 static void _new(struct Evaluator* etor, struct D_List* args);
 void ns_array_get(struct Evaluator* etor, struct D_List* args);
 static void _set(struct Evaluator* etor, struct D_List* args);
+static void _sort(struct Evaluator* etor, struct D_List* args);
 
 void ns_array_defineAll(struct D_HashTable* env) {
     struct E_Identifier* nsName = identifier_new(NS_NAME);
     struct D_HashTable* nsHash = hashTable_new();
     hashTable_put_unsafe(env, (struct Any*)nsName, (struct Any*)nsHash);
     primitive_define(nsHash, "count", _count);
-    primitive_define(nsHash, "get", ns_array_get);
+    primitive_define(nsHash, "delete", _delete);
+    primitive_define(nsHash, "get", ns_array_get);  // used by src/expr/bracketexpr.c
+    primitive_define(nsHash, "insert", _insert);
     primitive_define(nsHash, "new", _new);
     primitive_define(nsHash, "set", _set);
+    primitive_define(nsHash, "sort", _sort);
 }
 
 static void _count(struct Evaluator* etor, struct D_List* args) {
@@ -34,6 +40,31 @@ static void _count(struct Evaluator* etor, struct D_List* args) {
     struct D_Array* array = (struct D_Array*)arrayObj;
     struct D_Unsigned* countNum = unsigned_new(array_count(array));
     evaluator_pushObj(etor, (struct Any*)countNum);
+}
+
+static void _delete(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_Array, T_Integer};
+    struct Any* arrayObj;
+    struct Any* indexObj;
+    struct Any** paramVars[] = {&arrayObj, &indexObj};
+    primitive_checkArgs(2, paramTypes, args, paramVars, etor);
+    struct D_Array* array = (struct D_Array*)arrayObj;
+    struct D_Integer* index = (struct D_Integer*)indexObj;
+    array_delete(array, integer_getValue(index));
+    evaluator_pushObj(etor, (struct Any*)array);
+}
+
+static void _insert(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_Array, T_Integer, T_NULL};
+    struct Any* arrayObj;
+    struct Any* indexObj;
+    struct Any* elem;
+    struct Any** paramVars[] = {&arrayObj, &indexObj, &elem};
+    primitive_checkArgs(3, paramTypes, args, paramVars, etor);
+    struct D_Array* array = (struct D_Array*)arrayObj;
+    struct D_Integer* index = (struct D_Integer*)indexObj;
+    array_insert(array, integer_getValue(index), elem);
+    evaluator_pushObj(etor, (struct Any*)array);
 }
 
 static void _new(struct Evaluator* etor, struct D_List* args) {
@@ -85,5 +116,15 @@ static void _set(struct Evaluator* etor, struct D_List* args) {
         evaluator_throwException(etor, sym, "index out of bounds", (struct Any*)exn);
     }
     array_set_unsafe(array, i, elem);
+    evaluator_pushObj(etor, (struct Any*)array);
+}
+
+static void _sort(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_Array};
+    struct Any* arrayObj;
+    struct Any** paramVars[] = {&arrayObj};
+    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
+    struct D_Array* array = (struct D_Array*)arrayObj;
+    array_sort(array, etor);
     evaluator_pushObj(etor, (struct Any*)array);
 }

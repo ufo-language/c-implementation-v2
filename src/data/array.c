@@ -91,6 +91,14 @@ struct D_Array* array_deepCopy(struct D_Array* self) {
     return ary;
 }
 
+void array_delete(struct D_Array* self, int index) {
+    int n = index;
+    for (; n<self->count-1; n++) {
+        self->elems[n] = self->elems[n+1];
+    }
+    self->elems[n] = (struct Any*)NIL;
+}
+
 void array_eval(struct D_Array* self, struct Evaluator* etor) {
     struct D_Integer* arrayCount = integer_new(self->count);
     evaluator_pushExpr(etor, (struct Any*)continuation_new(array_contin, "array", (struct Any*)arrayCount));
@@ -115,6 +123,13 @@ HashCode array_hashCode(struct D_Array* self, struct Evaluator* etor) {
         hashCode = hashRotateLeft(hashCode) ^ any_hashCode(self->elems[n], etor);
     }
     return hashCode ^ HASH_PRIMES[T_Array];
+}
+
+void array_insert(struct D_Array* self, int index, struct Any* elem) {
+    for (int n=self->count-2; n>=index; n--) {
+        self->elems[n+1] = self->elems[n];
+    }
+    self->elems[index] = elem;
 }
 
 bool array_isEqual(struct D_Array* self, struct D_Array* other) {
@@ -185,6 +200,27 @@ void array_showWith(struct D_Array* self, char* open, char* sep, char* close, FI
 
 size_t array_sizeOf(struct D_Array* self) {
     return sizeof(self) + sizeof(self->elems);
+}
+
+struct D_Array* array_sort(struct D_Array* self, struct Evaluator* etor) {
+    int count = self->count;
+    for (int n=0; n<count; n++) {
+        struct Any* smallest = self->elems[n];
+        int smallestIndex = n;
+        for (int m=n+1; m<count; m++) {
+            struct Any* elem = self->elems[m];
+            int res = any_compare(elem, smallest, etor);
+            if (res == -1) {
+                smallest = elem;
+                smallestIndex = m;
+            }
+        }
+        // swap the elements found
+        struct Any* temp = self->elems[n];
+        self->elems[n] = smallest;
+        self->elems[smallestIndex] = temp;
+    }
+    return self;
 }
 
 size_t array_structSize(void) {
