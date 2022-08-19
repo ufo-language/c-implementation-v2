@@ -203,7 +203,10 @@ size_t array_sizeOf(struct D_Array* self) {
 }
 
 // This uses a double-ended selection sort.
-struct D_Array* array_sort(struct D_Array* self, struct Evaluator* etor) {
+// TODO THIS DOES NOT WORK RIGHT
+// UFO> array:sort({5,4,3,2,1})
+// {2, 1, 3, 5, 4} :: Array
+struct D_Array* array_selectionSort(struct D_Array* self, struct Evaluator* etor) {
     int count = self->count;
     for (int n=0; n<count; n++) {
         int top = count - n - 1;

@@ -17,7 +17,7 @@ static void _insert(struct Evaluator* etor, struct D_List* args);
 static void _new(struct Evaluator* etor, struct D_List* args);
 void ns_array_get(struct Evaluator* etor, struct D_List* args);
 static void _set(struct Evaluator* etor, struct D_List* args);
-static void _sort(struct Evaluator* etor, struct D_List* args);
+static void _selectionSort(struct Evaluator* etor, struct D_List* args);
 
 void ns_array_defineAll(struct D_HashTable* env) {
     struct E_Identifier* nsName = identifier_new(NS_NAME);
@@ -29,7 +29,7 @@ void ns_array_defineAll(struct D_HashTable* env) {
     primitive_define(nsHash, "insert", _insert);
     primitive_define(nsHash, "new", _new);
     primitive_define(nsHash, "set", _set);
-    primitive_define(nsHash, "sort", _sort);
+    primitive_define(nsHash, "selectionSort", _selectionSort);
 }
 
 static void _count(struct Evaluator* etor, struct D_List* args) {
@@ -119,12 +119,12 @@ static void _set(struct Evaluator* etor, struct D_List* args) {
     evaluator_pushObj(etor, (struct Any*)array);
 }
 
-static void _sort(struct Evaluator* etor, struct D_List* args) {
+static void _selectionSort(struct Evaluator* etor, struct D_List* args) {
     static enum TypeId paramTypes[] = {T_Array};
     struct Any* arrayObj;
     struct Any** paramVars[] = {&arrayObj};
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     struct D_Array* array = (struct D_Array*)arrayObj;
-    array_sort(array, etor);
+    array_selectionSort(array, etor);
     evaluator_pushObj(etor, (struct Any*)array);
 }
