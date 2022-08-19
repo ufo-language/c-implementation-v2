@@ -202,23 +202,39 @@ size_t array_sizeOf(struct D_Array* self) {
     return sizeof(self) + sizeof(self->elems);
 }
 
+// This uses a double-ended selection sort.
 struct D_Array* array_sort(struct D_Array* self, struct Evaluator* etor) {
     int count = self->count;
     for (int n=0; n<count; n++) {
-        struct Any* smallest = self->elems[n];
+        int top = count - n - 1;
         int smallestIndex = n;
-        for (int m=n+1; m<count; m++) {
+        struct Any* smallest = self->elems[smallestIndex];
+        int largestIndex = top;
+        struct Any* largest = self->elems[largestIndex];
+        for (int m=n+1; m<top; m++) {
             struct Any* elem = self->elems[m];
             int res = any_compare(elem, smallest, etor);
             if (res == -1) {
                 smallest = elem;
                 smallestIndex = m;
             }
+            res = any_compare(elem, largest, etor);
+            if (res == 1) {
+                largest = elem;
+                largestIndex = m;
+            }
         }
-        // swap the elements found
-        struct Any* temp = self->elems[n];
-        self->elems[n] = smallest;
-        self->elems[smallestIndex] = temp;
+        // swap the elements into place
+        if (n != smallestIndex) {
+            struct Any* temp = self->elems[n];
+            self->elems[n] = smallest;
+            self->elems[smallestIndex] = temp;
+        }
+        if (top != largestIndex) {
+            struct Any* temp = self->elems[top];
+            self->elems[top] = largest;
+            self->elems[largestIndex] = temp;
+        }
     }
     return self;
 }
