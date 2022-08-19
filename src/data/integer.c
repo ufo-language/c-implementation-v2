@@ -37,7 +37,7 @@ int integer_compare(struct D_Integer* self, struct D_Integer* other, struct Eval
 
 HashCode integer_hashCode(struct D_Integer* self, struct Evaluator* etor) {
     (void)etor;
-    return self->value ^ HASH_PRIMES[T_Integer];
+    return self->value;
 }
 
 bool integer_isEqual(struct D_Integer* self, struct D_Integer* other) {
