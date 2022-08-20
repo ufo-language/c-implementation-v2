@@ -29,6 +29,7 @@ HashCode array_hashCode(struct D_Array* self, struct Evaluator* etor);
 void array_insert(struct D_Array* self, int index, struct Any* elem, struct Any* deadZone);
 struct D_Array* array_insertionSort(struct D_Array* self, struct Evaluator* etor);
 bool array_isEqual(struct D_Array* self, struct D_Array* other);
+struct Array* array_map(struct D_Array* self, struct Any* abstr, struct Evaluator* etor);
 void array_markChildren(struct D_Array* self);
 struct D_Triple* array_match(struct D_Array* self, struct Any* other, struct D_Triple* bindings);
 void array_reverse(struct D_Array* self);

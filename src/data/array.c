@@ -203,6 +203,10 @@ bool array_isEqual(struct D_Array* self, struct D_Array* other) {
     return true;
 }
 
+struct Array* array_map(struct D_Array* self, struct Any* abstr, struct Evaluator* etor) {
+    // TODO finish this
+}
+
 void array_markChildren(struct D_Array* self) {
     for (int n=0; n<self->count; n++) {
         any_mark(array_get_unsafe(self, n));

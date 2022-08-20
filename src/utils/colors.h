@@ -1,3 +1,6 @@
+#if !defined(COLORS_H)
+#define COLORS_H
+
 #define BLK "\x1b[0;30m"
 #define RED "\x1b[0;31m"
 #define GRN "\x1b[0;32m"
@@ -71,3 +74,5 @@
 #define reset "\x1b[0m"
 #define CRESET "\x1b[0m"
 #define COLOR_RESET "\x1b[0m"
+
+#endif
