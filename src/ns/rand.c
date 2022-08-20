@@ -47,10 +47,10 @@ static void _choose(struct Evaluator* etor, struct D_List* args) {
     struct Any** paramVars[] = {&aryObj};
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     struct D_Array* ary = (struct D_Array*)aryObj;
-    int len = array_count(ary);
+    int count = array_count(ary);
     struct Any* obj;
-    if (len > 0) {
-        int n = rand() % len;
+    if (count > 0) {
+        int n = rand() % count;
         obj = array_get_unsafe(ary, n);
     }
     else {

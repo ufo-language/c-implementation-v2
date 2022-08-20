@@ -16,6 +16,7 @@ struct D_Array* array_newWith(int count, struct Any* elem);
 void array_free(struct D_Array* self);
 
 int array_compare(struct D_Array* self, struct D_Array* other, struct Evaluator* etor);
+bool array_contains(struct D_Array* self, struct Any* elem);
 struct D_Array* array_copy(struct D_Array* self);
 int array_count(struct D_Array* self);
 struct D_Array* array_deepCopy(struct D_Array* self);
@@ -34,6 +35,7 @@ void array_set(struct D_Array* self, int n, struct Any* elem, struct Evaluator* 
 void array_set_unsafe(struct D_Array* self, int n, struct Any* elem);
 void array_show(struct D_Array* self, FILE* fp);
 void array_showWith(struct D_Array* self, char* open, char* sep, char* close, FILE* fp);
+void array_shuffle(struct D_Array* self);
 size_t array_sizeOf(struct D_Array* self);
 struct D_Array* array_selectionSort(struct D_Array* self, struct Evaluator* etor);
 size_t array_structSize(void);

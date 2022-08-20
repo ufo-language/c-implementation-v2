@@ -1,5 +1,6 @@
 #include "data/any.h"
 #include "data/array.h"
+#include "data/boolean.h"
 #include "data/hashtable.h"
 #include "data/integer.h"
 #include "data/list.h"
@@ -13,6 +14,7 @@
 
 #define NS_NAME "array"
 
+static void _contains(struct Evaluator* etor, struct D_List* args);
 static void _count(struct Evaluator* etor, struct D_List* args);
 static void _delete(struct Evaluator* etor, struct D_List* args);
 static void _domain(struct Evaluator* etor, struct D_List* args);
@@ -23,11 +25,13 @@ void ns_array_get(struct Evaluator* etor, struct D_List* args);
 static void _reverse(struct Evaluator* etor, struct D_List* args);
 static void _set(struct Evaluator* etor, struct D_List* args);
 static void _selectionSort(struct Evaluator* etor, struct D_List* args);
+static void _shuffle(struct Evaluator* etor, struct D_List* args);
 
 void ns_array_defineAll(struct D_HashTable* env) {
     struct E_Identifier* nsName = identifier_new(NS_NAME);
     struct D_HashTable* nsHash = hashTable_new();
     hashTable_put_unsafe(env, (struct Any*)nsName, (struct Any*)nsHash);
+    primitive_define(nsHash, "contains", _contains);
     primitive_define(nsHash, "count", _count);
     primitive_define(nsHash, "delete", _delete);
     primitive_define(nsHash, "domain", _domain);
@@ -38,6 +42,17 @@ void ns_array_defineAll(struct D_HashTable* env) {
     primitive_define(nsHash, "reverse", _reverse);
     primitive_define(nsHash, "set", _set);
     primitive_define(nsHash, "selectionSort", _selectionSort);
+    primitive_define(nsHash, "shuffle", _shuffle);
+}
+
+static void _contains(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_Array, T_NULL};
+    struct Any* arrayObj;
+    struct Any* elem;
+    struct Any** paramVars[] = {&arrayObj, &elem};
+    primitive_checkArgs(2, paramTypes, args, paramVars, etor);
+    struct D_Array* array = (struct D_Array*)arrayObj;
+    evaluator_pushObj(etor, (struct Any*)boolean_from(array_contains(array, elem)));
 }
 
 static void _count(struct Evaluator* etor, struct D_List* args) {
@@ -164,5 +179,15 @@ static void _selectionSort(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     struct D_Array* array = (struct D_Array*)arrayObj;
     array_selectionSort(array, etor);
+    evaluator_pushObj(etor, (struct Any*)array);
+}
+
+static void _shuffle(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_Array};
+    struct Any* arrayObj;
+    struct Any** paramVars[] = {&arrayObj};
+    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
+    struct D_Array* array = (struct D_Array*)arrayObj;
+    array_shuffle(array);
     evaluator_pushObj(etor, (struct Any*)array);
 }
