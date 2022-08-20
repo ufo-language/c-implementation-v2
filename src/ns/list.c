@@ -90,6 +90,7 @@ static void _isEmpty(struct Evaluator* etor, struct D_List* args) {
     evaluator_pushObj(etor, (struct Any*)(list_isEmpty(list) ? TRUE : FALSE));
 }
 
+// TODO move this into data/list.c (see data/array.c for example)
 static void _mapContin(struct Evaluator* etor, struct Any* arg) {
     struct Any* value = evaluator_popObj(etor);
     struct D_Array* argAry = (struct D_Array*)arg;
@@ -110,6 +111,7 @@ static void _mapContin(struct Evaluator* etor, struct Any* arg) {
     evaluator_pushExpr(etor, (struct Any*)app);
 }
 
+// TODO move this into data/list.c (see data/array.c for example)
 static void _map(struct Evaluator* etor, struct D_List* args) {
     static enum TypeId paramTypes[] = {T_List, T_NULL};
     struct Any* listObj;
