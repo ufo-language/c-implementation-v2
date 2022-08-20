@@ -132,6 +132,32 @@ void array_insert(struct D_Array* self, int index, struct Any* elem) {
     self->elems[index] = elem;
 }
 
+struct D_Array* array_insertionSort(struct D_Array* self, struct Evaluator* etor) {
+    int count = self->count;
+    struct Any** elems = self->elems;
+    struct D_Array* newArray = array_new(count);
+    for (int n=0; n<count; n++) {
+        struct Any* elem = elems[n];
+        if (n == 0) {
+            newArray->elems[0] = elem;
+        }
+        else {
+            for (int m=0; m<=n; m++) {
+                struct Any* newElem = newArray->elems[m];
+                if (newElem == (struct Any*)NIL) {
+                    newArray->elems[m] = elem;
+                    break;
+                }
+                else if (any_compare(elem, newElem, etor) < 0) {
+                    array_insert(newArray, m, elem);
+                    break;
+                }
+            }
+        }
+    }
+    return newArray;
+}
+
 bool array_isEqual(struct D_Array* self, struct D_Array* other) {
     if (self->count != other->count) {
         return false;
@@ -216,6 +242,7 @@ size_t array_sizeOf(struct D_Array* self) {
 // TODO THIS DOES NOT WORK RIGHT
 // UFO> array:sort({5,4,3,2,1})
 // {2, 1, 3, 5, 4} :: Array
+#if 0
 struct D_Array* array_selectionSort(struct D_Array* self, struct Evaluator* etor) {
     int count = self->count;
     int nSwaps = 0;
@@ -261,6 +288,30 @@ struct D_Array* array_selectionSort(struct D_Array* self, struct Evaluator* etor
     printf("swaps %d, comps %d\n", nSwaps, nComps);
     return self;
 }
+#else
+struct D_Array* array_selectionSort(struct D_Array* self, struct Evaluator* etor) {
+    int count = self->count;
+    for (int n=0; n<count; n++) {
+        struct Any* smallest = self->elems[n];
+        int smallestIndex = n;
+        for (int m=n+1; m<count; m++) {
+            struct Any* elem = self->elems[m];
+            int res = any_compare(elem, smallest, etor);
+            if (res == -1) {
+                smallest = elem;
+                smallestIndex = m;
+            }
+        }
+        // swap the elements found
+        if (n != smallestIndex) {
+            struct Any* temp = self->elems[n];
+            self->elems[n] = smallest;
+            self->elems[smallestIndex] = temp;
+        }
+    }
+    return self;
+}
+#endif
 
 size_t array_structSize(void) {
     return sizeof(struct D_Array);

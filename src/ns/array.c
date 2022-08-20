@@ -14,6 +14,7 @@
 static void _count(struct Evaluator* etor, struct D_List* args);
 static void _delete(struct Evaluator* etor, struct D_List* args);
 static void _insert(struct Evaluator* etor, struct D_List* args);
+static void _insertionSort(struct Evaluator* etor, struct D_List* args);
 static void _new(struct Evaluator* etor, struct D_List* args);
 void ns_array_get(struct Evaluator* etor, struct D_List* args);
 static void _reverse(struct Evaluator* etor, struct D_List* args);
@@ -28,6 +29,7 @@ void ns_array_defineAll(struct D_HashTable* env) {
     primitive_define(nsHash, "delete", _delete);
     primitive_define(nsHash, "get", ns_array_get);  // used by src/expr/bracketexpr.c
     primitive_define(nsHash, "insert", _insert);
+    primitive_define(nsHash, "insertionSort", _insertionSort);
     primitive_define(nsHash, "new", _new);
     primitive_define(nsHash, "reverse", _reverse);
     primitive_define(nsHash, "set", _set);
@@ -67,6 +69,16 @@ static void _insert(struct Evaluator* etor, struct D_List* args) {
     struct D_Integer* index = (struct D_Integer*)indexObj;
     array_insert(array, integer_getValue(index), elem);
     evaluator_pushObj(etor, (struct Any*)array);
+}
+
+static void _insertionSort(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_Array};
+    struct Any* arrayObj;
+    struct Any** paramVars[] = {&arrayObj};
+    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
+    struct D_Array* array = (struct D_Array*)arrayObj;
+    struct D_Array* newArray = array_insertionSort(array, etor);
+    evaluator_pushObj(etor, (struct Any*)newArray);
 }
 
 static void _new(struct Evaluator* etor, struct D_List* args) {
