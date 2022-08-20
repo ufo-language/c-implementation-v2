@@ -2,7 +2,9 @@
 #include "data/array.h"
 #include "data/hashtable.h"
 #include "data/integer.h"
+#include "data/list.h"
 #include "data/primitive.h"
+#include "data/sequence.h"
 #include "data/symbol.h"
 #include "data/unsigned.h"
 #include "etor/evaluator.h"
@@ -13,6 +15,7 @@
 
 static void _count(struct Evaluator* etor, struct D_List* args);
 static void _delete(struct Evaluator* etor, struct D_List* args);
+static void _domain(struct Evaluator* etor, struct D_List* args);
 static void _insert(struct Evaluator* etor, struct D_List* args);
 static void _insertionSort(struct Evaluator* etor, struct D_List* args);
 static void _new(struct Evaluator* etor, struct D_List* args);
@@ -27,6 +30,7 @@ void ns_array_defineAll(struct D_HashTable* env) {
     hashTable_put_unsafe(env, (struct Any*)nsName, (struct Any*)nsHash);
     primitive_define(nsHash, "count", _count);
     primitive_define(nsHash, "delete", _delete);
+    primitive_define(nsHash, "domain", _domain);
     primitive_define(nsHash, "get", ns_array_get);  // used by src/expr/bracketexpr.c
     primitive_define(nsHash, "insert", _insert);
     primitive_define(nsHash, "insertionSort", _insertionSort);
@@ -58,16 +62,29 @@ static void _delete(struct Evaluator* etor, struct D_List* args) {
     evaluator_pushObj(etor, (struct Any*)array);
 }
 
+static void _domain(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_Array};
+    struct Any* arrayObj;
+    struct Any** paramVars[] = {&arrayObj};
+    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
+    struct D_Array* array = (struct D_Array*)arrayObj;
+    int count = array_count(array);
+    struct D_Sequence* seq = sequence_new(0, count - 1, 1, etor);
+    evaluator_pushObj(etor, (struct Any*)seq);
+}
+
 static void _insert(struct Evaluator* etor, struct D_List* args) {
-    static enum TypeId paramTypes[] = {T_Array, T_Integer, T_NULL};
+    //int nArgs = list_count(args);
     struct Any* arrayObj;
     struct Any* indexObj;
     struct Any* elem;
-    struct Any** paramVars[] = {&arrayObj, &indexObj, &elem};
-    primitive_checkArgs(3, paramTypes, args, paramVars, etor);
+    struct Any* deadZone = NULL;
+    static enum TypeId paramTypes[] = {T_Array, T_Integer, T_NULL, T_NULL};
+    struct Any** paramVars[] = {&arrayObj, &indexObj, &elem, &deadZone};
+    primitive_checkArgs2(3, 4, paramTypes, args, paramVars, etor);
     struct D_Array* array = (struct D_Array*)arrayObj;
     struct D_Integer* index = (struct D_Integer*)indexObj;
-    array_insert(array, integer_getValue(index), elem);
+    array_insert(array, integer_getValue(index), elem, deadZone);
     evaluator_pushObj(etor, (struct Any*)array);
 }
 
@@ -88,10 +105,7 @@ static void _new(struct Evaluator* etor, struct D_List* args) {
     struct Any** paramVars[] = {&countObj, &initialValue};
     primitive_checkArgs2(1, 2, paramTypes, args, paramVars, etor);
     int count = integer_getValue((struct D_Integer*)countObj);
-    struct D_Array* ary = (struct D_Array*)array_new(count);
-    for (int n=0; n<count; n++) {
-        array_set_unsafe(ary, n, initialValue);
-    }
+    struct D_Array* ary = (struct D_Array*)array_newWith(count, initialValue);
     evaluator_pushObj(etor, (struct Any*)ary);
 }
 

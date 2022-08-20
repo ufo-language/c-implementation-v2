@@ -12,6 +12,7 @@ struct Evaluator;
 
 struct D_Array* array_new(int n);
 struct D_Array* array_newN(int n, ...);
+struct D_Array* array_newWith(int count, struct Any* elem);
 void array_free(struct D_Array* self);
 
 int array_compare(struct D_Array* self, struct D_Array* other, struct Evaluator* etor);
@@ -23,7 +24,7 @@ void array_eval(struct D_Array* self, struct Evaluator* etor);
 void array_freeVars(struct D_Array* self, struct D_Set* freeVars, struct Evaluator* etor);
 struct Any* array_get_unsafe(struct D_Array* self, int n);
 HashCode array_hashCode(struct D_Array* self, struct Evaluator* etor);
-void array_insert(struct D_Array* self, int index, struct Any* elem);
+void array_insert(struct D_Array* self, int index, struct Any* elem, struct Any* deadZone);
 struct D_Array* array_insertionSort(struct D_Array* self, struct Evaluator* etor);
 bool array_isEqual(struct D_Array* self, struct D_Array* other);
 void array_markChildren(struct D_Array* self);

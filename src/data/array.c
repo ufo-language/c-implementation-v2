@@ -20,13 +20,7 @@ struct D_Array {
 };
 
 struct D_Array* array_new(int count) {
-    struct D_Array* self = (struct D_Array*)gc_alloc(T_Array);
-    self->count = count;
-    self->elems = (struct Any**)malloc(count * sizeof(struct Any*));
-    for (int n=0; n<count; n++) {
-        self->elems[n] = (struct Any*)NIL;
-    }
-    return self;
+    return array_newWith(count, (struct Any*)NIL);
 }
 
 struct D_Array* array_newN(int count, ...) {
@@ -38,6 +32,16 @@ struct D_Array* array_newN(int count, ...) {
         self->elems[n] = elem;
     }
     va_end(argList);
+    return self;
+}
+
+struct D_Array* array_newWith(int count, struct Any* elem) {
+    struct D_Array* self = (struct D_Array*)gc_alloc(T_Array);
+    self->count = count;
+    self->elems = (struct Any**)malloc(count * sizeof(struct Any*));
+    for (int n=0; n<count; n++) {
+        self->elems[n] = elem;
+    }
     return self;
 }
 
@@ -125,17 +129,24 @@ HashCode array_hashCode(struct D_Array* self, struct Evaluator* etor) {
     return hashCode ^ HASH_PRIMES[T_Array];
 }
 
-void array_insert(struct D_Array* self, int index, struct Any* elem) {
-    for (int n=self->count-2; n>=index; n--) {
-        self->elems[n+1] = self->elems[n];
+void array_insert(struct D_Array* self, int index, struct Any* elem, struct Any* deadZone) {
+    struct Any** elems = self->elems;
+    struct Any* temp = elems[index];
+    for (int n=index+1; n<self->count; n++) {
+        struct Any* temp2 = elems[n];
+        elems[n] = temp;
+        if (deadZone && any_isEqual(elems[n], deadZone)) {
+            break;
+        }
+        temp = temp2;
     }
-    self->elems[index] = elem;
+    elems[index] = elem;
 }
 
 struct D_Array* array_insertionSort(struct D_Array* self, struct Evaluator* etor) {
     int count = self->count;
     struct Any** elems = self->elems;
-    struct D_Array* newArray = array_new(count);
+    struct D_Array* newArray = array_newWith(count, (struct Any*)NIL);
     for (int n=0; n<count; n++) {
         struct Any* elem = elems[n];
         if (n == 0) {
@@ -149,7 +160,7 @@ struct D_Array* array_insertionSort(struct D_Array* self, struct Evaluator* etor
                     break;
                 }
                 else if (any_compare(elem, newElem, etor) < 0) {
-                    array_insert(newArray, m, elem);
+                    array_insert(newArray, m, elem, (struct Any*)NIL);
                     break;
                 }
             }
