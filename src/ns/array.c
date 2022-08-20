@@ -127,19 +127,22 @@ static void _new(struct Evaluator* etor, struct D_List* args) {
 void ns_array_get(struct Evaluator* etor, struct D_List* args) {
     static enum TypeId paramTypes[] = {T_Array, T_Integer};
     struct Any* arrayObj;
-    struct Any* countObj;
-    struct Any** paramVars[] = {&arrayObj, &countObj};
+    struct Any* indexObj;
+    struct Any** paramVars[] = {&arrayObj, &indexObj};
     primitive_checkArgs(2, paramTypes, args, paramVars, etor);
     struct D_Array* array = (struct D_Array*)arrayObj;
-    struct D_Unsigned* count = (struct D_Unsigned*)countObj;
-    int i = unsigned_getValue(count);
-    // TODO replace with call to array_get (the non-unsafe function)
-    if (i >= array_count(array)) {
+    struct D_Integer* indexInt = (struct D_Integer*)indexObj;
+    int index = integer_getValue(indexInt);
+    #if 0
+    if (index >= array_count(array)) {
         struct D_Symbol* sym = symbol_new("Array");
-        struct D_Array* exn = array_newN(2, count, array);
+        struct D_Array* exn = array_newN(2, indexInt, array);
         evaluator_throwException(etor, sym, "index out of bounds", (struct Any*)exn);
     }
-    evaluator_pushObj(etor, (struct Any*)array_get_unsafe(array, i));
+    evaluator_pushObj(etor, (struct Any*)array_get_unsafe(array, index));
+    #else
+    evaluator_pushObj(etor, (struct Any*)array_get(array, index, etor));
+    #endif
 }
 
 static void _reverse(struct Evaluator* etor, struct D_List* args) {
@@ -153,22 +156,16 @@ static void _reverse(struct Evaluator* etor, struct D_List* args) {
 }
 
 static void _set(struct Evaluator* etor, struct D_List* args) {
-    static enum TypeId paramTypes[] = {T_Array, T_Unsigned, T_NULL};
+    static enum TypeId paramTypes[] = {T_Array, T_Integer, T_NULL};
     struct Any* arrayObj;
-    struct Any* countObj;
+    struct Any* indexObj;
     struct Any* elem;
-    struct Any** paramVars[] = {&arrayObj, &countObj, &elem};
+    struct Any** paramVars[] = {&arrayObj, &indexObj, &elem};
     primitive_checkArgs(3, paramTypes, args, paramVars, etor);
     struct D_Array* array = (struct D_Array*)arrayObj;
-    struct D_Unsigned* count = (struct D_Unsigned*)countObj;
-    int i = unsigned_getValue(count);
-    // TODO replace with call to array_get (the non-unsafe function)
-    if (i >= array_count(array)) {
-        struct D_Symbol* sym = symbol_new("Array");
-        struct D_Array* exn = array_newN(2, count, array);
-        evaluator_throwException(etor, sym, "index out of bounds", (struct Any*)exn);
-    }
-    array_set_unsafe(array, i, elem);
+    struct D_Integer* indexInt = (struct D_Integer*)indexObj;
+    int index = integer_getValue(indexInt);
+    array_set(array, index, elem, etor);
     evaluator_pushObj(etor, (struct Any*)array);
 }
 

@@ -127,8 +127,20 @@ void array_freeVars(struct D_Array* self, struct D_Set* freeVars, struct Evaluat
     }
 }
 
-struct Any* array_get_unsafe(struct D_Array* self, int index) {
-    return self->elems[index];
+struct Any* array_get(struct D_Array* self, int n, struct Evaluator* etor) {
+    if (n >= self->count) {
+        evaluator_throwException(
+            etor,
+            symbol_new("Array"),
+            "index out of bounds",
+            (struct Any*)array_newN(2, (struct Any*)integer_new(n), (struct Any*)self)
+        );
+    }
+    return self->elems[n];
+}
+
+struct Any* array_get_unsafe(struct D_Array* self, int n) {
+    return self->elems[n];
 }
 
 HashCode array_hashCode(struct D_Array* self, struct Evaluator* etor) {

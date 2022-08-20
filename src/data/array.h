@@ -23,6 +23,7 @@ struct D_Array* array_deepCopy(struct D_Array* self);
 void array_delete(struct D_Array* self, int index);
 void array_eval(struct D_Array* self, struct Evaluator* etor);
 void array_freeVars(struct D_Array* self, struct D_Set* freeVars, struct Evaluator* etor);
+struct Any* array_get(struct D_Array* self, int n, struct Evaluator* etor);
 struct Any* array_get_unsafe(struct D_Array* self, int n);
 HashCode array_hashCode(struct D_Array* self, struct Evaluator* etor);
 void array_insert(struct D_Array* self, int index, struct Any* elem, struct Any* deadZone);
