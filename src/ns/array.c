@@ -16,6 +16,7 @@ static void _delete(struct Evaluator* etor, struct D_List* args);
 static void _insert(struct Evaluator* etor, struct D_List* args);
 static void _new(struct Evaluator* etor, struct D_List* args);
 void ns_array_get(struct Evaluator* etor, struct D_List* args);
+static void _reverse(struct Evaluator* etor, struct D_List* args);
 static void _set(struct Evaluator* etor, struct D_List* args);
 static void _selectionSort(struct Evaluator* etor, struct D_List* args);
 
@@ -28,6 +29,7 @@ void ns_array_defineAll(struct D_HashTable* env) {
     primitive_define(nsHash, "get", ns_array_get);  // used by src/expr/bracketexpr.c
     primitive_define(nsHash, "insert", _insert);
     primitive_define(nsHash, "new", _new);
+    primitive_define(nsHash, "reverse", _reverse);
     primitive_define(nsHash, "set", _set);
     primitive_define(nsHash, "selectionSort", _selectionSort);
 }
@@ -97,6 +99,16 @@ void ns_array_get(struct Evaluator* etor, struct D_List* args) {
         evaluator_throwException(etor, sym, "index out of bounds", (struct Any*)exn);
     }
     evaluator_pushObj(etor, (struct Any*)array_get_unsafe(array, i));
+}
+
+static void _reverse(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_Array};
+    struct Any* arrayObj;
+    struct Any** paramVars[] = {&arrayObj};
+    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
+    struct D_Array* array = (struct D_Array*)arrayObj;
+    array_reverse(array);
+    evaluator_pushObj(etor, (struct Any*)array);
 }
 
 static void _set(struct Evaluator* etor, struct D_List* args) {

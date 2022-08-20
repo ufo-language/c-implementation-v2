@@ -167,6 +167,16 @@ struct D_Triple* array_match(struct D_Array* self, struct Any* other, struct D_T
     return bindings;
 }
 
+void array_reverse(struct D_Array* self) {
+    int count = self->count;
+    struct Any** elems = self->elems;
+    for (int n=0; n<(count/2); n++) {
+        struct Any* temp = elems[n];
+        elems[n] = elems[count - n - 1];
+        elems[count - n - 1] = temp;
+    }
+}
+
 void array_set(struct D_Array* self, int index, struct Any* elem, struct Evaluator* etor) {
     if (index >= self->count) {
         evaluator_throwException(
@@ -208,6 +218,8 @@ size_t array_sizeOf(struct D_Array* self) {
 // {2, 1, 3, 5, 4} :: Array
 struct D_Array* array_selectionSort(struct D_Array* self, struct Evaluator* etor) {
     int count = self->count;
+    int nSwaps = 0;
+    int nComps = 0;
     for (int n=0; n<count; n++) {
         int top = count - n - 1;
         int smallestIndex = n;
@@ -215,13 +227,18 @@ struct D_Array* array_selectionSort(struct D_Array* self, struct Evaluator* etor
         int largestIndex = top;
         struct Any* largest = self->elems[largestIndex];
         for (int m=n+1; m<top; m++) {
+            if (n == top) {
+                break;
+            }
             struct Any* elem = self->elems[m];
             int res = any_compare(elem, smallest, etor);
+            nComps++;
             if (res == -1) {
                 smallest = elem;
                 smallestIndex = m;
             }
             res = any_compare(elem, largest, etor);
+            nComps++;
             if (res == 1) {
                 largest = elem;
                 largestIndex = m;
@@ -232,13 +249,16 @@ struct D_Array* array_selectionSort(struct D_Array* self, struct Evaluator* etor
             struct Any* temp = self->elems[n];
             self->elems[n] = smallest;
             self->elems[smallestIndex] = temp;
+            nSwaps++;
         }
         if (top != largestIndex) {
             struct Any* temp = self->elems[top];
             self->elems[top] = largest;
             self->elems[largestIndex] = temp;
+            nSwaps++;
         }
     }
+    printf("swaps %d, comps %d\n", nSwaps, nComps);
     return self;
 }
 

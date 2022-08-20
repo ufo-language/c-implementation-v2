@@ -27,6 +27,7 @@ void array_insert(struct D_Array* self, int index, struct Any* elem);
 bool array_isEqual(struct D_Array* self, struct D_Array* other);
 void array_markChildren(struct D_Array* self);
 struct D_Triple* array_match(struct D_Array* self, struct Any* other, struct D_Triple* bindings);
+void array_reverse(struct D_Array* self);
 void array_set(struct D_Array* self, int n, struct Any* elem, struct Evaluator* etor);
 void array_set_unsafe(struct D_Array* self, int n, struct Any* elem);
 void array_show(struct D_Array* self, FILE* fp);
