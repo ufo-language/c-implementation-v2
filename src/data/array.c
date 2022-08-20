@@ -6,8 +6,10 @@
 #include "data/any.h"
 #include "data/array.h"
 #include "data/integer.h"
+#include "data/list.h"
 #include "data/symbol.h"
 #include "etor/evaluator.h"
+#include "expr/apply.h"
 #include "expr/continuation.h"
 #include "gc/gc.h"
 #include "main/globals.h"
@@ -115,7 +117,8 @@ void array_delete(struct D_Array* self, int index) {
 
 void array_eval(struct D_Array* self, struct Evaluator* etor) {
     struct D_Integer* arrayCount = integer_new(self->count);
-    evaluator_pushExpr(etor, (struct Any*)continuation_new(array_contin, "array", (struct Any*)arrayCount));
+    struct E_Continuation* contin = continuation_new(array_contin, "array", (struct Any*)arrayCount);
+    evaluator_pushExpr(etor, (struct Any*)contin);
     for (int n=self->count; n>0; n--) {
         evaluator_pushExpr(etor, self->elems[n-1]);
     }
@@ -203,8 +206,42 @@ bool array_isEqual(struct D_Array* self, struct D_Array* other) {
     return true;
 }
 
-struct Array* array_map(struct D_Array* self, struct Any* abstr, struct Evaluator* etor) {
-    // TODO finish this
+// builds the apply structure for the map function
+struct E_Apply* array_map_apply(struct D_Array* self, int n, struct Any* abstr) {
+    struct D_List* args = list_new(self->elems[n], (struct Any*)EMPTY_LIST);
+    return apply_new(abstr, args);
+}
+
+// handles the continuation for the map function
+void array_map_contin(struct Evaluator* etor, struct Any* arg) {
+    struct D_Array* args = (struct D_Array*)arg;
+    struct D_Array* self = (struct D_Array*)args->elems[0];
+    struct D_Integer* indexInt = (struct D_Integer*)args->elems[1];
+    struct D_Array* newArray = (struct D_Array*)args->elems[2];
+    struct Any* abstr = args->elems[3];
+    int index = integer_getValue(indexInt);
+    struct Any* newElem = evaluator_popObj(etor);
+    newArray->elems[index] = newElem;
+    if (++index == newArray->count) {
+        evaluator_pushObj(etor, (struct Any*)newArray);
+    }
+    else {
+        args->elems[1] = (struct Any*)integer_new(index);
+        struct E_Continuation* contin = continuation_new(array_map_contin, "array_map", (struct Any*)args);
+        evaluator_pushExpr(etor, (struct Any*)contin);
+        struct E_Apply* app = array_map_apply(self, index, abstr);
+        evaluator_pushExpr(etor, (struct Any*)app);
+    }
+}
+
+void array_map(struct D_Array* self, struct Any* abstr, struct Evaluator* etor) {
+    struct D_Integer* nInt = integer_new(0);
+    struct D_Array* newArray = array_new(self->count);
+    struct D_Array* args = array_newN(4, (struct Any*)self, (struct Any*)nInt, (struct Any*)newArray, abstr);
+    struct E_Continuation* contin = continuation_new(array_map_contin, "array_map", (struct Any*)args);
+    evaluator_pushExpr(etor, (struct Any*)contin);
+    struct E_Apply* app = array_map_apply(self, 0, abstr);
+    evaluator_pushExpr(etor, (struct Any*)app);
 }
 
 void array_markChildren(struct D_Array* self) {
