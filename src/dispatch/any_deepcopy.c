@@ -31,6 +31,7 @@ static struct Any* _error(struct Any* obj) {
 }
 
 struct Any* any_deepCopy(struct Any* obj) {
+#if 1
     struct Methods* methods = METHOD_TABLE[obj->typeId];
     if (methods != NULL) {
         struct Any* (*method)(struct Any*) = methods->m_deepCopy;
@@ -39,6 +40,7 @@ struct Any* any_deepCopy(struct Any* obj) {
         }
     }
     printf("%s no method to handle typeId %d %s\n", __func__, obj->typeId, TYPE_NAMES[obj->typeId]);
+#endif
     switch (obj->typeId) {
         case T_NULL:
             return _error(obj);

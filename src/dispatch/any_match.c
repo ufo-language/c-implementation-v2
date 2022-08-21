@@ -26,6 +26,7 @@ static struct D_Triple* _isEqual(struct Any* obj, struct Any* other, struct D_Tr
 }
 
 struct D_Triple* any_match(struct Any* obj, struct Any* other, struct D_Triple* bindings) {
+#if 1
     struct Methods* methods = METHOD_TABLE[obj->typeId];
     if (methods != NULL) {
         struct D_Triple* (*method)(struct Any*, struct Any*, struct D_Triple*) = methods->m_match;
@@ -34,6 +35,7 @@ struct D_Triple* any_match(struct Any* obj, struct Any* other, struct D_Triple* 
         }
     }
     printf("%s no method to handle typeId %d %s\n", __func__, obj->typeId, TYPE_NAMES[obj->typeId]);
+#endif
     switch (obj->typeId) {
         case T_NULL:
             return _error(obj, other, bindings);

@@ -35,6 +35,7 @@ static HashCode _noHash(struct Any* obj, struct Evaluator* etor) {
 }
 
 HashCode any_hashCode(struct Any* obj, struct Evaluator* etor) {
+#if 1
     struct Methods* methods = METHOD_TABLE[obj->typeId];
     if (methods != NULL) {
         HashCode (*method)(struct Any*, struct Evaluator*) = methods->m_hashCode;
@@ -43,6 +44,7 @@ HashCode any_hashCode(struct Any* obj, struct Evaluator* etor) {
         }
     }
     printf("%s no method to handle typeId %d %s\n", __func__, obj->typeId, TYPE_NAMES[obj->typeId]);
+#endif
     switch (obj->typeId) {
         case T_NULL:
             return _error(obj, etor);

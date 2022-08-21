@@ -40,6 +40,7 @@ bool any_isEqual(struct Any* obj, struct Any* other) {
     if (obj->typeId != other->typeId) {
         return false;
     }
+    #if 1
     struct Methods* methods = METHOD_TABLE[obj->typeId];
     if (methods != NULL) {
         bool (*method)(struct Any*, struct Any*) = methods->m_isEqual;
@@ -48,6 +49,7 @@ bool any_isEqual(struct Any* obj, struct Any* other) {
         }
     }
     printf("%s no method to handle typeId %d %s\n", __func__, obj->typeId, TYPE_NAMES[obj->typeId]);
+#endif
     switch (obj->typeId) {
         case T_NULL:
             return _error(obj, other);

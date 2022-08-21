@@ -22,7 +22,6 @@ struct D_String {
 };
 
 struct Methods* string_methodSetup(void) {
-    printf("%s caled\n", __func__);
     struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
     methodTable_setupDefaults(methods);
     methods->m_boolValue = (bool (*)(struct Any*))string_boolValue;

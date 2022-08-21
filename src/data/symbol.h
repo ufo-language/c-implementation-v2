@@ -18,6 +18,6 @@ char* symbol_getName(struct D_Symbol* self);
 HashCode symbol_hashCode(struct D_Symbol* self, struct Evaluator* etor);
 void symbol_show(struct D_Symbol* self, FILE* fd);
 size_t symbol_sizeOf(struct D_Symbol* self);
-size_t symbol_structSize(void);
+size_t symbol_structSize(enum TypeId typeId);
 
 #endif

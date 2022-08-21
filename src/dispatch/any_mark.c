@@ -51,6 +51,7 @@ void any_mark(struct Any* obj) {
         return;
     }
     obj->isMarked = true;
+#if 1
     struct Methods* methods = METHOD_TABLE[obj->typeId];
     if (methods != NULL) {
         void (*method)(struct Any*) = methods->m_mark;
@@ -60,6 +61,7 @@ void any_mark(struct Any* obj) {
         }
     }
     printf("%s no method to handle typeId %d %s\n", __func__, obj->typeId, TYPE_NAMES[obj->typeId]);
+#endif
     switch (obj->typeId) {
         case T_NULL:
             _error(obj);

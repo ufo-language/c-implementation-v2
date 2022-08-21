@@ -25,6 +25,6 @@ HashCode identifier_hashCode(struct E_Identifier* self, struct Evaluator* etor);
 struct D_Triple* identifier_match(struct E_Identifier* self, struct Any* other, struct D_Triple* bindings);
 void identifier_show(struct E_Identifier* self, FILE* fd);
 size_t identifier_sizeOf(struct E_Identifier* self);
-size_t identifier_structSize(void);
+size_t identifier_structSize(enum TypeId typeId);
 
 #endif

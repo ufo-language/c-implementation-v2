@@ -44,6 +44,7 @@ static void _simpleMatch(struct Any* obj, struct D_Set* freeVars, struct Evaluat
 }
 
 void any_freeVars(struct Any* obj, struct D_Set* freeVars, struct Evaluator* etor) {
+#if 1
     struct Methods* methods = METHOD_TABLE[obj->typeId];
     if (methods != NULL) {
         void (*method)(struct Any*, struct D_Set*, struct Evaluator*) = methods->m_freeVars;
@@ -53,6 +54,7 @@ void any_freeVars(struct Any* obj, struct D_Set* freeVars, struct Evaluator* eto
         }
     }
     printf("%s no method to handle typeId %d %s\n", __func__, obj->typeId, TYPE_NAMES[obj->typeId]);
+#endif
     switch (obj->typeId) {
         case T_NULL:
             _error(obj, freeVars, etor);

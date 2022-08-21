@@ -42,6 +42,7 @@ static void _self(struct Any* obj, struct Evaluator* etor) {
 }
 
 void any_eval(struct Any* obj, struct Evaluator* etor) {
+#if 1
     struct Methods* methods = METHOD_TABLE[obj->typeId];
     if (methods != NULL) {
         void (*method)(struct Any*, struct Evaluator*) = methods->m_eval;
@@ -51,6 +52,7 @@ void any_eval(struct Any* obj, struct Evaluator* etor) {
         }
     }
     printf("%s no method to handle typeId %d %s\n", __func__, obj->typeId, TYPE_NAMES[obj->typeId]);
+#endif
     switch (obj->typeId) {
         case T_NULL:
             _error(obj, etor);

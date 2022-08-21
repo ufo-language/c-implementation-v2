@@ -28,6 +28,7 @@ static int _fail(struct Any* obj, struct Any* other, struct Evaluator* etor) {
 }
 
 int any_compare(struct Any* obj, struct Any* other, struct Evaluator* etor) {
+#if 1
     struct Methods* methods = METHOD_TABLE[obj->typeId];
     if (methods != NULL) {
         int (*method)(struct Any*, struct Any*, struct Evaluator*) = methods->m_compare;
@@ -36,6 +37,7 @@ int any_compare(struct Any* obj, struct Any* other, struct Evaluator* etor) {
         }
     }
     printf("%s no method to handle typeId %d\n", __func__, obj->typeId);
+#endif
     switch (obj->typeId) {
         case T_NULL:
             return _fail(obj, other, etor);

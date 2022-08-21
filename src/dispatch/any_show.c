@@ -55,6 +55,7 @@ static void _error(struct Any* obj, FILE* fp) {
 }
 
 void any_show(struct Any* obj, FILE* fp) {
+#if 1
     struct Methods* methods = METHOD_TABLE[obj->typeId];
     if (methods != NULL) {
         void (*method)(struct Any*, FILE* fp) = methods->m_show;
@@ -64,6 +65,7 @@ void any_show(struct Any* obj, FILE* fp) {
         }
     }
     printf("%s no method to handle typeId %d\n", __func__, obj->typeId);
+#endif
     if (obj == NULL) {
         fputs("NULL", fp);
         return;
