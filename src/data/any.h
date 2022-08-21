@@ -64,9 +64,11 @@ struct Evaluator;
 struct D_List;
 struct D_Set;
 struct D_Symbol;
+struct MethodTable;
 
 struct Any {
     enum TypeId typeId;
+    struct MethodTable* methodTable;
     struct Any* next;
     bool isMarked;
 };
