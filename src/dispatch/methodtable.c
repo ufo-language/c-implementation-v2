@@ -43,9 +43,7 @@ static int m_compare(struct Any* self, struct Any* other, struct Evaluator* etor
 }
 
 static struct Any* m_deepCopy(struct Any* self) {
-    fprintf(stderr, "ERROR: call to '%s' is not valid for type ID %d (%0x)\n", __func__, self->typeId, self->typeId);
-    exit(1);
-    return NULL;
+    return self;
 }
 
 static void m_display(struct Any* self, FILE* fp) {

@@ -43,8 +43,8 @@ int main(int argc, char* argv[]) {
         //string[0] = 'h';
         //ipc_writeString(CHILD_TO_PARENT[1], 5, string);
         any_sanityCheck();
-        gc_start();
         methodTable_setupMethods();
+        gc_start();
         ufo_start();
         ufo_stop();
         gc_stop();

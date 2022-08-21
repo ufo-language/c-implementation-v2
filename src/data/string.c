@@ -29,6 +29,8 @@ struct Methods* string_methodSetup(void) {
     methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))string_compare;
     methods->m_display = (void (*)(struct Any*, FILE*))string_display;
     methods->m_free = (void (*)(struct Any*))string_free;
+    methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))string_hashCode;
+    methods->m_isEqual = (bool (*)(struct Any*, struct Any*))string_isEqual;
     methods->m_show = (void (*)(struct Any*, FILE*))string_show;
     methods->m_sizeOf = (size_t (*)(struct Any*))string_sizeOf;
     methods->m_structSize = string_structSize;
@@ -187,6 +189,15 @@ struct D_List* string_split(struct D_String* self, char c) {
     return queue_asList(queue);
 }
 
+size_t string_sizeOf(struct D_String* self) {
+    return sizeof(self) + sizeof(self->chars);
+}
+
+size_t string_structSize(enum TypeId typeId) {
+    (void)typeId;
+    return sizeof(struct D_String);
+}
+
 void string_unescapify(struct D_String* self, FILE* fd) {
     bool escaped = false;
     for (int n=0; n<self->count; n++) {
@@ -212,13 +223,4 @@ void string_unescapify(struct D_String* self, FILE* fd) {
             fputc(c, fd);
         }
     }
-}
-
-size_t string_sizeOf(struct D_String* self) {
-    return sizeof(self) + sizeof(self->chars);
-}
-
-size_t string_structSize(enum TypeId typeId) {
-    (void)typeId;
-    return sizeof(struct D_String);
 }
