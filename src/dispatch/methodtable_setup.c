@@ -4,6 +4,7 @@
 struct Methods* identifier_methodSetup();
 struct Methods* iterator_methodSetup();
 struct Methods* string_methodSetup();
+struct Methods* symbol_methodSetup();
 
 // called from main.c
 void methodTable_setupMethods(void) {

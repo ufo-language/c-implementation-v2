@@ -55,15 +55,12 @@ static size_t _error(enum TypeId typeId) {
 }
 
 size_t any_structSize(enum TypeId typeId) {
-#if 0
+#if 1
     struct Methods* methods = METHOD_TABLE[typeId];
     if (methods != NULL) {
         size_t (*method)(enum TypeId) = methods->m_structSize;
-        printf("%s %s method = %p\n", __func__, TYPE_NAMES[typeId], (void*)method);
         if (method != NULL) {
-            size_t size = method(typeId);
-            printf("  got size %lu\n", size);
-            return size;
+            return method(typeId);
         }
     }
     printf("%s no method to handle typeId %d %s\n", __func__, typeId, TYPE_NAMES[typeId]);

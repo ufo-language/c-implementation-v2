@@ -24,27 +24,12 @@ static HashCode _hashCode(char* name, int strLen);
 struct Methods* symbol_methodSetup(void) {
     struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
     methodTable_setupDefaults(methods);
-    //methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))symbol_compare;
-    //methods->m_free = (void (*)(struct Any*))symbol_free;
-    //methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))symbol_hashCode;
-    //methods->m_show = (void (*)(struct Any*, FILE*))symbol_show;
-    //methods->m_sizeOf = (size_t (*)(struct Any*))symbol_sizeOf;
-    //methods->m_structSize = symbol_structSize;
-    methods->m_boolValue = NULL;
-    methods->m_compare = NULL;
-    methods->m_deepCopy = NULL;
-    methods->m_display = NULL;
-    methods->m_eval = NULL;
-    methods->m_free = NULL;
-    methods->m_freeVars = NULL;
-    methods->m_hashCode = NULL;
-    methods->m_isEqual = NULL;
-    methods->m_mark = NULL;
-    methods->m_match = NULL;
-    methods->m_show = NULL;
-    methods->m_sizeOf = NULL;
-    methods->m_structSize = NULL;
-    methods->m_typeOf = NULL;
+    methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))symbol_compare;
+    methods->m_free = (void (*)(struct Any*))symbol_free;
+    methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))symbol_hashCode;
+    methods->m_show = (void (*)(struct Any*, FILE*))symbol_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))symbol_sizeOf;
+    methods->m_structSize = symbol_structSize;
     return methods;
 }
 
