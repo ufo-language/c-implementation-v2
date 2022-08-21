@@ -7,6 +7,7 @@
 #include "data/array.h"
 #include "data/integer.h"
 #include "data/list.h"
+#include "data/queue.h"
 #include "data/symbol.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
@@ -272,6 +273,7 @@ size_t list_structSize(void) {
     return sizeof(struct D_List);
 }
 
+// This is called only by the JSON parser.
 struct D_Array* list_toArray(struct D_List* self, int nElems) {
     struct D_Array* ary = array_new(nElems);
     for (int n=0; n<nElems; n++) {
@@ -280,3 +282,35 @@ struct D_Array* list_toArray(struct D_List* self, int nElems) {
     }
     return ary;
 }
+
+#if 0
+void _each(struct D_List* self, void (*fun)(struct Any*)) {
+    struct D_List* list = self;
+    while (!list_isEmpty(list)) {
+        fun(list->first);
+        struct Any* rest = list->rest;
+        if (!any_isA(rest, T_List)) {
+            fun(list->first);
+            break;;
+        }
+        list = (struct D_List*)rest;
+    }
+}
+
+struct D_List* _map(struct D_List* self, struct Any* (*fun)(struct Any*)) {
+    struct D_List* list = self;
+    struct D_Queue* q = queue_new();
+    while (!list_isEmpty(list)) {
+        struct Any* newElem = fun(list->first);
+        queue_enq(q, newElem);
+        struct Any* rest = list->rest;
+        if (!any_isA(rest, T_List)) {
+            struct Any* newElem = fun(list->first);
+            queue_enq(q, newElem);
+            break;;
+        }
+        list = (struct D_List*)rest;
+    }
+    return queue_asList(q);;
+}
+#endif
