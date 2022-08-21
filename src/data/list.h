@@ -14,6 +14,7 @@ struct D_List* list_new(struct Any* first, struct Any* rest);
 struct D_List* list_from(struct Any* arg, ...);
 void list_free(struct D_List* self);
 
+struct D_Array* list_asArray(struct D_List* self);
 bool list_boolValue(struct D_List* self);
 int list_compare(struct D_List* self, struct D_List* other, struct Evaluator* etor);
 // returns -1 if the list is improper

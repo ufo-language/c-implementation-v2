@@ -50,6 +50,23 @@ void list_free(struct D_List* self) {
     free(self);
 }
 
+struct D_Array* list_asArray(struct D_List* self) {
+    int count = list_count(self);
+    struct D_Array* ary = array_new(count);
+    struct D_List* list = self;
+    int n = 0;
+    while (!list_isEmpty(list)) {
+        array_set_unsafe(ary, n++, list->first);
+        struct Any* rest = list->rest;
+        if (!any_isA(rest, T_List)) {
+            array_set_unsafe(ary, n, list->rest);
+            break;;
+        }
+        list = (struct D_List*)rest;
+    }
+    return ary;
+}
+
 bool list_boolValue(struct D_List* self) {
     return !list_isEmpty(self);
 }
@@ -80,8 +97,7 @@ int list_count(struct D_List* self) {
         count++;
         struct Any* rest = list->rest;
         if (!any_isA(rest, T_List)) {
-            // list is improper
-            return -1;
+            return count + 1;
         }
         list = (struct D_List*)rest;
     }
@@ -167,8 +183,6 @@ bool list_isEmpty(struct D_List* self) {
 }
 
 void list_markChildren(struct D_List* self) {
-    // TODO make this iterative instead of recursive
-    // see list_count for an example
     if (!list_isEmpty(self)) {
         any_mark(self->first);
         any_mark(self->rest);
