@@ -9,6 +9,7 @@
 #include "data/file.h"
 #include "data/hashtable.h"
 #include "data/integer.h"
+#include "data/iterator.h"
 #include "data/list.h"
 #include "data/nil.h"
 #include "data/primitive.h"
@@ -96,6 +97,8 @@ size_t any_sizeOf(struct Any* obj) {
             return if_sizeOf((struct E_If*)obj);
         case T_Integer:
             return integer_sizeOf((struct D_Integer*)obj);
+        case T_Iterator:
+            return iterator_sizeOf((struct D_Iterator*)obj);
         case T_LetIn:
             return letIn_sizeOf((struct E_LetIn*)obj);
         case T_Let:

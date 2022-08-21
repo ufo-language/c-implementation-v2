@@ -75,6 +75,8 @@ HashCode any_hashCode(struct Any* obj, struct Evaluator* etor) {
             return _noHash(obj, etor);
         case T_Integer:
             return integer_hashCode((struct D_Integer*)obj, etor);
+        case T_Iterator:
+            return _noHash(obj, etor);
         case T_Let:
             return _noHash(obj, etor);
         case T_LetIn:

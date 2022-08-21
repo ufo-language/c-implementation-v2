@@ -68,6 +68,8 @@ struct D_Triple* any_match(struct Any* obj, struct Any* other, struct D_Triple* 
             return _isEqual(obj, other, bindings);
         case T_Integer:
             return _isEqual(obj, other, bindings);
+        case T_Iterator:
+            return _isEqual(obj, other, bindings);
         case T_Let:
             return _isEqual(obj, other, bindings);
         case T_LetIn:

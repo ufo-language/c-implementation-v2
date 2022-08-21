@@ -9,6 +9,7 @@
 #include "data/file.h"
 #include "data/hashtable.h"
 #include "data/integer.h"
+#include "data/iterator.h"
 #include "data/list.h"
 #include "data/nil.h"
 #include "data/primitive.h"
@@ -94,6 +95,8 @@ size_t any_structSize(enum TypeId typeId) {
             return if_structSize();
         case T_Integer:
             return integer_structSize();
+        case T_Iterator:
+            return iterator_structSize();
         case T_Let:
             return let_structSize();
         case T_LetIn:

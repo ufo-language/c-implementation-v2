@@ -9,6 +9,7 @@
 #include "data/file.h"
 #include "data/hashtable.h"
 #include "data/integer.h"
+#include "data/iterator.h"
 #include "data/list.h"
 #include "data/nil.h"
 #include "data/primitive.h"
@@ -117,6 +118,9 @@ void any_show(struct Any* obj, FILE* fp) {
             break;
         case T_Integer:
             integer_show((struct D_Integer*)obj, fp);
+            break;
+        case T_Iterator:
+            iterator_show((struct D_Iterator*)obj, fp);
             break;
         case T_Let:
             let_show((struct E_Let*)obj, fp);

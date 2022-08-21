@@ -93,6 +93,7 @@ struct Any* any_deepCopy(struct Any* obj) {
         case T_Continuation:
         case T_Evaluator:
         case T_ExceptionHandler:
+        case T_Iterator:
         case T_Protocol:
         case T_RecordDefinition:
         case T_RecordSpec:

@@ -69,6 +69,8 @@ int any_compare(struct Any* obj, struct Any* other, struct Evaluator* etor) {
             return _fail(obj, other, etor);
         case T_Integer:
             return integer_compare((struct D_Integer*)obj, (struct D_Integer*)other, etor);
+        case T_Iterator:
+            return _fail(obj, other, etor);
         case T_Let:
             return _fail(obj, other, etor);
         case T_LetIn:

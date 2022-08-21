@@ -26,6 +26,7 @@ char* TYPE_NAMES[] = {
     "Identifier",
     "If",
     "Integer",
+    "Iterator",
     "Let",
     "LetIn",
     "LetRec",

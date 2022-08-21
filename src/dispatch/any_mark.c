@@ -7,6 +7,7 @@
 #include "data/closure.h"
 #include "data/file.h"
 #include "data/hashtable.h"
+#include "data/iterator.h"
 #include "data/list.h"
 #include "data/queue.h"
 #include "data/record.h"
@@ -109,6 +110,9 @@ void any_mark(struct Any* obj) {
             break;
         case T_Integer:
             _mark(obj);
+            break;
+        case T_Iterator:
+            iterator_markChildren((struct D_Iterator*)obj);
             break;
         case T_Let:
             let_markChildren((struct E_Let*)obj);
