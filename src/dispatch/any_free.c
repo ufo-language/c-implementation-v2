@@ -9,6 +9,7 @@
 #include "data/file.h"
 #include "data/hashtable.h"
 #include "data/integer.h"
+#include "data/iterator.h"
 #include "data/list.h"
 #include "data/nil.h"
 #include "data/primitive.h"
@@ -110,6 +111,9 @@ void any_free(struct Any* obj) {
             break;
         case T_Integer:
             integer_free((struct D_Integer*)obj);
+            break;
+        case T_Iterator:
+            iterator_free((struct D_Iterator*)obj);
             break;
         case T_If:
             if_free((struct E_If*)obj);

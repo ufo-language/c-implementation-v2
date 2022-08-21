@@ -102,6 +102,9 @@ void any_eval(struct Any* obj, struct Evaluator* etor) {
         case T_If:
             if_eval((struct E_If*)obj, etor);
             break;
+        case T_Iterator:
+            _self(obj, etor);
+            break;
         case T_Let:
             let_eval((struct E_Let*)obj, etor);
             break;

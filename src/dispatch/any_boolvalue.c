@@ -8,6 +8,7 @@
 #include "data/file.h"
 #include "data/hashtable.h"
 #include "data/integer.h"
+#include "data/iterator.h"
 #include "data/list.h"
 #include "data/queue.h"
 #include "data/real.h"
@@ -78,6 +79,8 @@ bool any_boolValue(struct Any* obj) {
             return _true(obj);
         case T_If:
             return _true(obj);
+        case T_Iterator:
+            return iterator_boolValue((struct D_Iterator*)obj);
         case T_Let:
             return _true(obj);
         case T_LetIn:

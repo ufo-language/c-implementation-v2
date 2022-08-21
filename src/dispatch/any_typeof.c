@@ -75,6 +75,7 @@ struct Any* any_typeOf(struct Any* obj) {
         case T_Identifier:
         case T_If:
         case T_Integer:
+        case T_Iterator:
         case T_Let:
         case T_LetIn:
         case T_LetRec:

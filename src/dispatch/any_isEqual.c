@@ -80,6 +80,8 @@ bool any_isEqual(struct Any* obj, struct Any* other) {
             return _false(obj, other);
         case T_Integer:
             return integer_isEqual((struct D_Integer*)obj, (struct D_Integer*)other);
+        case T_Iterator:
+            return _false(obj, other);
         case T_Let:
             return _false(obj, other);
         case T_LetIn:

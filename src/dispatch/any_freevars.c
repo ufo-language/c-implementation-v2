@@ -104,6 +104,9 @@ void any_freeVars(struct Any* obj, struct D_Set* freeVars, struct Evaluator* eto
         case T_Integer:
             _simpleMatch(obj, freeVars, etor);
             break;
+        case T_Iterator:
+            _simpleMatch(obj, freeVars, etor);
+            break;
         case T_Let:
             let_freeVars((struct E_Let*)obj, freeVars, etor);
             break;

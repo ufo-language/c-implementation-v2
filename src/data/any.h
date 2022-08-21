@@ -28,6 +28,7 @@ enum TypeId {
     T_Identifier,
     T_If,
     T_Integer,
+    T_Iterator,
     T_Let,
     T_LetIn,
     T_LetRec,
