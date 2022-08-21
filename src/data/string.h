@@ -31,6 +31,6 @@ void string_show(struct D_String* self, FILE* fd);
 struct D_List* string_split(struct D_String* self, char c);
 void string_unescapify(struct D_String* self, FILE* fd);
 size_t string_sizeOf(struct D_String* self);
-size_t string_structSize(void);
+size_t string_structSize(enum TypeId typeId);
 
 #endif

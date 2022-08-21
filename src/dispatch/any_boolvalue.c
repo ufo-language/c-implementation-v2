@@ -20,6 +20,7 @@
 #include "data/symbol.h"
 #include "data/term.h"
 #include "data/unsigned.h"
+#include "dispatch/methodtable.h"
 
 static bool _error(struct Any* obj) {
     fprintf(stderr, "ERROR: call to 'any_boolValue' is not valid for type ID %d (%0x)\n", obj->typeId, obj->typeId);
@@ -38,6 +39,14 @@ static bool _true(struct Any* obj) {
 }
 
 bool any_boolValue(struct Any* obj) {
+    struct Methods* methods = METHOD_TABLE[obj->typeId];
+    if (methods != NULL) {
+        bool (*method)(struct Any*) = methods->m_boolValue;
+        if (method != NULL) {
+            return method(obj);
+        }
+    }
+    printf("%s no method to handle typeId %d %s\n", __func__, obj->typeId, TYPE_NAMES[obj->typeId]);
     switch (obj->typeId) {
         case T_NULL:
             return _error(obj);

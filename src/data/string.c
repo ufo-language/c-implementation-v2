@@ -8,6 +8,7 @@
 #include "data/queue.h"
 #include "data/string.h"
 #include "data/symbol.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "gc/gc.h"
 #include "main/globals.h"
@@ -19,6 +20,20 @@ struct D_String {
     int count;
     char* chars;
 };
+
+struct Methods* string_methodSetup(void) {
+    printf("%s caled\n", __func__);
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_boolValue = (bool (*)(struct Any*))string_boolValue;
+    methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))string_compare;
+    methods->m_display = (void (*)(struct Any*, FILE*))string_display;
+    methods->m_free = (void (*)(struct Any*))string_free;
+    methods->m_show = (void (*)(struct Any*, FILE*))string_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))string_sizeOf;
+    methods->m_structSize = string_structSize;
+    return methods;
+}
 
 struct D_String* string_fromChar(char c) {
     char cs[2] = {c, 0};
@@ -63,6 +78,7 @@ int string_count(struct D_String* self) {
 }
 
 void string_display(struct D_String* self, FILE* fd) {
+    printf("%s called\n", __func__);
     fputs(self->chars, fd);
 }
 
@@ -202,6 +218,7 @@ size_t string_sizeOf(struct D_String* self) {
     return sizeof(self) + sizeof(self->chars);
 }
 
-size_t string_structSize(void) {
+size_t string_structSize(enum TypeId typeId) {
+    (void)typeId;
     return sizeof(struct D_String);
 }

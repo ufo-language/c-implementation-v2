@@ -10,6 +10,7 @@
 #include "data/set.h"
 #include "data/term.h"
 #include "data/tuple.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/abstraction.h"
 #include "expr/apply.h"
@@ -41,6 +42,15 @@ static void _self(struct Any* obj, struct Evaluator* etor) {
 }
 
 void any_eval(struct Any* obj, struct Evaluator* etor) {
+    struct Methods* methods = METHOD_TABLE[obj->typeId];
+    if (methods != NULL) {
+        void (*method)(struct Any*, struct Evaluator*) = methods->m_eval;
+        if (method != NULL) {
+            method(obj, etor);
+            return;
+        }
+    }
+    printf("%s no method to handle typeId %d %s\n", __func__, obj->typeId, TYPE_NAMES[obj->typeId]);
     switch (obj->typeId) {
         case T_NULL:
             _error(obj, etor);

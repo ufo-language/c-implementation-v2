@@ -1,3 +1,6 @@
+#if !defined(METHODTABLE_H)
+#define METHODTABLE
+
 #include <stdbool.h>  // for bool
 #include <stdio.h>    // for FILE
 #include <stdlib.h>   // for size_t
@@ -9,7 +12,7 @@ struct D_Set;
 struct D_Triple;
 struct Evaluator;
 
-struct MethodTable {
+struct Methods {
     bool             (*m_boolValue)(struct Any* self);
     int              (*m_compare)(struct Any* self, struct Any* other, struct Evaluator* etor);
     struct Any*      (*m_deepCopy)(struct Any* self);
@@ -23,8 +26,12 @@ struct MethodTable {
     struct D_Triple* (*m_match)(struct Any* self, struct Any* other, struct D_Triple* bindings);
     void             (*m_show)(struct Any* self, FILE* fp);
     size_t           (*m_sizeOf)(struct Any* self);
-    size_t           (*m_structSize)(struct Any* self);
+    size_t           (*m_structSize)(enum TypeId typeId);
     struct Any*      (*m_typeOf)(struct Any* self);
 };
 
-void methodTable_setupDefaults(struct MethodTable* methodTable);
+extern struct Methods* METHOD_TABLE[];
+
+void methodTable_setupDefaults(struct Methods* methods);
+
+#endif

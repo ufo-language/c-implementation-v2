@@ -3,6 +3,7 @@
 #include "data/any.h"
 #include "data/string.h"
 #include "data/unsigned.h"
+#include "dispatch/methodtable.h"
         
 static void _error(struct Any* obj, FILE* fp) {
     (void)fp;
@@ -11,6 +12,15 @@ static void _error(struct Any* obj, FILE* fp) {
 }
 
 void any_display(struct Any* obj, FILE* fp) {
+    struct Methods* methods = METHOD_TABLE[obj->typeId];
+    if (methods != NULL) {
+        void (*method)(struct Any*, FILE* fp) = methods->m_display;
+        if (method != NULL) {
+            method(obj, fp);
+            return;
+        }
+    }
+    printf("%s no method to handle typeId %d %s\n", __func__, obj->typeId, TYPE_NAMES[obj->typeId]);
     if (obj == NULL) {
         fputs("NULL", fp);
         return;

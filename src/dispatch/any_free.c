@@ -26,6 +26,7 @@
 #include "data/triple.h"
 #include "data/tuple.h"
 #include "data/unsigned.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/abstraction.h"
 #include "expr/apply.h"
@@ -54,6 +55,15 @@ static bool _error(struct Any* obj) {
 }
 
 void any_free(struct Any* obj) {
+    struct Methods* methods = METHOD_TABLE[obj->typeId];
+    if (methods != NULL) {
+        void (*method)(struct Any*) = methods->m_free;
+        if (method != NULL) {
+            method(obj);
+            return;
+        }
+    }
+    printf("%s no method to handle typeId %d %s\n", __func__, obj->typeId, TYPE_NAMES[obj->typeId]);
     switch (obj->typeId) {
         case T_NULL:
             _error(obj);

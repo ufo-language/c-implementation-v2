@@ -69,7 +69,6 @@ struct MethodTable;
 
 struct Any {
     enum TypeId typeId;
-    struct MethodTable* methodTable;
     struct Any* next;
     bool isMarked;
 };

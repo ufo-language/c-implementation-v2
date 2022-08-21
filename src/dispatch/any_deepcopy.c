@@ -11,6 +11,7 @@
 #include "data/set.h"
 #include "data/term.h"
 #include "data/tuple.h"
+#include "dispatch/methodtable.h"
 #include "expr/abstraction.h"
 #include "expr/apply.h"
 #include "expr/binop.h"
@@ -30,6 +31,14 @@ static struct Any* _error(struct Any* obj) {
 }
 
 struct Any* any_deepCopy(struct Any* obj) {
+    struct Methods* methods = METHOD_TABLE[obj->typeId];
+    if (methods != NULL) {
+        struct Any* (*method)(struct Any*) = methods->m_deepCopy;
+        if (method != NULL) {
+            return method(obj);
+        }
+    }
+    printf("%s no method to handle typeId %d %s\n", __func__, obj->typeId, TYPE_NAMES[obj->typeId]);
     switch (obj->typeId) {
         case T_NULL:
             return _error(obj);

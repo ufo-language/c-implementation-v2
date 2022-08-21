@@ -9,6 +9,7 @@
 #include "data/term.h"
 #include "data/triple.h"
 #include "data/tuple.h"
+#include "dispatch/methodtable.h"
 #include "expr/identifier.h"
 #include "expr/recordspec.h"
 
@@ -25,6 +26,14 @@ static struct D_Triple* _isEqual(struct Any* obj, struct Any* other, struct D_Tr
 }
 
 struct D_Triple* any_match(struct Any* obj, struct Any* other, struct D_Triple* bindings) {
+    struct Methods* methods = METHOD_TABLE[obj->typeId];
+    if (methods != NULL) {
+        struct D_Triple* (*method)(struct Any*, struct Any*, struct D_Triple*) = methods->m_match;
+        if (method != NULL) {
+            return method(obj, other, bindings);
+        }
+    }
+    printf("%s no method to handle typeId %d %s\n", __func__, obj->typeId, TYPE_NAMES[obj->typeId]);
     switch (obj->typeId) {
         case T_NULL:
             return _error(obj, other, bindings);

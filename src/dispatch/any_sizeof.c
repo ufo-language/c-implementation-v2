@@ -25,6 +25,7 @@
 #include "data/term.h"
 #include "data/triple.h"
 #include "data/tuple.h"
+#include "dispatch/methodtable.h"
 #include "data/unsigned.h"
 #include "etor/evaluator.h"
 #include "expr/abstraction.h"
@@ -56,6 +57,14 @@ static size_t _error(struct Any* obj) {
 }
 
 size_t any_sizeOf(struct Any* obj) {
+    struct Methods* methods = METHOD_TABLE[obj->typeId];
+    if (methods != NULL) {
+        size_t (*method)(struct Any*) = methods->m_sizeOf;
+        if (method != NULL) {
+            return method(obj);
+        }
+    }
+    printf("%s no method to handle typeId %d %s\n", __func__, obj->typeId, TYPE_NAMES[obj->typeId]);
     switch (obj->typeId) {
         case T_NULL:
             return _error(obj);

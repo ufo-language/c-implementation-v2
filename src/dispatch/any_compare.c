@@ -11,11 +11,11 @@
 #include "data/sequence.h"
 #include "data/string.h"
 #include "data/symbol.h"
+#include "dispatch/methodtable.h"
 #include "data/unsigned.h"
 #include "etor/evaluator.h"
 #include "expr/bracketexpr.h"
 #include "expr/identifier.h"
-#include "data/symbol.h"
 
 static int _fail(struct Any* obj, struct Any* other, struct Evaluator* etor) {
     evaluator_throwException(
@@ -28,6 +28,14 @@ static int _fail(struct Any* obj, struct Any* other, struct Evaluator* etor) {
 }
 
 int any_compare(struct Any* obj, struct Any* other, struct Evaluator* etor) {
+    struct Methods* methods = METHOD_TABLE[obj->typeId];
+    if (methods != NULL) {
+        int (*method)(struct Any*, struct Any*, struct Evaluator*) = methods->m_compare;
+        if (method != NULL) {
+            return method(obj, other, etor);
+        }
+    }
+    printf("%s no method to handle typeId %d\n", __func__, obj->typeId);
     switch (obj->typeId) {
         case T_NULL:
             return _fail(obj, other, etor);

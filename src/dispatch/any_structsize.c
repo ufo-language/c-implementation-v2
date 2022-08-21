@@ -26,6 +26,7 @@
 #include "data/triple.h"
 #include "data/tuple.h"
 #include "data/unsigned.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/abstraction.h"
 #include "expr/apply.h"
@@ -47,16 +48,22 @@
 #include "expr/trycatch.h"
 #include "repl/repl.h"
 
-static size_t _error(void) {
-    fprintf(stderr, "ERROR: call to 'any_structSize' called with illegal typeId\n");
+static size_t _error(enum TypeId typeId) {
+    fprintf(stderr, "ERROR: call to 'any_structSize' called with illegal typeId %d\n", typeId);
     exit(1);
     return 0;
 }
 
 size_t any_structSize(enum TypeId typeId) {
+    struct Methods* methods = METHOD_TABLE[typeId];
+    if (methods != NULL) {
+        size_t (*method)(enum TypeId) = methods->m_structSize;
+        if (method != NULL) {
+            return method(typeId);
+        }
+    }
+    printf("%s no method to handle typeId %d %s\n", __func__, typeId, TYPE_NAMES[typeId]);
     switch (typeId) {
-        case T_NULL:
-            return _error();
         case T_Abstraction:
             return abstraction_structSize();
         case T_Address:
@@ -95,8 +102,6 @@ size_t any_structSize(enum TypeId typeId) {
             return if_structSize();
         case T_Integer:
             return integer_structSize();
-        case T_Iterator:
-            return iterator_structSize();
         case T_Let:
             return let_structSize();
         case T_LetIn:
@@ -130,7 +135,7 @@ size_t any_structSize(enum TypeId typeId) {
         case T_Set:
             return set_structSize();
         case T_String:
-            return string_structSize();
+            return string_structSize(typeId);
         case T_StringBuffer:
             return stringBuffer_structSize();
         case T_StringStream:
@@ -147,9 +152,10 @@ size_t any_structSize(enum TypeId typeId) {
             return tuple_structSize();
         case T_Unsigned:
             return unsigned_structSize();
+        case T_NULL:
+        case T_Iterator:
         case T_FINAL:
-            return _error();
         default:
-            return _error();
+            return _error(typeId);
     }
 }

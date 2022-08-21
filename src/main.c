@@ -18,6 +18,7 @@ int PARENT_TO_CHILD[2];
 int CHILD_TO_PARENT[2];
 
 void any_sanityCheck(void);
+void methodTable_setupMethods(void);
 
 int main(int argc, char* argv[]) {
     ARGC = argc;
@@ -43,6 +44,7 @@ int main(int argc, char* argv[]) {
         //ipc_writeString(CHILD_TO_PARENT[1], 5, string);
         any_sanityCheck();
         gc_start();
+        methodTable_setupMethods();
         ufo_start();
         ufo_stop();
         gc_stop();

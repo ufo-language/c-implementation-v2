@@ -13,6 +13,7 @@
 #include "data/symbol.h"
 #include "data/tuple.h"
 #include "data/unsigned.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/identifier.h"
 
@@ -34,6 +35,14 @@ static HashCode _noHash(struct Any* obj, struct Evaluator* etor) {
 }
 
 HashCode any_hashCode(struct Any* obj, struct Evaluator* etor) {
+    struct Methods* methods = METHOD_TABLE[obj->typeId];
+    if (methods != NULL) {
+        HashCode (*method)(struct Any*, struct Evaluator*) = methods->m_hashCode;
+        if (method != NULL) {
+            return method(obj, etor);
+        }
+    }
+    printf("%s no method to handle typeId %d %s\n", __func__, obj->typeId, TYPE_NAMES[obj->typeId]);
     switch (obj->typeId) {
         case T_NULL:
             return _error(obj, etor);

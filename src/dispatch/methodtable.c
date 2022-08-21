@@ -4,7 +4,7 @@
 #include "etor/evaluator.h"
 
 #if 0
-struct MethodTable {
+struct Methods {
     bool             (*m_boolValue)(struct Any* self);
     int              (*m_compare)(struct Any* self, struct Any* other, struct Evaluator* etor);
     struct Any*      (*m_deepCopy)(struct Any* self);
@@ -22,6 +22,8 @@ struct MethodTable {
     struct Any*      (*m_typeOf)(struct Any* self);
 };
 #endif
+
+struct Methods* METHOD_TABLE[T_FINAL + 1] = { NULL };
 
 // These are the default functions for all the methods.
 
@@ -47,9 +49,7 @@ static struct Any* m_deepCopy(struct Any* self) {
 }
 
 static void m_display(struct Any* self, FILE* fp) {
-    (void)fp;
-    fprintf(stderr, "ERROR: call to '%s' is not valid for type ID %d (%0x)\n", __func__, self->typeId, self->typeId);
-    exit(1);
+    any_show(self, fp);
 }
 
 static void m_eval(struct Any* self, struct Evaluator* etor) {
@@ -98,38 +98,38 @@ static void m_show(struct Any* self, FILE* fp) {
 }
 
 static size_t m_sizeOf(struct Any* self) {
-    fprintf(stderr, "ERROR: call to 'any_sizeof' is not valid for type ID %d (%0x)\n", self->typeId, self->typeId);
+    fprintf(stderr, "ERROR: call to '%s' is not valid for type ID %d (%0x)\n", __func__, self->typeId, self->typeId);
     exit(1);
     return 0;
 }
 
-static size_t m_structSize(struct Any* self) {
-    fprintf(stderr, "ERROR: call to 'any_sizeof' is not valid for type ID %d (%0x)\n", self->typeId, self->typeId);
+static size_t m_structSize(enum TypeId typeId) {
+    fprintf(stderr, "ERROR: call to '%s' is not valid for type ID %d (%0x)\n", __func__, typeId, typeId);
     exit(1);
     return 0;
 }
 
 static struct Any* m_typeOf(struct Any* self) {
-    fprintf(stderr, "ERROR: call to 'any_sizeof' is not valid for type ID %d (%0x)\n", self->typeId, self->typeId);
+    fprintf(stderr, "ERROR: call to '%s' is not valid for type ID %d (%0x)\n", __func__, self->typeId, self->typeId);
     exit(1);
     return 0;
 }
 
 // This sets up a method table with default methods.
-void methodTable_setupDefaults(struct MethodTable* methodTable) {
-    methodTable->m_boolValue = m_boolValue;
-    methodTable->m_compare = m_compare;
-    methodTable->m_deepCopy = m_deepCopy;
-    methodTable->m_display = m_display;
-    methodTable->m_eval = m_eval;
-    methodTable->m_free = m_free;
-    methodTable->m_freeVars = m_freeVars;
-    methodTable->m_hashCode = m_hashCode;
-    methodTable->m_isEqual = m_isEqual;
-    methodTable->m_mark = m_mark;
-    methodTable->m_match = m_match;
-    methodTable->m_show = m_show;
-    methodTable->m_sizeOf = m_sizeOf;
-    methodTable->m_structSize = m_structSize;
-    methodTable->m_typeOf = m_typeOf;
+void methodTable_setupDefaults(struct Methods* methods) {
+    methods->m_boolValue = m_boolValue;
+    methods->m_compare = m_compare;
+    methods->m_deepCopy = m_deepCopy;
+    methods->m_display = m_display;
+    methods->m_eval = m_eval;
+    methods->m_free = m_free;
+    methods->m_freeVars = m_freeVars;
+    methods->m_hashCode = m_hashCode;
+    methods->m_isEqual = m_isEqual;
+    methods->m_mark = m_mark;
+    methods->m_match = m_match;
+    methods->m_show = m_show;
+    methods->m_sizeOf = m_sizeOf;
+    methods->m_structSize = m_structSize;
+    methods->m_typeOf = m_typeOf;
 }
