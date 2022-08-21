@@ -7,6 +7,7 @@
 #include "data/array.h"
 #include "data/integer.h"
 #include "data/list.h"
+#include "data/queue.h"
 #include "data/symbol.h"
 #include "etor/evaluator.h"
 #include "expr/apply.h"
@@ -50,6 +51,15 @@ struct D_Array* array_newWith(int count, struct Any* elem) {
 void array_free(struct D_Array* self) {
     free(self->elems);
     free(self);
+}
+
+struct D_Queue* array_asQueue(struct D_Array* self) {
+    struct D_Queue* q = queue_new();
+    struct Any** elems = self->elems;
+    for (int n=0; n<self->count; n++) {
+        queue_enq(q, elems[n]);
+    }
+    return q;
 }
 
 int array_compare(struct D_Array* self, struct D_Array* other, struct Evaluator* etor) {

@@ -7,6 +7,7 @@
 #include "any.h"
 
 struct D_Array;
+struct D_Queue;
 struct D_Set;
 struct Evaluator;
 
@@ -15,6 +16,7 @@ struct D_Array* array_newN(int n, ...);
 struct D_Array* array_newWith(int count, struct Any* elem);
 void array_free(struct D_Array* self);
 
+struct D_Queue* array_asQueue(struct D_Array* self);
 int array_compare(struct D_Array* self, struct D_Array* other, struct Evaluator* etor);
 bool array_contains(struct D_Array* self, struct Any* elem);
 struct D_Array* array_copy(struct D_Array* self);

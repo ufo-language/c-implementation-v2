@@ -14,6 +14,7 @@
 
 #define NS_NAME "array"
 
+static void _asQueue(struct Evaluator* etor, struct D_List* args);
 static void _contains(struct Evaluator* etor, struct D_List* args);
 static void _count(struct Evaluator* etor, struct D_List* args);
 static void _delete(struct Evaluator* etor, struct D_List* args);
@@ -32,6 +33,7 @@ void ns_array_defineAll(struct D_HashTable* env) {
     struct E_Identifier* nsName = identifier_new(NS_NAME);
     struct D_HashTable* nsHash = hashTable_new();
     hashTable_put_unsafe(env, (struct Any*)nsName, (struct Any*)nsHash);
+    primitive_define(nsHash, "asQueue", _asQueue);
     primitive_define(nsHash, "contains", _contains);
     primitive_define(nsHash, "count", _count);
     primitive_define(nsHash, "delete", _delete);
@@ -45,6 +47,15 @@ void ns_array_defineAll(struct D_HashTable* env) {
     primitive_define(nsHash, "set", _set);
     primitive_define(nsHash, "selectionSort", _selectionSort);
     primitive_define(nsHash, "shuffle", _shuffle);
+}
+
+static void _asQueue(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_Array};
+    struct Any* arrayObj;
+    struct Any** paramVars[] = {&arrayObj};
+    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
+    struct D_Array* array = (struct D_Array*)arrayObj;
+    evaluator_pushObj(etor, (struct Any*)array_asQueue(array));
 }
 
 static void _contains(struct Evaluator* etor, struct D_List* args) {
