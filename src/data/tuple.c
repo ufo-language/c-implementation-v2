@@ -5,6 +5,7 @@
 
 #include "data/any.h"
 #include "data/tuple.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "gc/gc.h"
 #include "main/globals.h"
@@ -16,6 +17,24 @@ struct D_Tuple {
     int count;
     struct Any** elems;
 };
+
+struct Methods* tuple_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    //methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))tuple_compare;
+    methods->m_deepCopy = (struct Any* (*)(struct Any*))tuple_deepCopy;
+    methods->m_eval = (void (*)(struct Any*, struct Evaluator*))tuple_eval;
+    methods->m_free = (void (*)(struct Any*))tuple_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))tuple_freeVars;
+    methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))tuple_hashCode;
+    methods->m_isEqual = (bool (*)(struct Any*, struct Any*))tuple_isEqual;
+    methods->m_markChildren = (void (*)(struct Any* self))tuple_markChildren;
+    methods->m_match = (struct D_Triple* (*)(struct Any*, struct Any*, struct D_Triple*))tuple_match;
+    methods->m_show = (void (*)(struct Any*, FILE*))tuple_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))tuple_sizeOf;
+    methods->m_structSize = tuple_structSize;
+    return methods;
+}
 
 struct D_Tuple* tuple_new(int count) {
     struct D_Tuple* self = (struct D_Tuple*)gc_alloc(T_Tuple);

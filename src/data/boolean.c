@@ -4,6 +4,7 @@
 
 #include "data/any.h"
 #include "data/boolean.h"
+#include "dispatch/methodtable.h"
 #include "gc/gc.h"
 #include "main/globals.h"
 #include "main/typedefs.h"
@@ -13,6 +14,27 @@ struct D_Boolean {
     struct Any obj;
     bool value;
 };
+
+bool boolean_boolValue(struct D_Boolean* self);
+int boolean_compare(struct D_Boolean* self, struct D_Boolean* other, struct Evaluator* etor);
+void boolean_free(struct D_Boolean* self);
+HashCode boolean_hashCode(struct D_Boolean* self, struct Evaluator* etor);
+void boolean_show(struct D_Boolean* self, FILE* fp);
+size_t boolean_sizeOf(struct D_Boolean* self);
+size_t boolean_structSize(void);
+
+struct Methods* boolean_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_boolValue = (bool (*)(struct Any*))boolean_boolValue;
+    methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))boolean_compare;
+    methods->m_free = (void (*)(struct Any*))boolean_free;
+    methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))boolean_hashCode;
+    methods->m_show = (void (*)(struct Any*, FILE*))boolean_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))boolean_sizeOf;
+    methods->m_structSize = boolean_structSize;
+    return methods;
+}
 
 struct D_Boolean* boolean_from(bool value) {
     return value ? TRUE : FALSE;

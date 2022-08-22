@@ -7,9 +7,11 @@
 #include "data/integer.h"
 #include "data/list.h"
 #include "data/queue.h"
+#include "data/record.h"
 #include "data/symbol.h"
 #include "data/term.h"
 #include "data/triple.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
 #include "expr/identifier.h"
@@ -22,6 +24,22 @@ struct D_Record {
     struct E_RecordDefinition* recordDefinition;
     struct D_Array* values;
 };
+
+struct Methods* record_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_deepCopy = (struct Any* (*)(struct Any*))record_deepCopy;
+    //methods->m_eval = (void (*)(struct Any*, struct Evaluator*))record_eval;
+    methods->m_free = (void (*)(struct Any*))record_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))record_freeVars;
+    methods->m_isEqual = (bool (*)(struct Any*, struct Any*))record_isEqual;
+    methods->m_markChildren = (void (*)(struct Any* self))record_markChildren;
+    methods->m_match = (struct D_Triple* (*)(struct Any*, struct Any*, struct D_Triple*))record_match;
+    methods->m_show = (void (*)(struct Any*, FILE*))record_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))record_sizeOf;
+    methods->m_structSize = record_structSize;
+    return methods;
+}
 
 struct D_Record* record_new(struct E_RecordDefinition* recordDefinition, struct D_Array* values) {
     struct D_Record* self = (struct D_Record*)gc_alloc(T_Record);

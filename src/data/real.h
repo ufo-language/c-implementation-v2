@@ -4,6 +4,9 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#include "any.h"
+#include "dispatch/methodtable.h"
+
 struct D_Real;
 struct Evaluator;
 

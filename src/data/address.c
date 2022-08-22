@@ -4,6 +4,7 @@
 #include "data/address.h"
 #include "data/address.h"
 #include "data/any.h"
+#include "dispatch/methodtable.h"
 #include "gc/gc.h"
 #include "utils/hash.h"
 #include "main/typedefs.h"
@@ -12,6 +13,31 @@ struct D_Address* address_new(void* value) {
     struct D_Address* self = (struct D_Address*)gc_alloc(T_Address); 
     self->value = value;
     return self;
+}
+
+#if 0
+bool address_boolValue(struct D_Address* self);
+int address_compare(struct D_Address* self, struct D_Address* other, struct Evaluator* etor);
+void address_free(struct D_Address* self);
+HashCode address_hashCode(struct D_Address* self, struct Evaluator* etor);
+bool address_isEqual(struct D_Address* self, struct D_Address* other);
+void address_show(struct D_Address* self, FILE* fp);
+size_t address_sizeOf(struct D_Address* self);
+size_t address_structSize(void);
+#endif
+
+struct Methods* address_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_boolValue = (bool (*)(struct Any*))address_boolValue;
+    methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))address_compare;
+    methods->m_free = (void (*)(struct Any*))address_free;
+    methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))address_hashCode;
+    methods->m_isEqual = (bool (*)(struct Any*, struct Any*))address_isEqual;
+    methods->m_show = (void (*)(struct Any*, FILE*))address_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))address_sizeOf;
+    methods->m_structSize = address_structSize;
+    return methods;
 }
 
 void address_free(struct D_Address* self) {

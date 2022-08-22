@@ -7,6 +7,7 @@
 #include "data/integer.h"
 #include "data/sequence.h"
 #include "data/symbol.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "gc/gc.h"
 #include "main/globals.h"
@@ -19,6 +20,20 @@ struct D_Sequence {
     int to;
     int by;
 };
+
+struct Methods* sequence_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_boolValue = (bool (*)(struct Any*))sequence_boolValue;
+    methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))sequence_compare;
+    methods->m_free = (void (*)(struct Any*))sequence_free;
+    methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))sequence_hashCode;
+    methods->m_isEqual = (bool (*)(struct Any*, struct Any*))sequence_isEqual;
+    methods->m_show = (void (*)(struct Any*, FILE*))sequence_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))sequence_sizeOf;
+    methods->m_structSize = sequence_structSize;
+    return methods;
+}
 
 struct D_Sequence* sequence_new(int from, int to, int by, struct Evaluator* etor) {
     if (by == 0) {

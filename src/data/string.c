@@ -192,8 +192,7 @@ size_t string_sizeOf(struct D_String* self) {
     return sizeof(self) + sizeof(self->chars);
 }
 
-size_t string_structSize(enum TypeId typeId) {
-    (void)typeId;
+size_t string_structSize(void) {
     return sizeof(struct D_String);
 }
 

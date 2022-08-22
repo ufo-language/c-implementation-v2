@@ -1,5 +1,5 @@
 #if !defined(METHODTABLE_H)
-#define METHODTABLE
+#define METHODTABLE_H
 
 #include <stdbool.h>  // for bool
 #include <stdio.h>    // for FILE
@@ -22,11 +22,11 @@ struct Methods {
     void             (*m_freeVars)(struct Any* self, struct D_Set* freeVars, struct Evaluator* etor);
     HashCode         (*m_hashCode)(struct Any* self, struct Evaluator* etor);
     bool             (*m_isEqual)(struct Any* self, struct Any* other);
-    void             (*m_mark)(struct Any* self);
+    void             (*m_markChildren)(struct Any* self);
     struct D_Triple* (*m_match)(struct Any* self, struct Any* other, struct D_Triple* bindings);
     void             (*m_show)(struct Any* self, FILE* fp);
     size_t           (*m_sizeOf)(struct Any* self);
-    size_t           (*m_structSize)(enum TypeId typeId);
+    size_t           (*m_structSize)(void);
     struct Any*      (*m_typeOf)(struct Any* self);
 };
 

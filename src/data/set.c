@@ -8,6 +8,7 @@
 #include "data/hashtable.h"
 #include "data/integer.h"
 #include "data/set.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
 #include "gc/gc.h"
@@ -17,6 +18,23 @@ struct D_Set {
     struct Any obj;
     struct D_HashTable* hash;
 };
+
+struct Methods* set_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_boolValue = (bool (*)(struct Any*))set_boolValue;
+    methods->m_deepCopy = (struct Any* (*)(struct Any*))set_deepCopy;
+    methods->m_eval = (void (*)(struct Any*, struct Evaluator*))set_eval;
+    methods->m_free = (void (*)(struct Any*))set_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))set_freeVars;
+    methods->m_isEqual = (bool (*)(struct Any*, struct Any*))set_isEqual;
+    methods->m_markChildren = (void (*)(struct Any* self))set_markChildren;
+    //methods->m_match = (struct D_Triple* (*)(struct Any*, struct Any*, struct D_Triple*))set_match;
+    methods->m_show = (void (*)(struct Any*, FILE*))set_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))set_sizeOf;
+    methods->m_structSize = set_structSize;
+    return methods;
+}
 
 struct D_Set* set_new(void) {
     struct D_Set* self = (struct D_Set*)gc_alloc(T_Set);

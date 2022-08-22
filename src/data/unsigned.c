@@ -3,6 +3,7 @@
 
 #include "data/any.h"
 #include "data/unsigned.h"
+#include "dispatch/methodtable.h"
 #include "gc/gc.h"
 #include "main/typedefs.h"
 #include "utils/hash.h"
@@ -11,6 +12,20 @@ struct D_Unsigned {
     struct Any obj;
     size_t value;
 };
+
+struct Methods* unsigned_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_boolValue = (bool (*)(struct Any*))unsigned_boolValue;
+    methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))unsigned_compare;
+    methods->m_free = (void (*)(struct Any*))unsigned_free;
+    methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))unsigned_hashCode;
+    methods->m_isEqual = (bool (*)(struct Any*, struct Any*))unsigned_isEqual;
+    methods->m_show = (void (*)(struct Any*, FILE*))unsigned_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))unsigned_sizeOf;
+    methods->m_structSize = unsigned_structSize;
+    return methods;
+}
 
 struct D_Unsigned* unsigned_new(size_t value) {
     struct D_Unsigned* self = (struct D_Unsigned*)gc_alloc(T_Unsigned);

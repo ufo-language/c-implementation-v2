@@ -11,6 +11,7 @@
 #include "data/primitive.h"
 #include "data/string.h"
 #include "data/symbol.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/identifier.h"
 #include "gc/gc.h"
@@ -29,6 +30,21 @@ union FunctionPointerUnion {
     //void* pointer;
     HashCode hashCode;
 };
+
+void primitive_free(struct D_Primitive* self);
+void primitive_show(struct D_Primitive* self, FILE* fp);
+size_t primitive_sizeOf(struct D_Primitive* self);
+size_t primitive_structSize(void);
+
+struct Methods* primitive_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_free = (void (*)(struct Any*))primitive_free;
+    methods->m_show = (void (*)(struct Any*, FILE*))primitive_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))primitive_sizeOf;
+    methods->m_structSize = primitive_structSize;
+    return methods;
+}
 
 void primitive_argCountException(int nParams, struct D_List* argList, struct Evaluator* etor) {
     struct D_Array* exn = array_newN(6,

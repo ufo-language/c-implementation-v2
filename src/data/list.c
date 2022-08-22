@@ -9,6 +9,7 @@
 #include "data/list.h"
 #include "data/queue.h"
 #include "data/symbol.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
 #include "gc/gc.h"
@@ -19,6 +20,24 @@ struct D_List {
     struct Any* first;
     struct Any* rest;
 };
+
+struct Methods* list_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_boolValue = (bool (*)(struct Any*))list_boolValue;
+    methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))list_compare;
+    methods->m_deepCopy = (struct Any* (*)(struct Any*))list_deepCopy;
+    methods->m_eval = (void (*)(struct Any*, struct Evaluator*))list_eval;
+    methods->m_free = (void (*)(struct Any*))list_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))list_freeVars;
+    methods->m_isEqual = (bool (*)(struct Any*, struct Any*))list_isEqual;
+    methods->m_markChildren = (void (*)(struct Any* self))list_markChildren;
+    methods->m_match = (struct D_Triple* (*)(struct Any*, struct Any*, struct D_Triple*))list_match;
+    methods->m_show = (void (*)(struct Any*, FILE*))list_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))list_sizeOf;
+    methods->m_structSize = list_structSize;
+    return methods;
+}
 
 struct D_List* list_new(struct Any* first, struct Any* rest) {
     struct D_List* self = (struct D_List*)gc_alloc(T_List);

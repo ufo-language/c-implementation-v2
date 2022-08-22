@@ -5,6 +5,7 @@
 #include "data/any.h"
 #include "data/hashtable.h"
 #include "data/symbol.h"
+#include "dispatch/methodtable.h"
 #include "gc/gc.h"
 #include "data/triple.h"
 
@@ -17,8 +18,21 @@ struct D_Triple {
 
 extern struct D_Symbol* GLOBAL_ENV;
 
-#include <assert.h>
-#include "main/globals.h"
+//#include "main/globals.h"
+
+struct Methods* triple_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_free = (void (*)(struct Any*))triple_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))triple_freeVars;
+    methods->m_isEqual = (bool (*)(struct Any*, struct Any*))triple_isEqual;
+    methods->m_markChildren = (void (*)(struct Any* self))triple_markChildren;
+    methods->m_match = (struct D_Triple* (*)(struct Any*, struct Any*, struct D_Triple*))triple_match;
+    methods->m_show = (void (*)(struct Any*, FILE*))triple_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))triple_sizeOf;
+    methods->m_structSize = triple_structSize;
+    return methods;
+}
 
 struct D_Triple* triple_new(struct Any* first, struct Any* second, struct D_Triple* next) {
     struct D_Triple* self = (struct D_Triple*)gc_alloc(T_Triple);

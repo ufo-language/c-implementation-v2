@@ -5,6 +5,7 @@
 #include "data/any.h"
 #include "data/array.h"
 #include "data/set.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
 #include "gc/gc.h"
@@ -17,6 +18,24 @@ struct D_Binding {
     struct Any* key;
     struct Any* value;
 };
+
+struct Methods* binding_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))binding_compare;
+    methods->m_deepCopy = (struct Any* (*)(struct Any*))binding_deepCopy;
+    methods->m_eval = (void (*)(struct Any*, struct Evaluator*))binding_eval;
+    methods->m_free = (void (*)(struct Any*))binding_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))binding_freeVars;
+    methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))binding_hashCode;
+    methods->m_isEqual = (bool (*)(struct Any*, struct Any*))binding_isEqual;
+    methods->m_markChildren = (void (*)(struct Any* self))binding_markChildren;
+    methods->m_match = (struct D_Triple* (*)(struct Any*, struct Any*, struct D_Triple*))binding_match;
+    methods->m_show = (void (*)(struct Any*, FILE*))binding_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))binding_sizeOf;
+    methods->m_structSize = binding_structSize;
+    return methods;
+}
 
 struct D_Binding* binding_new(struct Any* key, struct Any* value) {
     struct D_Binding* self = (struct D_Binding*)gc_alloc(T_Binding);

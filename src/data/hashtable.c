@@ -6,6 +6,7 @@
 #include "data/hashtable.h"
 #include "data/integer.h"
 #include "data/set.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
 #include "gc/gc.h"
@@ -27,6 +28,26 @@ struct D_HashTable {
     int nBuckets;
     int loadingFactor;
 };
+
+// method table
+
+struct Methods* hashTable_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_boolValue = (bool (*)(struct Any*))hashTable_boolValue;
+    methods->m_deepCopy = (struct Any* (*)(struct Any*))hashTable_deepCopy;
+    methods->m_eval = (void (*)(struct Any*, struct Evaluator*))hashTable_eval;
+    methods->m_free = (void (*)(struct Any*))hashTable_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))hashTable_freeVars;
+    methods->m_isEqual = (bool (*)(struct Any*, struct Any*))hashTable_isEqual;
+    methods->m_markChildren = (void (*)(struct Any* self))hashTable_markChildren;
+    methods->m_show = (void (*)(struct Any*, FILE*))hashTable_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))hashTable_sizeOf;
+    methods->m_structSize = hashTable_structSize;
+    return methods;
+}
+
+// private functions
 
 static struct D_HashTable* _fold(struct D_HashTable* self, struct D_HashTable* (*func)(struct BucketLink* link, struct D_HashTable* hash, struct Evaluator* etor), struct D_HashTable* newHash, struct Evaluator* etor);
 static void _forEach(struct D_HashTable* self, void (*func)(struct BucketLink* link));

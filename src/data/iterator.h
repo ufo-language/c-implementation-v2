@@ -15,7 +15,7 @@ bool iterator_boolValue(struct D_Iterator* self);
 void iterator_markChildren(struct D_Iterator* self);
 void iterator_show(struct D_Iterator* self, FILE* fp);
 size_t iterator_sizeOf(struct D_Iterator* self);
-size_t iterator_structSize(enum TypeId typeId);
+size_t iterator_structSize(void);
 struct Any* iterator_typeOf(struct Any* self);
 
 #endif

@@ -18,6 +18,7 @@ struct D_Record* record_new(struct E_RecordDefinition* recordDefinition, struct 
 void record_free(struct D_Record* self);
 
 void record_eval(struct D_Record* self, struct Evaluator* etor);
+void record_free(struct D_Record* self);
 void record_freeVars(struct D_Record* self, struct D_Set* freeVars, struct Evaluator* etor);
 struct D_Record* record_deepCopy(struct D_Record* self);
 struct E_RecordDefinition* record_getDefinition(struct D_Record* self);

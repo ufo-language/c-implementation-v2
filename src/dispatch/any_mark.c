@@ -54,7 +54,7 @@ void any_mark(struct Any* obj) {
 #if 1
     struct Methods* methods = METHOD_TABLE[obj->typeId];
     if (methods != NULL) {
-        void (*method)(struct Any*) = methods->m_mark;
+        void (*method)(struct Any*) = methods->m_markChildren;
         if (method != NULL) {
             method(obj);
             return;

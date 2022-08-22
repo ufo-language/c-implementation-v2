@@ -58,9 +58,9 @@ size_t any_structSize(enum TypeId typeId) {
 #if 1
     struct Methods* methods = METHOD_TABLE[typeId];
     if (methods != NULL) {
-        size_t (*method)(enum TypeId) = methods->m_structSize;
+        size_t (*method)(void) = methods->m_structSize;
         if (method != NULL) {
-            return method(typeId);
+            return method();
         }
     }
     printf("%s no method to handle typeId %d %s\n", __func__, typeId, TYPE_NAMES[typeId]);
@@ -99,7 +99,7 @@ size_t any_structSize(enum TypeId typeId) {
         case T_HashTable:
             return hashTable_structSize();
         case T_Identifier:
-            return identifier_structSize(typeId);
+            return identifier_structSize();
         case T_If:
             return if_structSize();
         case T_Integer:
@@ -137,13 +137,13 @@ size_t any_structSize(enum TypeId typeId) {
         case T_Set:
             return set_structSize();
         case T_String:
-            return string_structSize(typeId);
+            return string_structSize();
         case T_StringBuffer:
             return stringBuffer_structSize();
         case T_StringStream:
             return stringStream_structSize();
         case T_Symbol:
-            return symbol_structSize(typeId);
+            return symbol_structSize();
         case T_Term:
             return term_structSize();
         case T_Triple:

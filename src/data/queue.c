@@ -5,6 +5,7 @@
 #include "data/integer.h"
 #include "data/list.h"
 #include "data/symbol.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
 #include "gc/gc.h"
@@ -18,6 +19,24 @@ struct D_Queue {
     struct D_List* head;
     struct D_List* tail;
 };
+
+struct Methods* queue_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_boolValue = (bool (*)(struct Any*))queue_boolValue;
+    methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))queue_compare;
+    methods->m_deepCopy = (struct Any* (*)(struct Any*))queue_deepCopy;
+    methods->m_eval = (void (*)(struct Any*, struct Evaluator*))queue_eval;
+    methods->m_free = (void (*)(struct Any*))queue_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))queue_freeVars;
+    methods->m_isEqual = (bool (*)(struct Any*, struct Any*))queue_isEqual;
+    methods->m_markChildren = (void (*)(struct Any* self))queue_markChildren;
+    methods->m_match = (struct D_Triple* (*)(struct Any*, struct Any*, struct D_Triple*))queue_match;
+    methods->m_show = (void (*)(struct Any*, FILE*))queue_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))queue_sizeOf;
+    methods->m_structSize = queue_structSize;
+    return methods;
+}
 
 struct D_Queue* queue_new(void) {
     struct D_Queue* self = (struct D_Queue*)gc_alloc(T_Queue);

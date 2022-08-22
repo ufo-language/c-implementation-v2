@@ -9,6 +9,7 @@
 #include "data/list.h"
 #include "data/queue.h"
 #include "data/symbol.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/apply.h"
 #include "expr/continuation.h"
@@ -21,6 +22,27 @@ struct D_Array {
     int count;
     struct Any** elems;
 };
+
+bool array_boolValue(struct D_Array* self);
+
+struct Methods* array_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_boolValue = (bool (*)(struct Any*))array_boolValue;
+    methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))array_compare;
+    methods->m_deepCopy = (struct Any* (*)(struct Any*))array_deepCopy;
+    methods->m_eval = (void (*)(struct Any*, struct Evaluator*))array_eval;
+    methods->m_free = (void (*)(struct Any*))array_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))array_freeVars;
+    methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))array_hashCode;
+    methods->m_isEqual = (bool (*)(struct Any*, struct Any*))array_isEqual;
+    methods->m_markChildren = (void (*)(struct Any* self))array_markChildren;
+    methods->m_match = (struct D_Triple* (*)(struct Any*, struct Any*, struct D_Triple*))array_match;
+    methods->m_show = (void (*)(struct Any*, FILE*))array_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))array_sizeOf;
+    methods->m_structSize = array_structSize;
+    return methods;
+}
 
 struct D_Array* array_new(int count) {
     return array_newWith(count, (struct Any*)NIL);
@@ -60,6 +82,10 @@ struct D_Queue* array_asQueue(struct D_Array* self) {
         queue_enq(q, elems[n]);
     }
     return q;
+}
+
+bool array_boolValue(struct D_Array* self) {
+    return self->count != 0;
 }
 
 int array_compare(struct D_Array* self, struct D_Array* other, struct Evaluator* etor) {

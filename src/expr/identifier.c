@@ -126,7 +126,6 @@ size_t identifier_sizeOf(struct E_Identifier* self) {
     return sizeof(self);
 }
 
-size_t identifier_structSize(enum TypeId typeId) {
-    (void)typeId;
+size_t identifier_structSize() {
     return sizeof(struct E_Identifier);
 }

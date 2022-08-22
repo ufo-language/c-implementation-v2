@@ -14,11 +14,11 @@ struct Methods {
     void             (*m_freeVars)(struct Any* self, struct D_Set* freeVars, struct Evaluator* etor);
     HashCode         (*m_hashCode)(struct Any* self, struct Evaluator* etor);
     bool             (*m_isEqual)(struct Any* self, struct Any* other);
-    void             (*m_mark)(struct Any* self);
+    void             (*m_markChildren)(struct Any* self);
     struct D_Triple* (*m_match)(struct Any* self, struct Any* other, struct D_Triple* bindings);
     void             (*m_show)(struct Any* self, FILE* fp);
     size_t           (*m_sizeOf)(struct Any* self);
-    size_t           (*m_structSize)(enum TypeId typeId);
+    size_t           (*m_structSize)(void);
     struct Any*      (*m_typeOf)(struct Any* self);
 };
 #endif
@@ -81,7 +81,7 @@ static bool m_isEqual(struct Any* self, struct Any* other) {
     return false;
 }
 
-static void m_mark(struct Any* self) {
+static void m_markChildren(struct Any* self) {
     (void)self;
 }
 
@@ -101,16 +101,15 @@ static size_t m_sizeOf(struct Any* self) {
     return 0;
 }
 
-static size_t m_structSize(enum TypeId typeId) {
-    fprintf(stderr, "ERROR: call to '%s' is not valid for type ID %d (%0x)\n", __func__, typeId, typeId);
+static size_t m_structSize(void) {
+    fprintf(stderr, "ERROR: call to '%s' is not valid, no TypeId information\n", __func__);
     exit(1);
     return 0;
 }
 
 static struct Any* m_typeOf(struct Any* self) {
-    fprintf(stderr, "ERROR: call to '%s' is not valid for type ID %d (%0x)\n", __func__, self->typeId, self->typeId);
-    exit(1);
-    return 0;
+    char* typeName = TYPE_NAMES[self->typeId];
+    return (struct Any*)symbol_new(typeName);
 }
 
 // This sets up a method table with default methods.
@@ -124,7 +123,7 @@ void methodTable_setupDefaults(struct Methods* methods) {
     methods->m_freeVars = m_freeVars;
     methods->m_hashCode = m_hashCode;
     methods->m_isEqual = m_isEqual;
-    methods->m_mark = m_mark;
+    methods->m_markChildren = m_markChildren;
     methods->m_match = m_match;
     methods->m_show = m_show;
     methods->m_sizeOf = m_sizeOf;

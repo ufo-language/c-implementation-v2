@@ -7,6 +7,7 @@
 #include "data/set.h"
 #include "data/symbol.h"
 #include "data/term.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
 #include "gc/gc.h"
@@ -16,6 +17,25 @@ struct D_Term {
     struct D_Symbol* name;
     struct D_Array* elems;
 };
+
+struct Methods* term_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_boolValue = (bool (*)(struct Any*))term_boolValue;
+    //methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))term_compare;
+    methods->m_deepCopy = (struct Any* (*)(struct Any*))term_deepCopy;
+    methods->m_eval = (void (*)(struct Any*, struct Evaluator*))term_eval;
+    methods->m_free = (void (*)(struct Any*))term_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))term_freeVars;
+    //methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))term_hashCode;
+    methods->m_isEqual = (bool (*)(struct Any*, struct Any*))term_isEqual;
+    methods->m_markChildren = (void (*)(struct Any* self))term_markChildren;
+    methods->m_match = (struct D_Triple* (*)(struct Any*, struct Any*, struct D_Triple*))term_match;
+    methods->m_show = (void (*)(struct Any*, FILE*))term_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))term_sizeOf;
+    methods->m_structSize = term_structSize;
+    return methods;
+}
 
 struct D_Term* term_new(struct D_Symbol* name, struct D_Array* elems) {
     struct D_Term* self = (struct D_Term*)gc_alloc(T_Term);

@@ -10,6 +10,7 @@
 #include "data/string.h"
 #include "data/stringbuffer.h"
 #include "data/symbol.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "gc/gc.h"
 #include "main/globals.h"
@@ -20,6 +21,18 @@ struct D_File {
     FILE* fp;
     bool isOpen;
 };
+
+struct Methods* file_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_boolValue = (bool (*)(struct Any*))file_boolValue;
+    methods->m_free = (void (*)(struct Any*))file_free;
+    methods->m_markChildren = (void (*)(struct Any* self))file_markChildren;
+    methods->m_show = (void (*)(struct Any*, FILE*))file_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))file_sizeOf;
+    methods->m_structSize = array_structSize;
+    return methods;
+}
 
 struct D_File* file_new(struct D_String* fileName) {
     struct D_File* self = (struct D_File*)gc_alloc(T_File);

@@ -5,6 +5,7 @@
 #include "data/array.h"
 #include "data/closure.h"
 #include "data/list.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/abstraction.h"
 #include "gc/gc.h"
@@ -14,6 +15,18 @@ struct D_Closure {
     struct E_Abstraction* abstr;
     struct D_Triple* env;
 };
+
+struct Methods* closure_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_free = (void (*)(struct Any*))closure_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))closure_freeVars;
+    methods->m_markChildren = (void (*)(struct Any* self))closure_markChildren;
+    methods->m_show = (void (*)(struct Any*, FILE*))closure_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))closure_sizeOf;
+    methods->m_structSize = closure_structSize;
+    return methods;
+}
 
 struct D_Closure* closure_new(struct E_Abstraction* abstr, struct D_Triple* env) {
     struct D_Closure* self = (struct D_Closure*)gc_alloc(T_Closure);

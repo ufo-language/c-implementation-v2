@@ -6,6 +6,7 @@
 #include "data/any.h"
 #include "data/integer.h"
 #include "data/stringstream.h"
+#include "dispatch/methodtable.h"
 #include "gc/gc.h"
 
 struct D_StringStream {
@@ -19,6 +20,17 @@ struct D_StringStream {
     int prevChar;
     int prevNewlineCol;
 };
+
+struct Methods* stringStream_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_boolValue = (bool (*)(struct Any*))stringStream_boolValue;
+    methods->m_free = (void (*)(struct Any*))stringStream_free;
+    methods->m_show = (void (*)(struct Any*, FILE*))stringStream_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))stringStream_sizeOf;
+    methods->m_structSize = stringStream_structSize;
+    return methods;
+}
 
 struct D_StringStream* stringStream_new(char* str) {
     struct D_StringStream* self = (struct D_StringStream*)gc_alloc(T_StringStream);

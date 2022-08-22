@@ -7,7 +7,19 @@
 #include "data/string.h"
 #include "data/stringbuffer.h"
 #include "data/stringbufferstruct.h"
+#include "dispatch/methodtable.h"
 #include "gc/gc.h"
+
+struct Methods* stringBuffer_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_boolValue = (bool (*)(struct Any*))stringBuffer_boolValue;
+    methods->m_free = (void (*)(struct Any*))stringBuffer_free;
+    methods->m_show = (void (*)(struct Any*, FILE*))stringBuffer_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))stringBuffer_sizeOf;
+    methods->m_structSize = stringBuffer_structSize;
+    return methods;
+}
 
 struct BufferSegment* bufferSegment_new(void) {
     struct BufferSegment* segment = (struct BufferSegment*)malloc(sizeof(struct BufferSegment));
