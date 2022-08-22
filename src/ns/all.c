@@ -2,6 +2,7 @@
 
 void ns_any_defineAll(struct D_HashTable* env);
 void ns_array_defineAll(struct D_HashTable* env);
+void ns_binding_defineAll(struct D_HashTable* env);
 void ns_etor_defineAll(struct D_HashTable* env);
 void ns_event_defineAll(struct D_HashTable* env);
 void ns_ffi_defineAll(struct D_HashTable* env);
@@ -37,6 +38,7 @@ void ns_all_rootObjects(void) {
     _globalEnv = hashTable_new();
     ns_any_defineAll(_globalEnv);
     ns_array_defineAll(_globalEnv);
+    ns_binding_defineAll(_globalEnv);
     ns_etor_defineAll(_globalEnv);
     ns_event_defineAll(_globalEnv);
     ns_ffi_defineAll(_globalEnv);
