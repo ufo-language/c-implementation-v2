@@ -156,9 +156,11 @@ static int repl_read(struct REPL* self) {
                     self->keepRunning = false;
                     break;
                 case READ_LINES:
+                    stringBuffer_clear(self->inputStringBuffer);
                     nChars = repl_readLines(self);
                     break;
                 case READ_FILE:
+                    stringBuffer_clear(self->inputStringBuffer);
                     nChars = repl_readFile(self);
                     break;
             }

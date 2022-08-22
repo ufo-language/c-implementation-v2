@@ -11,7 +11,8 @@
 #include "expr/recorddef.h"
 #include "main/globals.h"
 
-#define NS_NAME "record"
+// This can't be called "record" because that's a reserved word.
+#define NS_NAME "rec"
 
 static void _definition(struct Evaluator* etor, struct D_List* args);
 static void _fieldNames(struct Evaluator* etor, struct D_List* args);
