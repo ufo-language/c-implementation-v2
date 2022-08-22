@@ -165,6 +165,13 @@ struct D_Triple* queue_match(struct D_Queue* self, struct Any* other, struct D_T
     return list_match(self->head, (struct Any*)((struct D_Queue*)other)->head, bindings);
 }
 
+struct Any* queue_peek(struct D_Queue* self) {
+    if (list_isEmpty(self->head)) {
+        return NULL;
+    }
+    return list_getFirst(self->head);
+}
+
 void queue_show(struct D_Queue* self, FILE* fp) {
     list_showWith(self->head, "~[", ", ", "]", fp);
 }
