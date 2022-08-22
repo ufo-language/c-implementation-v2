@@ -9,6 +9,7 @@
 #include "data/list.h"
 #include "data/string.h"
 #include "data/stringbuffer.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "gc/gc.h"
 #include "lexer/lexer.h"
@@ -17,6 +18,18 @@
 #include "repl/coloncommand.h"
 #include "repl/repl.h"
 #include "version.h"
+
+struct Methods* repl_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    //methods->m_deepCopy = (struct Any* (*)(struct Any*))repl_deepCopy;
+    methods->m_free = (void (*)(struct Any*))repl_free;
+    methods->m_markChildren = (void (*)(struct Any* self))repl_markChildren;
+    methods->m_show = (void (*)(struct Any*, FILE*))repl_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))repl_sizeOf;
+    methods->m_structSize = repl_structSize;
+    return methods;
+}
 
 struct REPL* repl_new(bool makeRoot) {
     struct REPL* self = (struct REPL*)gc_alloc(T_REPL);

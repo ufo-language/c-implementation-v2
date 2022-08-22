@@ -12,6 +12,7 @@
 #include "data/string.h"
 #include "data/symbol.h"
 #include "data/triple.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/exnhandler.h"
 #include "expr/identifier.h"
@@ -37,6 +38,17 @@ struct Evaluator {
     jmp_buf jumpBuf;
     bool showSteps;
 };
+
+struct Methods* evaluator_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_free = (void (*)(struct Any*))evaluator_free;
+    methods->m_markChildren = (void (*)(struct Any* self))evaluator_markChildren;
+    methods->m_show = (void (*)(struct Any*, FILE*))evaluator_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))evaluator_sizeOf;
+    methods->m_structSize = evaluator_structSize;
+    return methods;
+}
 
 void evaluator_rootObjects(void) {
     _runningEvaluators = queue_new();
