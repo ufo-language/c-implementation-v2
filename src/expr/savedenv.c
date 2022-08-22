@@ -3,6 +3,7 @@
 
 #include "expr/savedenv.h"
 #include "data/any.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "gc/gc.h"
 
@@ -15,6 +16,18 @@ struct E_SavedEnv {
     struct Any obj;
     struct D_Triple* env;
 };
+
+struct Methods* savedEnv_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_eval = (void (*)(struct Any*, struct Evaluator*))savedEnv_eval;
+    methods->m_free = (void (*)(struct Any*))savedEnv_free;
+    methods->m_markChildren = (void (*)(struct Any* self))savedEnv_markChildren;
+    methods->m_show = (void (*)(struct Any*, FILE*))savedEnv_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))savedEnv_sizeOf;
+    methods->m_structSize = savedEnv_structSize;
+    return methods;
+}
 
 struct E_SavedEnv* savedEnv_new(struct D_Triple* env) {
     struct E_SavedEnv* self = (struct E_SavedEnv*)gc_alloc(T_SavedEnv);

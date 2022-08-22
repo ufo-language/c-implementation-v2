@@ -11,6 +11,7 @@
 #include "data/record.h"
 #include "data/symbol.h"
 #include "data/triple.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
 #include "expr/identifier.h"
@@ -24,6 +25,20 @@ struct E_RecordSpec {
     struct D_Symbol* recordTypeName;
     struct D_Queue* fieldBindings;
 };
+
+struct Methods* recordSpec_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_eval = (void (*)(struct Any*, struct Evaluator*))recordSpec_eval;
+    methods->m_free = (void (*)(struct Any*))recordSpec_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))recordSpec_freeVars;
+    methods->m_markChildren = (void (*)(struct Any* self))recordSpec_markChildren;
+    methods->m_match = (struct D_Triple* (*)(struct Any*, struct Any*, struct D_Triple*))recordSpec_match;
+    methods->m_show = (void (*)(struct Any*, FILE*))recordSpec_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))recordSpec_sizeOf;
+    methods->m_structSize = recordSpec_structSize;
+    return methods;
+}
 
 struct E_RecordSpec* recordSpec_new(struct D_Symbol* recordTypeName, struct D_Queue* fieldBindings) {
     struct E_RecordSpec* self = (struct E_RecordSpec*)gc_alloc(T_RecordSpec);

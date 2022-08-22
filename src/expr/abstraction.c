@@ -5,6 +5,7 @@
 #include "data/closure.h"
 #include "data/list.h"
 #include "data/set.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/abstraction.h"
 #include "gc/gc.h"
@@ -15,6 +16,20 @@ struct E_Abstraction {
     struct Any* body;
     struct E_Abstraction* next;
 };
+
+struct Methods* abstraction_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_deepCopy = (struct Any* (*)(struct Any*))abstraction_deepCopy;
+    methods->m_eval = (void (*)(struct Any*, struct Evaluator*))abstraction_eval;
+    methods->m_free = (void (*)(struct Any*))abstraction_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))abstraction_freeVars;
+    methods->m_markChildren = (void (*)(struct Any* self))abstraction_markChildren;
+    methods->m_show = (void (*)(struct Any*, FILE*))abstraction_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))abstraction_sizeOf;
+    methods->m_structSize = abstraction_structSize;
+    return methods;
+}
 
 struct E_Abstraction* abstraction_new(struct D_List* params, struct Any* body) {
     struct E_Abstraction* self = (struct E_Abstraction*)gc_alloc(T_Abstraction);

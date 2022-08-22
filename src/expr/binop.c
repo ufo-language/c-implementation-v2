@@ -5,6 +5,7 @@
 #include "data/any.h"
 #include "data/closure.h"
 #include "data/list.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/binop.h"
 #include "expr/continuation.h"
@@ -19,6 +20,20 @@ struct E_BinOp {
     struct Any* rhs;
     struct D_List* argList;
 };
+
+struct Methods* binOp_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_deepCopy = (struct Any* (*)(struct Any*))binOp_deepCopy;
+    methods->m_eval = (void (*)(struct Any*, struct Evaluator*))binOp_eval;
+    methods->m_free = (void (*)(struct Any*))binOp_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))binOp_freeVars;
+    methods->m_markChildren = (void (*)(struct Any* self))binOp_markChildren;
+    methods->m_show = (void (*)(struct Any*, FILE*))binOp_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))binOp_sizeOf;
+    methods->m_structSize = binOp_structSize;
+    return methods;
+}
 
 struct E_BinOp* binOp_new(struct Any* lhs, struct E_Identifier* oper, struct Any* rhs) {
     struct E_BinOp* self = (struct E_BinOp*)gc_alloc(T_BinOp);

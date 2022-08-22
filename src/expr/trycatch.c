@@ -3,9 +3,11 @@
 
 #include "data/any.h"
 #include "data/array.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/abstraction.h"
 #include "expr/exnhandler.h"
+#include "expr/trycatch.h"
 #include "gc/gc.h"
 #include "main/globals.h"
 
@@ -14,6 +16,20 @@ struct E_TryCatch {
     struct Any* tryExpr;
     struct E_Abstraction* catchExpr;
 };
+
+struct Methods* tryCatch_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_deepCopy = (struct Any* (*)(struct Any*))tryCatch_deepCopy;
+    methods->m_eval = (void (*)(struct Any*, struct Evaluator*))tryCatch_eval;
+    methods->m_free = (void (*)(struct Any*))tryCatch_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))tryCatch_freeVars;
+    methods->m_markChildren = (void (*)(struct Any* self))tryCatch_markChildren;
+    methods->m_show = (void (*)(struct Any*, FILE*))tryCatch_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))tryCatch_sizeOf;
+    methods->m_structSize = tryCatch_structSize;
+    return methods;
+}
 
 struct E_TryCatch* tryCatch_new(struct Any* tryExpr, struct E_Abstraction* catchExpr) {
     struct E_TryCatch* self = (struct E_TryCatch*)gc_alloc(T_TryCatch);

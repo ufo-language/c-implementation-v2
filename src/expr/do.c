@@ -4,6 +4,7 @@
 #include "data/any.h"
 #include "data/array.h"
 #include "data/integer.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
 #include "expr/do.h"
@@ -14,6 +15,20 @@ struct E_Do {
     struct Any obj;
     struct D_Array* exprs;
 };
+
+struct Methods* do_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_deepCopy = (struct Any* (*)(struct Any*))do_deepCopy;
+    methods->m_eval = (void (*)(struct Any*, struct Evaluator*))do_eval;
+    methods->m_free = (void (*)(struct Any*))do_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))do_freeVars;
+    methods->m_markChildren = (void (*)(struct Any* self))do_markChildren;
+    methods->m_show = (void (*)(struct Any*, FILE*))do_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))do_sizeOf;
+    methods->m_structSize = do_structSize;
+    return methods;
+}
 
 struct E_Do* do_new(struct D_Array* exprs) {
     struct E_Do* self = (struct E_Do*)gc_alloc(T_Do);

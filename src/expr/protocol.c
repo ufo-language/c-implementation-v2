@@ -5,6 +5,7 @@
 #include "data/binding.h"
 #include "data/integer.h"
 #include "data/list.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
 #include "expr/protocol.h"
@@ -18,6 +19,19 @@ struct E_Protocol {
 struct E_Protocol* protocol_new(void) {
     struct E_Protocol* self = (struct E_Protocol*)gc_alloc(T_Protocol);
     return self;
+}
+
+struct Methods* protocol_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_eval = (void (*)(struct Any*, struct Evaluator*))protocol_eval;
+    methods->m_free = (void (*)(struct Any*))protocol_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))protocol_freeVars;
+    methods->m_markChildren = (void (*)(struct Any* self))protocol_markChildren;
+    methods->m_show = (void (*)(struct Any*, FILE*))protocol_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))protocol_sizeOf;
+    methods->m_structSize = protocol_structSize;
+    return methods;
 }
 
 void protocol_free(struct E_Protocol* self) {

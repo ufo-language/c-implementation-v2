@@ -4,6 +4,7 @@
 
 #include "data/any.h"
 #include "data/list.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
 #include "expr/if.h"
@@ -15,6 +16,20 @@ struct E_If {
     struct Any* conseq;
     struct Any* alt;
 };
+
+struct Methods* if_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_deepCopy = (struct Any* (*)(struct Any*))if_deepCopy;
+    methods->m_eval = (void (*)(struct Any*, struct Evaluator*))if_eval;
+    methods->m_free = (void (*)(struct Any*))if_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))if_freeVars;
+    methods->m_markChildren = (void (*)(struct Any* self))if_markChildren;
+    methods->m_show = (void (*)(struct Any*, FILE*))if_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))if_sizeOf;
+    methods->m_structSize = if_structSize;
+    return methods;
+}
 
 struct E_If* if_new(struct Any* cond, struct Any* conseq, struct Any* alt) {
     struct E_If* self = (struct E_If*)gc_alloc(T_If);

@@ -9,8 +9,10 @@
 #include "data/queue.h"
 #include "data/symbol.h"
 #include "data/triple.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/identifier.h"
+#include "expr/recorddef.h"
 #include "gc/gc.h"
 #include "main/globals.h"
 
@@ -22,6 +24,19 @@ struct E_RecordDefinition {
     struct D_Array* fieldTypes;
     struct D_Array* defaultValues;
 };
+
+struct Methods* recordDefinition_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_eval = (void (*)(struct Any*, struct Evaluator*))recordDefinition_eval;
+    methods->m_free = (void (*)(struct Any*))recordDefinition_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))recordDefinition_freeVars;
+    methods->m_markChildren = (void (*)(struct Any* self))recordDefinition_markChildren;
+    methods->m_show = (void (*)(struct Any*, FILE*))recordDefinition_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))recordDefinition_sizeOf;
+    methods->m_structSize = recordDefinition_structSize;
+    return methods;
+}
 
 struct E_RecordDefinition* recordDefinition_new(struct D_Symbol* typeName, struct D_Queue* fieldDefs, struct Evaluator* etor) {
     struct E_RecordDefinition* self = (struct E_RecordDefinition*)gc_alloc(T_RecordDefinition);

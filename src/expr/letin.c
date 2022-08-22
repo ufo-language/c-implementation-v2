@@ -7,6 +7,7 @@
 #include "data/integer.h"
 #include "data/list.h"
 #include "data/symbol.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
 #include "expr/letin.h"
@@ -19,6 +20,20 @@ struct E_LetIn {
     struct D_List* bindings;
     struct Any* expr;
 };
+
+struct Methods* letIn_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_deepCopy = (struct Any* (*)(struct Any*))letIn_deepCopy;
+    methods->m_eval = (void (*)(struct Any*, struct Evaluator*))letIn_eval;
+    methods->m_free = (void (*)(struct Any*))letIn_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))letIn_freeVars;
+    methods->m_markChildren = (void (*)(struct Any* self))letIn_markChildren;
+    methods->m_show = (void (*)(struct Any*, FILE*))letIn_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))letIn_sizeOf;
+    methods->m_structSize = letIn_structSize;
+    return methods;
+}
 
 struct E_LetIn* letIn_new(struct D_List* bindings, int nBindings, struct Any* expr) {
     struct E_LetIn* self = (struct E_LetIn*)gc_alloc(T_LetIn);

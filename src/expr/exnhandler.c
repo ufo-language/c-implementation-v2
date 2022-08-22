@@ -10,8 +10,10 @@
 #include "data/string.h"
 #include "data/symbol.h"
 #include "data/triple.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/abstraction.h"
+#include "expr/exnhandler.h"
 #include "gc/gc.h"
 #include "main/globals.h"
 #include "utils/hash.h"
@@ -22,6 +24,18 @@ struct E_ExceptionHandler {
     struct D_List* ostack;
     struct D_Triple* env;
 };
+
+struct Methods* exceptionHandler_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_eval = (void (*)(struct Any*, struct Evaluator*))exceptionHandler_eval;
+    methods->m_free = (void (*)(struct Any*))exceptionHandler_free;
+    methods->m_markChildren = (void (*)(struct Any* self))exceptionHandler_markChildren;
+    methods->m_show = (void (*)(struct Any*, FILE*))exceptionHandler_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))exceptionHandler_sizeOf;
+    methods->m_structSize = exceptionHandler_structSize;
+    return methods;
+}
 
 struct E_ExceptionHandler* exceptionHandler_new(struct E_Abstraction* catchExpr, struct D_List* ostack, struct D_Triple* env) {
     struct E_ExceptionHandler* self = (struct E_ExceptionHandler*)gc_alloc(T_ExceptionHandler);

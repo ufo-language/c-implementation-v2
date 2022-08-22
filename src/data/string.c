@@ -79,7 +79,6 @@ int string_count(struct D_String* self) {
 }
 
 void string_display(struct D_String* self, FILE* fd) {
-    printf("%s called\n", __func__);
     fputs(self->chars, fd);
 }
 

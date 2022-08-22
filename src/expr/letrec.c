@@ -9,6 +9,7 @@
 #include "data/queue.h"
 #include "data/set.h"
 #include "data/triple.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
 #include "expr/letrec.h"
@@ -20,6 +21,20 @@ struct E_LetRec {
     int nBindings;
     struct D_List* bindings;
 };
+
+struct Methods* letRec_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_deepCopy = (struct Any* (*)(struct Any*))letRec_deepCopy;
+    methods->m_eval = (void (*)(struct Any*, struct Evaluator*))letRec_eval;
+    methods->m_free = (void (*)(struct Any*))letRec_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))letRec_freeVars;
+    methods->m_markChildren = (void (*)(struct Any* self))letRec_markChildren;
+    methods->m_show = (void (*)(struct Any*, FILE*))letRec_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))letRec_sizeOf;
+    methods->m_structSize = letRec_structSize;
+    return methods;
+}
 
 struct E_LetRec* letRec_new(struct D_List* bindings, int nBindings) {
     struct E_LetRec* self = (struct E_LetRec*)gc_alloc(T_LetRec);

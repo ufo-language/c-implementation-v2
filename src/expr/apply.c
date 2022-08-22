@@ -6,6 +6,7 @@
 #include "data/list.h"
 #include "data/primitive.h"
 #include "data/symbol.h"
+#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/apply.h"
 #include "expr/continuation.h"
@@ -17,6 +18,20 @@ struct E_Apply {
     struct Any* abstr;
     struct D_List* args;
 };
+
+struct Methods* apply_methodSetup(void) {
+    struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
+    methodTable_setupDefaults(methods);
+    methods->m_deepCopy = (struct Any* (*)(struct Any*))apply_deepCopy;
+    methods->m_eval = (void (*)(struct Any*, struct Evaluator*))apply_eval;
+    methods->m_free = (void (*)(struct Any*))apply_free;
+    methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))apply_freeVars;
+    methods->m_markChildren = (void (*)(struct Any* self))apply_markChildren;
+    methods->m_show = (void (*)(struct Any*, FILE*))apply_show;
+    methods->m_sizeOf = (size_t (*)(struct Any*))apply_sizeOf;
+    methods->m_structSize = apply_structSize;
+    return methods;
+}
 
 struct E_Apply* apply_new(struct Any* abstr, struct D_List* args) {
     struct E_Apply* self = (struct E_Apply*)gc_alloc(T_Apply);
