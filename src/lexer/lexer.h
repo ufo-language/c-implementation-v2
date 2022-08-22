@@ -1,49 +1,31 @@
-#if !defined(LEXER2_H)
-#define LEXER2_H
+#if !defined(LEXER_H)
+#define LEXER_H
+
+struct D_List;
+struct D_String;
+struct D_Symbol;
+struct Evaluator;
 
 enum LexerTokenType {
-    LT_None,
-    LT_Boolean,
-    LT_Identifier,
-    LT_Integer,
-    LT_Nil,
-    LT_Operator,
-    LT_Real,
-    LT_Reserved,
-    LT_Special,
-    LT_String,
-    LT_Symbol,
-    LT_EOI,
-    LT_FINAL
+    LTT_None,
+    LTT_Boolean,
+    LTT_Nil,
+    LTT_Identifier,
+    LTT_Integer,
+    LTT_Operator,
+    LTT_Real,
+    LTT_Reserved,
+    LTT_Special,
+    LTT_String,
+    LTT_Symbol,
+    LTT_Word,
+    LTT_EOI,
+    LTT_FINAL
 };
 
-struct LexerState2 {
-    char* inputString;
-    int pos;
-    int col;
-    int line;
-    char prevChar;
-};
+extern struct D_Symbol* LEXER_SYMBOLS[];
 
-struct ResultToken {
-    enum LexerTokenType tokenType;
-    char* error;
-    int pos;
-    int col;
-    int line;
-    char* strValue;  // TODO rename this "lexeme"
-    int strLen;
-    // lexeme values: only one will be needed
-    // TODO make these three fields a union?
-    int intValue;
-    int charValue;
-    double doubleValue;
-};
-
-extern char* NIL_WORD;
-extern char* TRUE_WORD;
-extern char* FALSE_WORD;
-
-void lex_nextToken(struct LexerState2* lexerState, struct ResultToken* result);
+// Returns a D_Queue on success, a D_Array on error
+struct Any* lexer_tokenize(struct D_String* inputString);
 
 #endif

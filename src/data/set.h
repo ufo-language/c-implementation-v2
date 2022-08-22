@@ -10,7 +10,7 @@ struct D_Set;
 struct D_Triple;
 struct Evaluator;
 
-struct D_Set* set_new();
+struct D_Set* set_new(void);
 void set_free(struct D_Set* self);
 
 void set_add(struct D_Set* self, struct Any* obj, struct Evaluator* etor);
@@ -28,7 +28,7 @@ bool set_removeElem(struct D_Set* self, struct Any* elem, struct Evaluator* etor
 void set_removeSet(struct D_Set* self, struct D_Set* other, struct Evaluator* etor);
 void set_show(struct D_Set* self, FILE* fp);
 size_t set_sizeOf(struct D_Set* self);
-size_t set_structSize();
+size_t set_structSize(void);
 struct D_Array* set_toArray(struct D_Set* self);
 
 #endif

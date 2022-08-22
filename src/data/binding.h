@@ -30,6 +30,6 @@ struct D_Triple* binding_match(struct D_Binding* self, struct Any* other, struct
 void binding_setValue(struct D_Binding* self, struct Any* value);
 void binding_show(struct D_Binding* self, FILE* fp);
 size_t binding_sizeOf(struct D_Binding* self);
-size_t binding_structSize();
+size_t binding_structSize(void);
 
 #endif

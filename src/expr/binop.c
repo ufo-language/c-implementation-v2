@@ -87,6 +87,6 @@ size_t binOp_sizeOf(struct E_BinOp* self) {
     return sizeof(self);
 }
 
-size_t binOp_structSize() {
+size_t binOp_structSize(void) {
     return sizeof(struct E_BinOp);
 }

@@ -36,7 +36,7 @@ static void _resize(struct D_HashTable* self, struct Evaluator* etor);
 
 // allocate and free bucket links ------------------------------------
 
-// TODO get enable bucket recycling (I don't remember if it works or not, I think it does)
+// TODO enable bucket recycling (I don't remember if it works or not, I think it does)
 #define RECYCLE_BUCKETS 0
 
 #if RECYCLE_BUCKETS
@@ -280,7 +280,7 @@ void hashTable_put(struct D_HashTable* self, struct Any* key, struct Any* value,
         }
         else {
             struct Any* keyCopy = any_deepCopy(key);
-            struct BucketLink* link = _bucketLink_new(keyCopy, value, self->buckets[bucketNum]);
+            link = _bucketLink_new(keyCopy, value, self->buckets[bucketNum]);
             self->buckets[bucketNum] = link;
             self->count++;
         }
@@ -361,6 +361,6 @@ size_t hashTable_sizeOf(struct D_HashTable* self) {
     return sizeof(self) + sizeof(self->buckets);
 }
 
-size_t hashTable_structSize() {
+size_t hashTable_structSize(void) {
     return sizeof(struct D_HashTable);
 }

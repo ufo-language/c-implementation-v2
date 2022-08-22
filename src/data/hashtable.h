@@ -32,6 +32,6 @@ void hashTable_put_unsafe(struct D_HashTable* self, struct Any* key, struct Any*
 bool hashTable_remove(struct D_HashTable* self, struct Any* key, struct Evaluator* etor);
 void hashTable_show(struct D_HashTable* self, FILE* fp);
 size_t hashTable_sizeOf(struct D_HashTable* self);
-size_t hashTable_structSize();
+size_t hashTable_structSize(void);
 
 #endif

@@ -62,6 +62,6 @@ size_t address_sizeOf(struct D_Address* self) {
     return sizeof(struct D_Address);
 }
 
-size_t address_structSize() {
+size_t address_structSize(void) {
     return sizeof(struct D_Address);
 }

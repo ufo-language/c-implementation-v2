@@ -16,34 +16,55 @@
 
 /*
 Object list_accept(Thread* thd, Object args);
-Object list_count(Thread* thd, Object args);
 Object list_drop(Thread* thd, Object args);
-Object list_first(Thread* thd, Object args);
 Object list_keys(Thread* thd, Object args);
 Object list_map(Thread* thd, Object args);
 Object list_reject(Thread* thd, Object args);
-Object list_rest(Thread* thd, Object args);
 Object list_reverse(Thread* thd, Object args);
 Object list_setFirst(Thread* thd, Object args);
 Object list_setRest(Thread* thd, Object args);
 Object list_take(Thread* thd, Object args);
 */
 
+static void _asArray(struct Evaluator* etor, struct D_List* args);
+static void _count(struct Evaluator* etor, struct D_List* args);
 static void _first(struct Evaluator* etor, struct D_List* args);
 void ns_list_get(struct Evaluator* etor, struct D_List* args);
 static void _isEmpty(struct Evaluator* etor, struct D_List* args);
 static void _map(struct Evaluator* etor, struct D_List* args);
+static void _new(struct Evaluator* etor, struct D_List* args);
 static void _rest(struct Evaluator* etor, struct D_List* args);
 
 void ns_list_defineAll(struct D_HashTable* env) {
     struct E_Identifier* nsName = identifier_new(NS_NAME);
     struct D_HashTable* nsHash = hashTable_new();
     hashTable_put_unsafe(env, (struct Any*)nsName, (struct Any*)nsHash);
+    primitive_define(nsHash, "asArray", _asArray);
+    primitive_define(nsHash, "count", _count);
     primitive_define(nsHash, "first", _first);
     primitive_define(nsHash, "get", ns_list_get);
     primitive_define(nsHash, "isEmpty", _isEmpty);
     primitive_define(nsHash, "map", _map);
+    primitive_define(nsHash, "new", _new);
     primitive_define(nsHash, "rest", _rest);
+}
+
+static void _asArray(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_List};
+    struct Any* listObj;
+    struct Any** paramVars[] = {&listObj};
+    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
+    struct D_List* list = (struct D_List*)listObj;
+    evaluator_pushObj(etor, (struct Any*)list_asArray(list));
+}
+
+static void _count(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_List};
+    struct Any* listObj;
+    struct Any** paramVars[] = {&listObj};
+    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
+    struct D_List* list = (struct D_List*)listObj;
+    evaluator_pushObj(etor, (struct Any*)integer_new(list_count(list)));
 }
 
 static void _first(struct Evaluator* etor, struct D_List* args) {
@@ -90,6 +111,7 @@ static void _isEmpty(struct Evaluator* etor, struct D_List* args) {
     evaluator_pushObj(etor, (struct Any*)(list_isEmpty(list) ? TRUE : FALSE));
 }
 
+// TODO move this into data/list.c (see data/array.c for example)
 static void _mapContin(struct Evaluator* etor, struct Any* arg) {
     struct Any* value = evaluator_popObj(etor);
     struct D_Array* argAry = (struct D_Array*)arg;
@@ -110,6 +132,7 @@ static void _mapContin(struct Evaluator* etor, struct Any* arg) {
     evaluator_pushExpr(etor, (struct Any*)app);
 }
 
+// TODO move this into data/list.c (see data/array.c for example)
 static void _map(struct Evaluator* etor, struct D_List* args) {
     static enum TypeId paramTypes[] = {T_List, T_NULL};
     struct Any* listObj;
@@ -130,6 +153,15 @@ static void _map(struct Evaluator* etor, struct D_List* args) {
         struct E_Apply* app = apply_new(abstr, list_new(firstElem, (struct Any*)EMPTY_LIST));
         evaluator_pushExpr(etor, (struct Any*)app);
     }
+}
+
+static void _new(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_NULL, T_NULL};
+    struct Any* first;
+    struct Any* rest;
+    struct Any** paramVars[] = {&first, &rest};
+    primitive_checkArgs(2, paramTypes, args, paramVars, etor);
+    evaluator_pushObj(etor, (struct Any*)list_new(first, rest));
 }
 
 static void _rest(struct Evaluator* etor, struct D_List* args) {

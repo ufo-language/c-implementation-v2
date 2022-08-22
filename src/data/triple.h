@@ -26,6 +26,6 @@ void triple_setSecond(struct D_Triple* self, struct Any* second);
 void triple_show(struct D_Triple* self, FILE* fp);
 void triple_showWith(struct D_Triple* self, char* open, char* sep, char* close, FILE* fp);
 size_t triple_sizeOf(struct D_Triple* self);
-size_t triple_structSize();
+size_t triple_structSize(void);
 
 #endif

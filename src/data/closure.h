@@ -21,6 +21,6 @@ struct D_Triple* closure_getEnv(struct D_Closure* self);
 void closure_markChildren(struct D_Closure* self);
 void closure_show(struct D_Closure* self, FILE* fp);
 size_t closure_sizeOf(struct D_Closure* self);
-size_t closure_structSize();
+size_t closure_structSize(void);
 
 #endif

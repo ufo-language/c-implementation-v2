@@ -87,9 +87,9 @@ static void _readAll(struct Evaluator* etor, struct D_List* args) {
         evaluator_throwException(etor, sym, "file is closed", (struct Any*)file);
     }
     struct D_StringBuffer* sb = stringBuffer_new();
-    struct D_Array* sizeAry = file_readAll((struct D_File*)file, sb, etor);
-    struct D_Array* resAry = array_newN(2, sizeAry, sb);
-    evaluator_pushObj(etor, (struct Any*)resAry);
+    file_readAll((struct D_File*)file, sb, etor);
+    struct D_String* resString = stringBuffer_asString(sb);
+    evaluator_pushObj(etor, (struct Any*)resString);
 }
 
 static void _size(struct Evaluator* etor, struct D_List* args) {

@@ -9,12 +9,14 @@
 #include "data/file.h"
 #include "data/hashtable.h"
 #include "data/integer.h"
+#include "data/iterator.h"
 #include "data/list.h"
 #include "data/nil.h"
 #include "data/primitive.h"
 #include "data/queue.h"
 #include "data/real.h"
 #include "data/record.h"
+#include "data/sequence.h"
 #include "data/set.h"
 #include "data/string.h"
 #include "data/stringbuffer.h"
@@ -53,97 +55,101 @@ static size_t _error(void) {
 
 size_t any_structSize(enum TypeId typeId) {
     switch (typeId) {
-    case T_NULL:
-        return _error();
-    case T_Abstraction:
-        return abstraction_structSize();
-    case T_Address:
-        return address_structSize();
-    case T_Apply:
-        return apply_structSize();
-    case T_Array:
-        return array_structSize();
-    case T_Binding:
-        return binding_structSize();
-    case T_BinOp:
-        return binOp_structSize();
-    case T_Boolean:
-        return boolean_structSize();
-    case T_BracketExpr:
-        return bracketExpr_structSize();
-    case T_Closure:
-        return closure_structSize();
-    case T_Cobegin:
-        return cobegin_structSize();
-    case T_Continuation:
-        return continuation_structSize();
-    case T_Do:
-        return do_structSize();
-    case T_Evaluator:
-        return evaluator_structSize();
-    case T_ExceptionHandler:
-        return exceptionHandler_structSize();
-    case T_File:
-        return file_structSize();
-    case T_HashTable:
-        return hashTable_structSize();
-    case T_Identifier:
-        return identifier_structSize();
-    case T_If:
-        return if_structSize();
-    case T_Integer:
-        return integer_structSize();
-    case T_Let:
-        return let_structSize();
-    case T_LetIn:
-        return letIn_structSize();
-    case T_LetRec:
-        return letRec_structSize();
-    case T_List:
-        return list_structSize();
-    case T_Nil:
-        return nil_structSize();
-    case T_Primitive:
-        return primitive_structSize();
-    case T_Protocol:
-        return protocol_structSize();
-    case T_Queue:
-        return queue_structSize();
-    case T_Real:
-        return real_structSize();
-    case T_Record:
-        return record_structSize();
-    case T_RecordDefinition:
-        return recordDefinition_structSize();
-    case T_RecordSpec:
-        return recordSpec_structSize();
-    case T_REPL:
-        return repl_structSize();
-    case T_SavedEnv:
-        return savedEnv_structSize();
-    case T_Set:
-        return set_structSize();
-    case T_String:
-        return string_structSize();
-    case T_StringBuffer:
-        return stringBuffer_structSize();
-    case T_StringStream:
-        return stringStream_structSize();
-    case T_Symbol:
-        return symbol_structSize();
-    case T_Term:
-        return term_structSize();
-    case T_Triple:
-        return triple_structSize();
-    case T_TryCatch:
-        return tryCatch_structSize();
-    case T_Tuple:
-        return tuple_structSize();
-    case T_Unsigned:
-        return unsigned_structSize();
-    case T_FINAL:
-        return _error();
-    default:
-        return _error();
+        case T_NULL:
+            return _error();
+        case T_Abstraction:
+            return abstraction_structSize();
+        case T_Address:
+            return address_structSize();
+        case T_Apply:
+            return apply_structSize();
+        case T_Array:
+            return array_structSize();
+        case T_Binding:
+            return binding_structSize();
+        case T_BinOp:
+            return binOp_structSize();
+        case T_Boolean:
+            return boolean_structSize();
+        case T_BracketExpr:
+            return bracketExpr_structSize();
+        case T_Closure:
+            return closure_structSize();
+        case T_Cobegin:
+            return cobegin_structSize();
+        case T_Continuation:
+            return continuation_structSize();
+        case T_Do:
+            return do_structSize();
+        case T_Evaluator:
+            return evaluator_structSize();
+        case T_ExceptionHandler:
+            return exceptionHandler_structSize();
+        case T_File:
+            return file_structSize();
+        case T_HashTable:
+            return hashTable_structSize();
+        case T_Identifier:
+            return identifier_structSize();
+        case T_If:
+            return if_structSize();
+        case T_Integer:
+            return integer_structSize();
+        case T_Iterator:
+            return iterator_structSize();
+        case T_Let:
+            return let_structSize();
+        case T_LetIn:
+            return letIn_structSize();
+        case T_LetRec:
+            return letRec_structSize();
+        case T_List:
+            return list_structSize();
+        case T_Nil:
+            return nil_structSize();
+        case T_Primitive:
+            return primitive_structSize();
+        case T_Protocol:
+            return protocol_structSize();
+        case T_Queue:
+            return queue_structSize();
+        case T_Real:
+            return real_structSize();
+        case T_Record:
+            return record_structSize();
+        case T_RecordDefinition:
+            return recordDefinition_structSize();
+        case T_RecordSpec:
+            return recordSpec_structSize();
+        case T_REPL:
+            return repl_structSize();
+        case T_SavedEnv:
+            return savedEnv_structSize();
+        case T_Sequence:
+            return sequence_structSize();
+        case T_Set:
+            return set_structSize();
+        case T_String:
+            return string_structSize();
+        case T_StringBuffer:
+            return stringBuffer_structSize();
+        case T_StringStream:
+            return stringStream_structSize();
+        case T_Symbol:
+            return symbol_structSize();
+        case T_Term:
+            return term_structSize();
+        case T_Triple:
+            return triple_structSize();
+        case T_TryCatch:
+            return tryCatch_structSize();
+        case T_Tuple:
+            return tuple_structSize();
+        case T_Unsigned:
+            return unsigned_structSize();
+        case T_FINAL:
+            return _error();
+        default:
+            return _error();
     }
 }

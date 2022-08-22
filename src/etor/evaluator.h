@@ -42,7 +42,7 @@ void evaluator_setShowSteps(struct Evaluator* self, bool showSteps);
 void evaluator_setSubscriberTable(struct Evaluator* self, struct D_HashTable* subscriberTable);
 void evaluator_show(struct Evaluator* self, FILE* fp);
 size_t evaluator_sizeOf(struct Evaluator* self);
-size_t evaluator_structSize();
+size_t evaluator_structSize(void);
 void evaluator_throwException(struct Evaluator* self, struct D_Symbol* symbol, char* message, struct Any* obj);
 void evaluator_throwExceptionObj(struct Evaluator* self, struct Any* exceptionObj);
 struct Any* evaluator_topExpr(struct Evaluator* self);

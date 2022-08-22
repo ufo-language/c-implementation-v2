@@ -21,4 +21,4 @@ struct Any* bracketExpr_getLhs(struct E_BracketExpr* self);
 void bracketExpr_markChildren(struct E_BracketExpr* self);
 void bracketExpr_show(struct E_BracketExpr* self, FILE* fp);
 size_t bracketExpr_sizeOf(struct E_BracketExpr* self);
-size_t bracketExpr_structSize();
+size_t bracketExpr_structSize(void);

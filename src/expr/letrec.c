@@ -105,6 +105,6 @@ size_t letRec_sizeOf(struct E_LetRec* self) {
     return sizeof(self);
 }
 
-size_t letRec_structSize() {
+size_t letRec_structSize(void) {
     return sizeof(struct E_LetRec);
 }

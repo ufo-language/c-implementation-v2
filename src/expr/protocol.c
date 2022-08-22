@@ -15,7 +15,7 @@ struct E_Protocol {
     struct Any obj;
 };
 
-struct E_Protocol* protocol_new() {
+struct E_Protocol* protocol_new(void) {
     struct E_Protocol* self = (struct E_Protocol*)gc_alloc(T_Protocol);
     return self;
 }
@@ -62,6 +62,6 @@ size_t protocol_sizeOf(struct E_Protocol* self) {
     return sizeof(self);
 }
 
-size_t protocol_structSize() {
+size_t protocol_structSize(void) {
     return sizeof(struct E_Protocol);
 }

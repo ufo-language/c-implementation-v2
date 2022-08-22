@@ -19,6 +19,6 @@ void tryCatch_freeVars(struct E_TryCatch* self, struct D_Set* freeVars, struct E
 void tryCatch_markChildren(struct E_TryCatch* self);
 void tryCatch_show(struct E_TryCatch* self, FILE* fp);
 size_t tryCatch_sizeOf(struct E_TryCatch* self);
-size_t tryCatch_structSize();
+size_t tryCatch_structSize(void);
 
 #endif

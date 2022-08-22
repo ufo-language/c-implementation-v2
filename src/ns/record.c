@@ -11,7 +11,7 @@
 #include "expr/recorddef.h"
 #include "main/globals.h"
 
-#define NS_NAME "rec"
+#define NS_NAME "record"
 
 static void _definition(struct Evaluator* etor, struct D_List* args);
 static void _fieldNames(struct Evaluator* etor, struct D_List* args);

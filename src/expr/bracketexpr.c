@@ -106,6 +106,6 @@ size_t bracketExpr_sizeOf(struct E_BracketExpr* self) {
     return sizeof(self);
 }
 
-size_t bracketExpr_structSize() {
+size_t bracketExpr_structSize(void) {
     return sizeof(struct E_BracketExpr);
 }

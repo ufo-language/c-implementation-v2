@@ -16,18 +16,22 @@ static void _assert(struct Evaluator* etor, struct D_List* args);
 static void _colon(struct Evaluator* etor, struct D_List* args);
 static void _equalTo(struct Evaluator* etor, struct D_List* args);
 static void _minus(struct Evaluator* etor, struct D_List* args);
+static void _percent(struct Evaluator* etor, struct D_List* args);
 static void _plus(struct Evaluator* etor, struct D_List* args);
 static void _quote(struct Evaluator* etor, struct D_List* args);
 static void _reassign(struct Evaluator* etor, struct D_List* args);
+static void _sequence(struct Evaluator* etor, struct D_List* args);
 static void _slash(struct Evaluator* etor, struct D_List* args);
 static void _star(struct Evaluator* etor, struct D_List* args);
 static void _throw(struct Evaluator* etor, struct D_List* args);
 
+void globals_percent(struct Any* lhs, struct Any* rhs, struct Evaluator* etor);
 void globals_plus(struct Any* lhs, struct Any* rhs, struct Evaluator* etor);
 void globals_minus(struct Any* lhs, struct Any* rhs, struct Evaluator* etor);
+void globals_reassign(struct Any* lhs, struct Any* rhs, struct Evaluator* etor);
+void globals_sequence(struct Any* lhs, struct Any* rhs, struct Evaluator* etor);
 void globals_slash(struct Any* lhs, struct Any* rhs, struct Evaluator* etor);
 void globals_star(struct Any* lhs, struct Any* rhs, struct Evaluator* etor);
-void globals_reassign(struct Any* lhs, struct Any* rhs, struct Evaluator* etor);
 
 static void _defFun(struct D_HashTable* env, char* name, PrimitiveFunction fun) {
     hashTable_put_unsafe(env, (struct Any*)identifier_new(name),
@@ -46,6 +50,8 @@ void ns_globals_defineAll(struct D_HashTable* env) {
     _defFun(env, "-", _minus);
     _defFun(env, "*", _star);
     _defFun(env, "/", _slash);
+    _defFun(env, "%", _percent);
+    _defFun(env, "..", _sequence);
     _defFun(env, "assert", _assert);
     _defFun(env, "throw", _throw);
     // macros
@@ -83,13 +89,13 @@ static void _colon_contin(struct Evaluator* etor, struct Any* arg) {
     struct Any* obj = evaluator_popObj(etor);
     if (any_isA(obj, T_HashTable)) {
         struct D_HashTable* hash = (struct D_HashTable*)obj;
-        struct Any* obj = hashTable_get(hash, arg, etor);
-        evaluator_pushObj(etor, obj);
+        struct Any* obj1 = hashTable_get(hash, arg, etor);
+        evaluator_pushObj(etor, obj1);
     }
     else if (any_isA(obj, T_Record)) {
         struct D_Record* record = (struct D_Record*)obj;
-        struct Any* obj = record_getFieldValue(record, arg, etor);
-        evaluator_pushObj(etor, obj);
+        struct Any* obj1 = record_getFieldValue(record, arg, etor);
+        evaluator_pushObj(etor, obj1);
     }
     else {
         evaluator_throwException(
@@ -110,29 +116,26 @@ static void _colon(struct Evaluator* etor, struct D_List* args) {
 }
 
 static void _equalTo(struct Evaluator* etor, struct D_List* args) {
-    static enum TypeId paramTypes[] = {T_NULL, T_NULL};
-    struct Any* lhs;
-    struct Any* rhs;
-    struct Any** paramVars[] = {&lhs, &rhs};
-    primitive_checkArgs(2, paramTypes, args, paramVars, etor);
+    struct Any* lhs = list_getFirst(args);
+    struct Any* rhs = list_getSecond(args);
     evaluator_pushObj(etor, (struct Any*)boolean_from(any_isEqual(lhs, rhs)));
 }
 
 static void _minus(struct Evaluator* etor, struct D_List* args) {
-    static enum TypeId paramTypes[] = {T_NULL, T_NULL};
-    struct Any* lhs;
-    struct Any* rhs;
-    struct Any** paramVars[] = {&lhs, &rhs};
-    primitive_checkArgs(2, paramTypes, args, paramVars, etor);
+    struct Any* lhs = list_getFirst(args);
+    struct Any* rhs = list_getSecond(args);
     globals_minus(lhs, rhs, etor);
 }
 
+static void _percent(struct Evaluator* etor, struct D_List* args) {
+    struct Any* lhs = list_getFirst(args);
+    struct Any* rhs = list_getSecond(args);
+    globals_percent(lhs, rhs, etor);
+}
+
 static void _plus(struct Evaluator* etor, struct D_List* args) {
-    static enum TypeId paramTypes[] = {T_NULL, T_NULL};
-    struct Any* lhs;
-    struct Any* rhs;
-    struct Any** paramVars[] = {&lhs, &rhs};
-    primitive_checkArgs(2, paramTypes, args, paramVars, etor);
+    struct Any* lhs = list_getFirst(args);
+    struct Any* rhs = list_getSecond(args);
     globals_plus(lhs, rhs, etor);
 }
 
@@ -150,30 +153,27 @@ static void _reassignContin(struct Evaluator* etor, struct Any* arg) {
 }
 
 static void _reassign(struct Evaluator* etor, struct D_List* args) {
-    static enum TypeId paramTypes[] = {T_NULL, T_NULL};
-    struct Any* lhs;
-    struct Any* rhs;
-    struct Any** paramVars[] = {&lhs, &rhs};
-    primitive_checkArgs(2, paramTypes, args, paramVars, etor);
+    struct Any* lhs = list_getFirst(args);
+    struct Any* rhs = list_getSecond(args);
     evaluator_pushExpr(etor, (struct Any*)continuation_new(_reassignContin, "reassign", lhs));
     evaluator_pushExpr(etor, rhs);
 }
 
+static void _sequence(struct Evaluator* etor, struct D_List* args) {
+    struct Any* lhs = list_getFirst(args);
+    struct Any* rhs = list_getSecond(args);
+    globals_sequence(lhs, rhs, etor);
+}
+
 static void _slash(struct Evaluator* etor, struct D_List* args) {
-    static enum TypeId paramTypes[] = {T_NULL, T_NULL};
-    struct Any* lhs;
-    struct Any* rhs;
-    struct Any** paramVars[] = {&lhs, &rhs};
-    primitive_checkArgs(2, paramTypes, args, paramVars, etor);
+    struct Any* lhs = list_getFirst(args);
+    struct Any* rhs = list_getSecond(args);
     globals_slash(lhs, rhs, etor);
 }
 
 static void _star(struct Evaluator* etor, struct D_List* args) {
-    static enum TypeId paramTypes[] = {T_NULL, T_NULL};
-    struct Any* lhs;
-    struct Any* rhs;
-    struct Any** paramVars[] = {&lhs, &rhs};
-    primitive_checkArgs(2, paramTypes, args, paramVars, etor);
+    struct Any* lhs = list_getFirst(args);
+    struct Any* rhs = list_getSecond(args);
     globals_star(lhs, rhs, etor);
 }
 

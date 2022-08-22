@@ -52,6 +52,6 @@ size_t boolean_sizeOf(struct D_Boolean* self) {
     return sizeof(struct D_Boolean);
 }
 
-size_t boolean_structSize() {
+size_t boolean_structSize(void) {
     return sizeof(struct D_Boolean);
 }

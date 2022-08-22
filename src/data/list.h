@@ -14,6 +14,7 @@ struct D_List* list_new(struct Any* first, struct Any* rest);
 struct D_List* list_from(struct Any* arg, ...);
 void list_free(struct D_List* self);
 
+struct D_Array* list_asArray(struct D_List* self);
 bool list_boolValue(struct D_List* self);
 int list_compare(struct D_List* self, struct D_List* other, struct Evaluator* etor);
 // returns -1 if the list is improper
@@ -34,7 +35,7 @@ void list_setRest(struct D_List* self, struct Any* rest);
 void list_show(struct D_List* self, FILE* fp);
 void list_showWith(struct D_List* self, char* open, char* sep, char* close, FILE* fp);
 size_t list_sizeOf(struct D_List* self);
-size_t list_structSize();
+size_t list_structSize(void);
 struct D_Array* list_toArray(struct D_List* self, int nElems);
 
 #endif

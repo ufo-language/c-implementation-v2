@@ -7,9 +7,9 @@
 #include <unistd.h>
 
 #include "gc/gc.h"
-#include "main/ipc.h"
+#include "ipc/ipc.h"
+#include "ipc/resourceserver.h"
 #include "main/ufo.h"
-#include "main/resourceserver.h"
 
 int ARGC = 0;
 char** ARGV = NULL;
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
         ufo_start();
         ufo_stop();
         gc_stop();
-        ipc_writeString(CHILD_TO_PARENT[1], 12, "DGoodbye!\n\0");
+        ipc_writeString(CHILD_TO_PARENT[1], 16, "DShutting down\n\0");
         ipc_writeString(CHILD_TO_PARENT[1], 2, "UQ");
     }
     else {

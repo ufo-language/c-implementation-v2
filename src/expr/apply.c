@@ -110,6 +110,6 @@ size_t apply_sizeOf(struct E_Apply* self) {
     return sizeof(self);
 }
 
-size_t apply_structSize() {
+size_t apply_structSize(void) {
     return sizeof(struct E_Apply);
 }

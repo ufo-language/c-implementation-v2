@@ -28,7 +28,6 @@
 #include "expr/trycatch.h"
 #include "main/globals.h"
 #include "lexer/lexer.h"
-#include "lexer/lexobj.h"
 
 // NOTES
 // Write this in the simplest way possible.
@@ -117,7 +116,7 @@ static String HASH_MARK;
 static String PAREN_CLOSE;
 static String PAREN_OPEN;
 static String TILDE;
-static Symbol IGNORE;
+Symbol IGNORE;  // needed by json_parser.c
 
 static String CATCH;
 static String DO;
@@ -172,17 +171,17 @@ void parser_rootObjects(void) {
 
 // primitive parsers =================================================
 
-static Obj p_spot(List* tokens, Symbol tokenType) {
+Obj p_spot(List* tokens, Symbol tokenType) {
     Array firstToken = (Array)list_getFirst(*tokens);
     Symbol tokenSym = (Symbol)array_get_unsafe(firstToken, 0);
     if (tokenSym == tokenType) {
         *tokens = (List)list_getRest(*tokens);
         return array_get_unsafe(firstToken, 1);
     }
-    return false;
+    return NULL;
 }
 
-static Obj p_spotValue(List* tokens, Symbol tokenType, Obj value) {
+Obj p_spotValue(List* tokens, Symbol tokenType, Obj value) {
     Array firstToken = (Array)list_getFirst(*tokens);
     Symbol tokenSym = (Symbol)array_get_unsafe(firstToken, 0);
     if (tokenSym == tokenType) {
@@ -216,7 +215,7 @@ Obj p_braceClose(List* tokens) {
     if (p_special(tokens, BRACE_CLOSE)) {
         return (Obj)IGNORE;
     }
-    p_fail(tokens, "Epected '}' or ','", NULL);
+    p_fail(tokens, "Expected '}' or ','", NULL);
     return  NULL;
 }
 
@@ -228,7 +227,7 @@ Obj p_bracketClose(List* tokens) {
     if (p_special(tokens, BRACKET_CLOSE)) {
         return (Obj)IGNORE;
     }
-    p_fail(tokens, "Epected ']'", NULL);
+    p_fail(tokens, "Expected ']'", NULL);
     return  NULL;
 }
 
@@ -248,15 +247,15 @@ Obj p_parenOpen_required(List* tokens) {
     if (p_special(tokens, PAREN_OPEN)) {
         return (Obj)IGNORE;
     }
-    p_fail(tokens, "Epected '('", NULL);
-    return  NULL;
+    p_fail(tokens, "Expected '('", NULL);
+    return NULL;
 }
 
 Obj p_parenClose_required(List* tokens) {
     if (p_special(tokens, PAREN_CLOSE)) {
         return (Obj)IGNORE;
     }
-    p_fail(tokens, "Epected ')'", NULL);
+    p_fail(tokens, "Expected ')'", NULL);
     return  NULL;
 }
 
@@ -265,11 +264,11 @@ Obj p_tilde(List* tokens) {
 }
 
 Obj p_equalSign(List* tokens) {
-    return p_spotValue(tokens, LEXER_SYMBOLS[LT_Operator], (Obj)EQUAL_SIGN) ? (Obj)IGNORE : NULL;
+    return p_spotValue(tokens, LEXER_SYMBOLS[LTT_Operator], (Obj)EQUAL_SIGN) ? (Obj)IGNORE : NULL;
 }
 
 Obj p_equalSign_required(List* tokens) {
-    if (p_spotValue(tokens, LEXER_SYMBOLS[LT_Operator], (Obj)EQUAL_SIGN)) {
+    if (p_spotValue(tokens, LEXER_SYMBOLS[LTT_Operator], (Obj)EQUAL_SIGN)) {
         return (Obj)IGNORE;
     }
     p_fail(tokens, "Expected '='", NULL);
@@ -296,15 +295,16 @@ Obj p_oneOf(List* tokens, ...) {
     va_start(argList, tokens);
     Parser parser;
     List savedTokens = *tokens;
+    Obj value = NULL;
     while ((parser = va_arg(argList, Parser))) {
-        Obj value = parser(tokens);
+        value = parser(tokens);
         if (value) {
-            return value;
+            break;
         }
         *tokens = savedTokens;
     }
     va_end(argList);
-    return NULL;
+    return value;
 }
 
 struct D_Queue* p_sepBy(List* tokens, Parser parser, Parser separator) {
@@ -338,6 +338,7 @@ struct D_Queue* p_seq(List* tokens, ...) {
     while ((parser = va_arg(argList, Parser))) {
         Obj value = parser(tokens);
         if (value == NULL) {
+            va_end(argList);
             return NULL;
         }
         if (value != (Obj)IGNORE) {
@@ -374,55 +375,55 @@ struct D_Queue* p_commaSepElems(List* tokens) {
 // literals ==========================================================
 
 Obj p_boolean(List* tokens) {
-    return p_spot(tokens, LEXER_SYMBOLS[LT_Boolean]);
+    return p_spot(tokens, LEXER_SYMBOLS[LTT_Boolean]);
 }
 
 Obj p_identifier(List* tokens) {
-    return p_spot(tokens, LEXER_SYMBOLS[LT_Identifier]);
+    return p_spot(tokens, LEXER_SYMBOLS[LTT_Identifier]);
 }
 
 Obj p_integer(List* tokens) {
-    return p_spot(tokens, LEXER_SYMBOLS[LT_Integer]);
+    return p_spot(tokens, LEXER_SYMBOLS[LTT_Integer]);
 }
 
 Obj p_nil(List* tokens) {
-    return p_spot(tokens, LEXER_SYMBOLS[LT_Nil]);
+    return p_spot(tokens, LEXER_SYMBOLS[LTT_Nil]);
 }
 
 Obj p_real(List* tokens) {
-    return p_spot(tokens, LEXER_SYMBOLS[LT_Real]);
+    return p_spot(tokens, LEXER_SYMBOLS[LTT_Real]);
 }
 
 Obj p_reserved(List* tokens, String word) {
-    return p_spotValue(tokens, LEXER_SYMBOLS[LT_Reserved], (Obj)word) ? (Obj)IGNORE : NULL;
+    return p_spotValue(tokens, LEXER_SYMBOLS[LTT_Reserved], (Obj)word) ? (Obj)IGNORE : NULL;
 }
 
 Obj p_reserved_required(List* tokens, String word) {
-    if (p_spotValue(tokens, LEXER_SYMBOLS[LT_Reserved], (Obj)word)) {
+    if (p_spotValue(tokens, LEXER_SYMBOLS[LTT_Reserved], (Obj)word)) {
         return (Obj)IGNORE;
     }
-    p_fail(tokens, "expected a reserved word", (Obj)word);
+    p_fail(tokens, "Expected a reserved word", (Obj)word);
     return NULL;
 }
 
 Obj p_special(List* tokens, String str) {
-    return p_spotValue(tokens, LEXER_SYMBOLS[LT_Special], (Obj)str);
+    return p_spotValue(tokens, LEXER_SYMBOLS[LTT_Special], (Obj)str);
 }
 
 Obj p_string(List* tokens) {
-    return p_spot(tokens, LEXER_SYMBOLS[LT_String]);
+    return p_spot(tokens, LEXER_SYMBOLS[LTT_String]);
 }
 
 Obj p_symbol(List* tokens) {
-    return p_spot(tokens, LEXER_SYMBOLS[LT_Symbol]);
+    return p_spot(tokens, LEXER_SYMBOLS[LTT_Symbol]);
 }
 
 Obj p_symbol_required(List* tokens) {
-    Obj res = p_spot(tokens, LEXER_SYMBOLS[LT_Symbol]);
+    Obj res = p_spot(tokens, LEXER_SYMBOLS[LTT_Symbol]);
     if (res != NULL) {
         return res;
     }
-    p_fail(tokens, "Epected a symbol", NULL);
+    p_fail(tokens, "Expected a symbol", NULL);
     return  NULL;
 }
 
@@ -630,7 +631,7 @@ Obj p_TRY(List* tokens) {
 // expressions =======================================================
 
 Obj p_colonOperator(List* tokens) {
-    return p_spotValue(tokens, LEXER_SYMBOLS[LT_Operator], (Obj)COLON);
+    return p_spotValue(tokens, LEXER_SYMBOLS[LTT_Operator], (Obj)COLON);
 }
 
 Obj p_colonRhs(List* tokens) {
@@ -651,7 +652,7 @@ struct E_BinOp* p_colonExpr(List* tokens) {
     }
     Obj rhs = p_colonRhs(tokens);
     if (rhs == NULL) {
-        p_fail(tokens, "Expression expected after '.'", NULL);
+        p_fail(tokens, "Expression expected after ':'", NULL);
     }
     struct E_BinOp* binOp = binOp_new(lhs, (Identifier)colonOp, rhs);
     return binOp;
@@ -804,7 +805,7 @@ Obj p_parenExpr(List* tokens) {
 
 // for record definition
 Obj p_doubleColon(List* tokens) {
-    return p_spotValue(tokens, LEXER_SYMBOLS[LT_Operator], (Obj)DOUBLE_COLON) ? (Obj)IGNORE : NULL;
+    return p_spotValue(tokens, LEXER_SYMBOLS[LTT_Operator], (Obj)DOUBLE_COLON) ? (Obj)IGNORE : NULL;
 }
 
 Obj p_typeSpec(List* tokens) {
@@ -921,7 +922,7 @@ Obj p_any(List* tokens) {
     );
     // check for an operator and a RHS expression
     struct D_List* savedTokens = *tokens;
-    Obj oper = p_spot(tokens, LEXER_SYMBOLS[LT_Operator]);
+    Obj oper = p_spot(tokens, LEXER_SYMBOLS[LTT_Operator]);
     if (oper == NULL) {
         // this expression is not a binary operator, just return the original result
         *tokens = savedTokens;

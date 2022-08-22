@@ -19,6 +19,6 @@ void exceptionHandler_eval(struct E_ExceptionHandler* self, struct Evaluator* et
 void exceptionHandler_markChildren(struct E_ExceptionHandler* self);
 void exceptionHandler_show(struct E_ExceptionHandler* self, FILE* fd);
 size_t exceptionHandler_sizeOf(struct E_ExceptionHandler* self);
-size_t exceptionHandler_structSize();
+size_t exceptionHandler_structSize(void);
 
 #endif

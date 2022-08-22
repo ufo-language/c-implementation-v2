@@ -11,6 +11,13 @@ struct D_String;
 struct D_StringBuffer;
 struct Evaluator;
 
+enum ReadAction {
+    KEEP_LOOPING,
+    QUIT,
+    READ_LINES,
+    READ_FILE
+};
+
 // TODO should this be in repl.c instead?
 struct REPL {
     struct Any obj;
@@ -23,8 +30,9 @@ struct REPL {
     struct Any* value;
     struct Evaluator* etor;
     struct Any* error;
+    struct D_String* loadFileName;
     bool fileWasLoaded;
-    struct D_String* lastFileLoaded;
+    bool keepRunning;
 };
 
 struct REPL* repl_new(bool makeRoot);
@@ -35,6 +43,6 @@ void repl_markChildren(struct REPL* self);
 void repl_run(struct REPL* self);
 void repl_show(struct REPL* self, FILE* fp);
 size_t repl_sizeOf(struct REPL* self);
-size_t repl_structSize();
+size_t repl_structSize(void);
 
 #endif

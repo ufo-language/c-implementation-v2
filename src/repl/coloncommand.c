@@ -7,6 +7,7 @@
 #include "data/file.h"
 #include "data/list.h"
 #include "data/string.h"
+#include "data/stringbuffer.h"
 #include "etor/evaluator.h"
 #include "gc/gc.h"
 #include "main/globals.h"
@@ -45,7 +46,7 @@ static void colonCommand_help(void) {
     puts("  :syms           Shows symbol intern table");
 }
 
-bool colonCommand_run(struct D_List* tokens, struct REPL* repl) {
+enum ReadAction colonCommand_run(struct D_List* tokens, struct REPL* repl) {
     struct D_String* token1 = (struct D_String*)list_getFirst(tokens);
     char* string = string_getChars(token1);
     repl->fileWasLoaded = false;
@@ -54,35 +55,23 @@ bool colonCommand_run(struct D_List* tokens, struct REPL* repl) {
         colonCommand_help();
     }
     else if (!strcmp(":q", string)) {
-        return false;
+        return QUIT;
     }
     else if (!strcmp(":l", string)) {
-        struct D_String* fileNameString;
         if (list_isEmpty((struct D_List*)list_getRest(tokens))) {
-            fileNameString = repl->lastFileLoaded;
-            if (fileNameString == NULL) {
+            if (repl->loadFileName == NULL) {
                 puts("no file was previously loaded");
-                return true;
+                return KEEP_LOOPING;
             }
         }
         else {
-            fileNameString = (struct D_String*)list_getSecond(tokens);
+            repl->loadFileName = (struct D_String*)list_getSecond(tokens);
         }
-        char* fileName = string_getChars(fileNameString);
-        struct D_File* file = file_new_charString(fileName);
-        if (file_open_aux(file)) {
-            file_readAll_stringBuffer(file, repl->inputStringBuffer, repl->etor);
-            file_close(file, repl->etor);
-            repl->fileWasLoaded = true;
-            repl->lastFileLoaded = fileNameString;
-        }
-        else {
-            printf("unable to open file '%s'\n", fileName);
-        }
+        return READ_FILE;
     }
     // REPL ----------------------------------------------------------
     else if (!strcmp(":e", string)) {
-        printf("Option not implemented\n");
+        return READ_LINES;
     }
     else if (!strcmp(":env", string)) {
         struct D_Triple* env = evaluator_getEnv(repl->etor);
@@ -168,5 +157,5 @@ bool colonCommand_run(struct D_List* tokens, struct REPL* repl) {
     else {
         fprintf(stderr, "Colon command '%s' not understood\n", string);
     }
-    return true;
+    return KEEP_LOOPING;
 }

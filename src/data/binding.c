@@ -127,6 +127,6 @@ size_t binding_sizeOf(struct D_Binding* self) {
     return sizeof(self);
 }
 
-size_t binding_structSize() {
+size_t binding_structSize(void) {
     return sizeof(struct D_Binding);
 }

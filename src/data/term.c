@@ -98,6 +98,6 @@ size_t term_sizeOf(struct D_Term* self) {
     return sizeof(struct D_Term);
 }
 
-size_t term_structSize() {
+size_t term_structSize(void) {
     return sizeof(struct D_Term);
 }

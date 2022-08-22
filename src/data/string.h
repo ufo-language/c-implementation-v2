@@ -26,10 +26,11 @@ char string_getChar_unsafe(struct D_String* self, int n);
 char* string_getChars(struct D_String* self);
 HashCode string_hashCode(struct D_String* self, struct Evaluator* etor);
 bool string_isEqual(struct D_String* self, struct D_String* other);
+struct D_String* string_join(struct D_String* self, struct D_String* other);
 void string_show(struct D_String* self, FILE* fd);
 struct D_List* string_split(struct D_String* self, char c);
 void string_unescapify(struct D_String* self, FILE* fd);
 size_t string_sizeOf(struct D_String* self);
-size_t string_structSize();
+size_t string_structSize(void);
 
 #endif

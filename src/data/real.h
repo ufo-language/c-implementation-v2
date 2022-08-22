@@ -16,6 +16,6 @@ bool real_isEqual(struct D_Real* self, struct D_Real* other);
 double real_getValue(struct D_Real* self);
 void real_show(struct D_Real* self, FILE* fp);
 size_t real_sizeOf(struct D_Real* self);
-size_t real_structSize();
+size_t real_structSize(void);
 
 #endif

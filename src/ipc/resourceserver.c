@@ -5,10 +5,10 @@
 
 #include "data/stringbufferstruct.h"
 #include "data/stringbuffer.h"
-#include "main/ipc.h"
+#include "ipc/ipc.h"
 
-void _handleDisplayString(int readFromUfo);
-void _handleUfoCommand(int readFromUfo, int writeToUfo);
+static void _handleDisplayString(int readFromUfo);
+static void _handleUfoCommand(int readFromUfo, int writeToUfo);
 
 static bool _continue;
 
@@ -29,14 +29,14 @@ void resourceServer(pid_t ufoPid, int readFromUfo, int writeToUfo) {
     waitpid(ufoPid, &childStatus, 0);  // wait for UFO to terminate
 }
 
-void _handleDisplayString(int readFromUfo) {
+static void _handleDisplayString(int readFromUfo) {
     char c;
     while ((c = ipc_readChar(readFromUfo))) {
         putchar(c);
     }
 }
 
-void _handleReadString(int writeToUfo) {
+static void _handleReadString(int writeToUfo) {
     static struct D_StringBuffer sb;
     while (true) {
         // read text from the user
@@ -54,7 +54,7 @@ void _handleReadString(int writeToUfo) {
     }
 }
 
-void _handleUfoCommand(int readFromUfo, int writeToUfo) {
+static void _handleUfoCommand(int readFromUfo, int writeToUfo) {
     (void)writeToUfo;
     char cmd = ipc_readChar(readFromUfo);
     switch (cmd) {

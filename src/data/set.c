@@ -18,7 +18,7 @@ struct D_Set {
     struct D_HashTable* hash;
 };
 
-struct D_Set* set_new() {
+struct D_Set* set_new(void) {
     struct D_Set* self = (struct D_Set*)gc_alloc(T_Set);
     self->hash = hashTable_new();
     return self;
@@ -106,12 +106,12 @@ void set_show(struct D_Set* self, FILE* fp) {
     array_showWith(keyAry, "${", ", ", "}", fp);
 }
 
-size_t set_structSize() {
-    return sizeof(struct D_Set);
-}
-
 size_t set_sizeOf(struct D_Set* self) {
     return sizeof(self);
+}
+
+size_t set_structSize(void) {
+    return sizeof(struct D_Set);
 }
 
 struct D_Array* set_toArray(struct D_Set* self) {

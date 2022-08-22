@@ -18,7 +18,7 @@ void if_freeVars(struct E_If* self, struct D_Set* freeVars, struct Evaluator* et
 void if_markChildren(struct E_If* self);
 void if_show(struct E_If* self, FILE* fp);
 size_t if_sizeOf(struct E_If* self);
-size_t if_structSize();
+size_t if_structSize(void);
 
 #endif
 

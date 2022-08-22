@@ -21,6 +21,6 @@ struct D_HashTable* recordDefinition_getNameMap(struct E_RecordDefinition* self)
 void recordDefinition_markChildren(struct E_RecordDefinition* self);
 void recordDefinition_show(struct E_RecordDefinition* self, FILE* fp);
 size_t recordDefinition_sizeOf(struct E_RecordDefinition* self);
-size_t recordDefinition_structSize();
+size_t recordDefinition_structSize(void);
 
 #endif

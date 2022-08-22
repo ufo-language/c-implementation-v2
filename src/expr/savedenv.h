@@ -15,6 +15,6 @@ void savedEnv_eval(struct E_SavedEnv* self, struct Evaluator* etor);
 void savedEnv_markChildren(struct E_SavedEnv* self);
 void savedEnv_show(struct E_SavedEnv* self, FILE* fp);
 size_t savedEnv_sizeOf(struct E_SavedEnv* self);
-size_t savedEnv_structSize();
+size_t savedEnv_structSize(void);
 
 #endif

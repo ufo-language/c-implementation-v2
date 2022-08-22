@@ -19,7 +19,7 @@ struct D_Unsigned* unsigned_new(size_t value) {
 }
 
 void unsigned_display(struct D_Unsigned* self, FILE* fp) {
-    fprintf(fp, "%lu", self->value);
+    fprintf(fp, "%lu", (unsigned long)self->value);
 }
 
 void unsigned_initialize(struct D_Unsigned* self, size_t value) {
@@ -61,6 +61,6 @@ size_t unsigned_sizeOf(struct D_Unsigned* self) {
     return sizeof(struct D_Unsigned);
 }
 
-size_t unsigned_structSize() {
+size_t unsigned_structSize(void) {
     return sizeof(struct D_Unsigned);
 }

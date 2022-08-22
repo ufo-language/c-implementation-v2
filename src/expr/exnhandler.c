@@ -75,6 +75,6 @@ size_t exceptionHandler_sizeOf(struct E_ExceptionHandler* self) {
     return sizeof(self);
 }
 
-size_t exceptionHandler_structSize() {
+size_t exceptionHandler_structSize(void) {
     return sizeof(struct E_ExceptionHandler);
 }

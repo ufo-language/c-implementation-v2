@@ -27,6 +27,6 @@ struct D_Symbol* term_name(struct D_Term* self);
 void term_set_unsafe(struct D_Term* self, int n, struct Any* elem);
 void term_show(struct D_Term* self, FILE* fp);
 size_t term_sizeOf(struct D_Term* self);
-size_t term_structSize();
+size_t term_structSize(void);
 
 #endif

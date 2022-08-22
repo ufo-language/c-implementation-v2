@@ -38,7 +38,7 @@ static void _call(struct Evaluator* etor, struct D_List* args) {
     struct Any** paramVars[] = {&functionAddress};
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     union FunctionPointer {
-        void (*functionCall)();
+        void (*functionCall)(void);
         void* pointer;
     } functionPointer;
     functionPointer.pointer = address_getValue((struct D_Address*)functionAddress);

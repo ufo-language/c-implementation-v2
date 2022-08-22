@@ -29,6 +29,6 @@ void queue_markChildren(struct D_Queue* self);
 struct D_Triple* queue_match(struct D_Queue* self, struct Any* other, struct D_Triple* bindings);
 void queue_show(struct D_Queue* self, FILE* fp);
 size_t queue_sizeOf(struct D_Queue* self);
-size_t queue_structSize();
+size_t queue_structSize(void);
 
 #endif
