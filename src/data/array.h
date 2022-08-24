@@ -28,6 +28,7 @@ void array_eval(struct D_Array* self, struct Evaluator* etor);
 void array_freeVars(struct D_Array* self, struct D_Set* freeVars, struct Evaluator* etor);
 struct Any* array_get(struct D_Array* self, int n, struct Evaluator* etor);
 struct Any* array_get_unsafe(struct D_Array* self, int n);
+struct Any* array_getAssoc(struct D_Array* self, struct Any* key, struct Evaluator* etor);
 bool array_hashCode(struct D_Array* self, HashCode* hashCode);
 void array_insert(struct D_Array* self, int index, struct Any* elem, struct Any* deadZone);
 struct D_Array* array_insertionSort(struct D_Array* self, struct Evaluator* etor);

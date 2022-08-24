@@ -148,15 +148,18 @@ static void _new(struct Evaluator* etor, struct D_List* args) {
 }
 
 void ns_array_get(struct Evaluator* etor, struct D_List* args) {
-    static enum TypeId paramTypes[] = {T_Array, T_Integer};
+    static enum TypeId paramTypes[] = {T_Array, T_NULL};
     struct Any* arrayObj;
     struct Any* indexObj;
     struct Any** paramVars[] = {&arrayObj, &indexObj};
     primitive_checkArgs(2, paramTypes, args, paramVars, etor);
     struct D_Array* array = (struct D_Array*)arrayObj;
-    struct D_Integer* indexInt = (struct D_Integer*)indexObj;
-    int index = integer_getValue(indexInt);
-    evaluator_pushObj(etor, (struct Any*)array_get(array, index, etor));
+    if (T_Integer == any_typeId(indexObj)) {
+        struct D_Integer* indexInt = (struct D_Integer*)indexObj;
+        int index = integer_getValue(indexInt);
+        evaluator_pushObj(etor, array_get(array, index, etor));
+    }
+    evaluator_pushObj(etor, array_getAssoc(array, indexObj, etor));
 }
 
 static void _reverse(struct Evaluator* etor, struct D_List* args) {

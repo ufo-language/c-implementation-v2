@@ -183,6 +183,19 @@ struct Any* array_get_unsafe(struct D_Array* self, int n) {
     return self->elems[n];
 }
 
+struct Any* array_getAssoc(struct D_Array* self, struct Any* key, struct Evaluator* etor) {
+    for (int n=0; n<self->count; n++) {
+        
+        evaluator_throwException(
+            etor,
+            symbol_new("Array"),
+            "key not found in array",
+            (struct Any*)array_newN(2, key, (struct Any*)self)
+        );
+    }
+    return self->elems[n];
+}
+
 bool array_hashCode(struct D_Array* self, HashCode* hashCode) {
     HashCode elemHashCode = 0;
     HashCode tempHashCode;
