@@ -19,6 +19,7 @@ int CHILD_TO_PARENT[2];
 
 void any_sanityCheck(void);
 void methodTable_setupMethods(void);
+void methodTable_deallocateAll(void);
 
 int main(int argc, char* argv[]) {
     ARGC = argc;
@@ -48,6 +49,7 @@ int main(int argc, char* argv[]) {
         ufo_start();
         ufo_stop();
         gc_stop();
+        methodTable_deallocateAll();
         ipc_writeString(CHILD_TO_PARENT[1], 16, "DShutting down\n\0");
         ipc_writeString(CHILD_TO_PARENT[1], 2, "UQ");
     }

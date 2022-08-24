@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "data/any.h"
 #include "dispatch/methodtable.h"
 
@@ -94,4 +96,10 @@ void methodTable_setupMethods(void) {
     METHOD_TABLE[T_TryCatch] = tryCatch_methodSetup();
     METHOD_TABLE[T_Tuple] = tuple_methodSetup();
     METHOD_TABLE[T_Unsigned] = unsigned_methodSetup();
+}
+
+void methodTable_deallocateAll(void) {
+    for (int n=0; n<T_FINAL; n++) {
+        free(METHOD_TABLE[n]);
+    }
 }
