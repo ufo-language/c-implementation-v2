@@ -19,6 +19,7 @@ struct D_HashTable* hashTable_deepCopy(struct D_HashTable* self);
 void hashTable_eval(struct D_HashTable* self, struct Evaluator* etor);
 void hashTable_freeVars(struct D_HashTable* self, struct D_Set* freeVars, struct Evaluator* etor);
 struct Any* hashTable_get(struct D_HashTable* self, struct Any* key);
+struct Any* hashTable_get_throw(struct D_HashTable* self, struct Any* key, struct Evaluator* etor);
 bool hashTable_hasKey(struct D_HashTable* self, struct Any* key);
 bool hashTable_isEqual(struct D_HashTable* self, struct D_HashTable* other);
 struct D_Array* hashTable_keyArray(struct D_HashTable* self);

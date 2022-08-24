@@ -6,6 +6,7 @@
 #include "data/hashtable.h"
 #include "data/integer.h"
 #include "data/set.h"
+#include "data/symbol.h"
 #include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
@@ -214,6 +215,19 @@ struct Any* hashTable_get(struct D_HashTable* self, struct Any* key) {
     unsigned int bucketNum = 0;
     struct BucketLink* link = _locateLink(self->buckets, self->nBuckets, key, &bucketNum);
     return link ? link->value : NULL;
+}
+
+struct Any* hashTable_get_throw(struct D_HashTable* self, struct Any* key, struct Evaluator* etor) {
+    struct Any* value = hashTable_get(self, key);
+    if (value == NULL) {
+        evaluator_throwException(
+            etor,
+            symbol_new("HashTable"),
+            "key not found",
+            (struct Any*)array_newN(2, key, (struct Any*)self)
+        );
+    }
+    return value;
 }
 
 static struct BucketLink* _locateLink(struct BucketLink** buckets, int nBuckets, struct Any* key, unsigned int* bucketNum) {
