@@ -154,18 +154,25 @@ void ns_array_get(struct Evaluator* etor, struct D_List* args) {
     struct Any** paramVars[] = {&arrayObj, &indexObj};
     primitive_checkArgs(2, paramTypes, args, paramVars, etor);
     struct D_Array* array = (struct D_Array*)arrayObj;
-    if (T_Integer == any_typeId(indexObj)) {
+    enum TypeId indexTypeId = any_typeId(indexObj);
+    if (T_Integer == indexTypeId) {
         struct D_Integer* indexInt = (struct D_Integer*)indexObj;
         int index = integer_getValue(indexInt);
         evaluator_pushObj(etor, array_get(array, index, etor));
     }
-    struct Any* val = array_getAssoc(array, indexObj);
-    if (val == NULL) {
-        struct D_Symbol* sym = symbol_new("Array");
-        struct D_Array* exn = array_newN(2, indexObj, (struct Any*)array);
-        evaluator_throwException(etor, sym, "key not found in array", (struct Any*)exn);
+    else if (T_Sequence == indexTypeId) {
+        struct D_Array* val = array_getRange(array, (struct D_Sequence*)indexObj);
+        evaluator_pushObj(etor, (struct Any*)val);
     }
-    evaluator_pushObj(etor, val);
+    else {
+        struct Any* val = array_getAssoc(array, indexObj);
+        if (val == NULL) {
+            struct D_Symbol* sym = symbol_new("Array");
+            struct D_Array* exn = array_newN(2, indexObj, (struct Any*)array);
+            evaluator_throwException(etor, sym, "key not found in array", (struct Any*)exn);
+        }
+        evaluator_pushObj(etor, val);
+    }
 }
 
 static void _reverse(struct Evaluator* etor, struct D_List* args) {

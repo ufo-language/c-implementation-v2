@@ -9,6 +9,7 @@
 
 struct D_Array;
 struct D_Queue;
+struct D_Sequence;
 struct D_Set;
 struct Evaluator;
 
@@ -29,6 +30,7 @@ void array_freeVars(struct D_Array* self, struct D_Set* freeVars, struct Evaluat
 struct Any* array_get(struct D_Array* self, int n, struct Evaluator* etor);
 struct Any* array_get_unsafe(struct D_Array* self, int n);
 struct Any* array_getAssoc(struct D_Array* self, struct Any* key);
+struct D_Array* array_getRange(struct D_Array* self, struct D_Sequence* range);
 bool array_hashCode(struct D_Array* self, HashCode* hashCode);
 void array_insert(struct D_Array* self, int index, struct Any* elem, struct Any* deadZone);
 struct D_Array* array_insertionSort(struct D_Array* self, struct Evaluator* etor);

@@ -8,6 +8,7 @@
 #include "data/integer.h"
 #include "data/list.h"
 #include "data/queue.h"
+#include "data/sequence.h"
 #include "data/symbol.h"
 #include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
@@ -202,6 +203,20 @@ struct Any* array_getPairValue(struct D_Array* self, struct Any* key) {
     }
     struct Any** elems = self->elems;
     return any_isEqual(key, elems[0]) ? elems[1] : NULL;
+}
+
+struct D_Array* array_getRange(struct D_Array* self, struct D_Sequence* range) {
+    int start = sequence_getFrom(range);
+    if (start < 0) start = 0;
+    int stop = sequence_getTo(range);
+    if (stop > self->count) stop = self->count;
+    int by = sequence_getBy(range);
+    struct Any** elems = self->elems;
+    struct D_Queue* elemQ = queue_new();
+    for (int n=start; n<=stop; n+=by) {
+        queue_enq(elemQ, elems[n]);
+    }
+    return list_asArray(queue_asList(elemQ));
 }
 
 bool array_hashCode(struct D_Array* self, HashCode* hashCode) {

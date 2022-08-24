@@ -18,6 +18,8 @@ struct D_Term {
     struct D_Array* elems;
 };
 
+struct Any* term_getPairValue(struct D_Term* self, struct Any* key);
+
 struct Methods* term_methodSetup(void) {
     struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
     methodTable_setupDefaults(methods);
@@ -27,6 +29,7 @@ struct Methods* term_methodSetup(void) {
     methods->m_eval = (void (*)(struct Any*, struct Evaluator*))term_eval;
     methods->m_free = (void (*)(struct Any*))term_free;
     methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))term_freeVars;
+    methods->m_getPairValue = (struct Any* (*)(struct Any*, struct Any*))term_getPairValue;
     //methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))term_hashCode;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))term_isEqual;
     methods->m_markChildren = (void (*)(struct Any* self))term_markChildren;
@@ -77,6 +80,10 @@ void term_freeVars(struct D_Term* self, struct D_Set* freeVars, struct Evaluator
 
 struct Any* term_get(struct D_Term* self, int n) {
     return array_get_unsafe(self->elems, n);
+}
+
+struct Any* term_getPairValue(struct D_Term* self, struct Any* key) {
+    return (struct Any*)self->name == key ? (struct Any*)self->elems : NULL;
 }
 
 bool term_isEqual(struct D_Term* self, struct D_Term* other) {
