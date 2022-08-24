@@ -14,6 +14,7 @@
 void ns_string_get(struct Evaluator* etor, struct D_List* args);
 static void _isEmpty(struct Evaluator* etor, struct D_List* args);
 static void _join(struct Evaluator* etor, struct D_List* args);
+static void _startsWith(struct Evaluator* etor, struct D_List* args);
 
 void ns_string_defineAll(struct D_HashTable* env) {
     struct E_Identifier* nsName = identifier_new(NS_NAME);
@@ -22,6 +23,7 @@ void ns_string_defineAll(struct D_HashTable* env) {
     primitive_define(nsHash, "get", ns_string_get);
     primitive_define(nsHash, "isEmpty", _isEmpty);
     primitive_define(nsHash, "join", _join);
+    primitive_define(nsHash, "startsWith", _startsWith);
 }
 
 void ns_string_get(struct Evaluator* etor, struct D_List* args) {
@@ -56,4 +58,15 @@ static void _join(struct Evaluator* etor, struct D_List* args) {
     struct D_String* string2 = (struct D_String*)string2Obj;
     struct D_String* string3 = string_join(string1, string2);
     evaluator_pushObj(etor, (struct Any*)string3);
+}
+
+static void _startsWith(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_String, T_String};
+    struct Any* stringObj;
+    struct Any* prefixObj;
+    struct Any** paramVars[] = {&stringObj, &prefixObj};
+    primitive_checkArgs(2, paramTypes, args, paramVars, etor);
+    struct D_String* string = (struct D_String*)stringObj;
+    struct D_String* prefix = (struct D_String*)prefixObj;
+    evaluator_pushObj(etor, (struct Any*)boolean_from(string_startsWith(string, prefix)));
 }

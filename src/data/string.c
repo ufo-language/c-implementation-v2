@@ -21,6 +21,8 @@ struct D_String {
     char* chars;
 };
 
+struct Any* string_getPairValue(struct D_String* self, struct Any* prefix);
+
 struct Methods* string_methodSetup(void) {
     struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
     methodTable_setupDefaults(methods);
@@ -28,6 +30,7 @@ struct Methods* string_methodSetup(void) {
     methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))string_compare;
     methods->m_display = (void (*)(struct Any*, FILE*))string_display;
     methods->m_free = (void (*)(struct Any*))string_free;
+    methods->m_getPairValue = (struct Any* (*)(struct Any*, struct Any*))string_getPairValue;
     methods->m_hashCode = (bool (*)(struct Any*, HashCode*))string_hashCode;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))string_isEqual;
     methods->m_show = (void (*)(struct Any*, FILE*))string_show;
@@ -123,6 +126,14 @@ char* string_getChars(struct D_String* self) {
     return self->chars;
 }
 
+struct Any* string_getPairValue(struct D_String* self, struct Any* prefix) {
+    if (T_String != any_typeId(prefix)) {
+        return NULL;
+    }
+    struct D_String* prefixString = (struct D_String*)prefix;
+    return string_startsWith(self, prefixString) ? (struct Any*)self : NULL;
+}
+
 bool string_hashCode(struct D_String* self, HashCode* hashCode) {
     HashCode charHashCode = 0;
     for (int n=0; n<self->count; n++) {
@@ -189,6 +200,20 @@ struct D_List* string_split(struct D_String* self, char c) {
 
 size_t string_sizeOf(struct D_String* self) {
     return sizeof(self) + sizeof(self->chars);
+}
+
+bool string_startsWith(struct D_String* self, struct D_String* prefix) {
+    if (self->count < prefix->count) {
+        return false;
+    }
+    char* selfChars = self->chars;
+    char* prefixChars = prefix->chars;
+    for (int n=0; n<prefix->count; n++) {
+        if (selfChars[n] != prefixChars[n]) {
+            return false;
+        }
+    }
+    return true;
 }
 
 size_t string_structSize(void) {
