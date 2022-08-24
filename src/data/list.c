@@ -21,6 +21,8 @@ struct D_List {
     struct Any* rest;
 };
 
+struct Any* list_getPairValue(struct D_List* self, struct Any* key);
+
 struct Methods* list_methodSetup(void) {
     struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
     methodTable_setupDefaults(methods);
@@ -30,6 +32,7 @@ struct Methods* list_methodSetup(void) {
     methods->m_eval = (void (*)(struct Any*, struct Evaluator*))list_eval;
     methods->m_free = (void (*)(struct Any*))list_free;
     methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))list_freeVars;
+    methods->m_getPairValue = (struct Any* (*)(struct Any*, struct Any*))list_getPairValue;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))list_isEqual;
     methods->m_markChildren = (void (*)(struct Any* self))list_markChildren;
     methods->m_match = (struct D_Triple* (*)(struct Any*, struct Any*, struct D_Triple*))list_match;
@@ -159,6 +162,13 @@ void list_freeVars(struct D_List* self, struct D_Set* freeVars, struct Evaluator
 
 struct Any* list_getFirst(struct D_List* self) {
     return self->first;
+}
+
+struct Any* list_getPairValue(struct D_List* self, struct Any* key) {
+    if (list_isEmpty(self)) {
+        return NULL;
+    }
+    return any_isEqual(key, self->first) ? self->rest : NULL;
 }
 
 struct Any* list_getRest(struct D_List* self) {

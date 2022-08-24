@@ -20,6 +20,8 @@ struct D_Binding {
     struct Any* value;
 };
 
+struct Any* binding_getPairValue(struct D_Binding* self, struct Any* key);
+
 struct Methods* binding_methodSetup(void) {
     struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
     methodTable_setupDefaults(methods);
@@ -28,6 +30,7 @@ struct Methods* binding_methodSetup(void) {
     methods->m_eval = (void (*)(struct Any*, struct Evaluator*))binding_eval;
     methods->m_free = (void (*)(struct Any*))binding_free;
     methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))binding_freeVars;
+    methods->m_getPairValue = (struct Any* (*)(struct Any*, struct Any*))binding_getPairValue;
     methods->m_hashCode = (bool (*)(struct Any*, HashCode*))binding_hashCode;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))binding_isEqual;
     methods->m_markChildren = (void (*)(struct Any* self))binding_markChildren;
@@ -90,6 +93,10 @@ void binding_freeVars(struct D_Binding* self, struct D_Set* freeVars, struct Eva
 
 struct Any* binding_getKey(struct D_Binding* self) {
     return self->key;
+}
+
+struct Any* binding_getPairValue(struct D_Binding* self, struct Any* key) {
+    return any_isEqual(key, self->key) ? self->value : NULL;
 }
 
 struct Any* binding_getValue(struct D_Binding* self) {

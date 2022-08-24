@@ -25,6 +25,7 @@ struct D_Array {
 };
 
 bool array_boolValue(struct D_Array* self);
+struct Any* array_getPairValue(struct D_Array* self, struct Any* key);
 
 struct Methods* array_methodSetup(void) {
     struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
@@ -35,7 +36,7 @@ struct Methods* array_methodSetup(void) {
     methods->m_eval = (void (*)(struct Any*, struct Evaluator*))array_eval;
     methods->m_free = (void (*)(struct Any*))array_free;
     methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))array_freeVars;
-    methods->m_getPairValue = (struct Any*)(*)(struct Any*, struct Any*))array_getPairValue;
+    methods->m_getPairValue = (struct Any* (*)(struct Any*, struct Any*))array_getPairValue;
     methods->m_hashCode = (bool (*)(struct Any*, HashCode*))array_hashCode;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))array_isEqual;
     methods->m_markChildren = (void (*)(struct Any* self))array_markChildren;
@@ -193,6 +194,14 @@ struct Any* array_getAssoc(struct D_Array* self, struct Any* key) {
         }
     }
     return NULL;
+}
+
+struct Any* array_getPairValue(struct D_Array* self, struct Any* key) {
+    if (self->count < 2) {
+        return NULL;
+    }
+    struct Any** elems = self->elems;
+    return any_isEqual(key, elems[0]) ? elems[1] : NULL;
 }
 
 bool array_hashCode(struct D_Array* self, HashCode* hashCode) {
