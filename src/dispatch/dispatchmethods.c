@@ -64,12 +64,12 @@ void any_freeVars(struct Any* obj, struct D_Set* freeVars, struct Evaluator* eto
     method(obj, freeVars, etor);
 }
 
-HashCode any_hashCode(struct Any* obj, struct Evaluator* etor) {
+bool any_hashCode(struct Any* obj, HashCode* hashCode) {
     struct Methods* methods = METHOD_TABLE[obj->typeId];
     assert(NULL != methods);
-    HashCode (*method)(struct Any*, struct Evaluator*) = methods->m_hashCode;
+    bool (*method)(struct Any*, HashCode*) = methods->m_hashCode;
     assert(NULL != method);
-    return method(obj, etor);
+    return method(obj, hashCode);
 }
 
 bool any_isEqual(struct Any* obj, struct Any* other) {

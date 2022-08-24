@@ -13,6 +13,7 @@
 #include "etor/evaluator.h"
 #include "expr/identifier.h"
 #include "gc/gc.h"
+#include "main/typedefs.h"  // for HashCode
 #include "utils/hash.h"
 
 struct E_Identifier {
@@ -32,7 +33,7 @@ struct Methods* identifier_methodSetup(void) {
     methods->m_eval = (void (*)(struct Any*, struct Evaluator*))identifier_eval;
     methods->m_free = (void (*)(struct Any*))identifier_free;
     methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))identifier_freeVars;
-    methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))identifier_hashCode;
+    methods->m_hashCode = (bool (*)(struct Any*, HashCode*))identifier_hashCode;
     methods->m_match = (struct D_Triple*(*)(struct Any*, struct Any*, struct D_Triple*))identifier_match;
     methods->m_show = (void (*)(struct Any*, FILE*))identifier_show;
     methods->m_sizeOf = (size_t (*)(struct Any*))identifier_sizeOf;
@@ -42,7 +43,7 @@ struct Methods* identifier_methodSetup(void) {
 
 struct E_Identifier* identifier_new(char* name) {
     struct D_String* nameString = string_new(name);
-    struct E_Identifier* self = (struct E_Identifier*)hashTable_get_unsafe(INTERNED_IDENTIFIERS, (struct Any*)nameString);
+    struct E_Identifier* self = (struct E_Identifier*)hashTable_get(INTERNED_IDENTIFIERS, (struct Any*)nameString);
     if (self == NULL) {
         self = (struct E_Identifier*)gc_alloc(T_Identifier);
         int count = strlen(name);
@@ -56,7 +57,7 @@ struct E_Identifier* identifier_new(char* name) {
 
 struct E_Identifier* identifier_new_move(char* name, int count) {
     struct D_String* nameString = string_new(name);
-    struct E_Identifier* self = (struct E_Identifier*)hashTable_get_unsafe(INTERNED_IDENTIFIERS, (struct Any*)nameString);
+    struct E_Identifier* self = (struct E_Identifier*)hashTable_get(INTERNED_IDENTIFIERS, (struct Any*)nameString);
     if (self == NULL) {
         self = (struct E_Identifier*)gc_alloc(T_Identifier);
         self->name = name;
@@ -109,9 +110,9 @@ static unsigned int _hashCode(char* name, int strLen) {
     return hashCode ^ HASH_PRIMES[T_Symbol];
 }
 
-unsigned int identifier_hashCode(struct E_Identifier* self, struct Evaluator* etor) {
-    (void)etor;
-    return self->hashCode;
+bool identifier_hashCode(struct E_Identifier* self, HashCode* hashCode) {
+    *hashCode = self->hashCode;
+    return true;
 }
 
 struct D_Triple* identifier_match(struct E_Identifier* self, struct Any* other, struct D_Triple* bindings) {

@@ -66,7 +66,7 @@ struct E_RecordDefinition* record_getDefinition(struct D_Record* self) {
 
 struct Any* record_getFieldValue(struct D_Record* self, struct Any* fieldName, struct Evaluator* etor) {
     struct D_HashTable* nameMap = recordDefinition_getNameMap(self->recordDefinition);
-    struct Any* indexObj = hashTable_get_aux(nameMap, fieldName, etor);
+    struct Any* indexObj = hashTable_get(nameMap, fieldName);
     if (indexObj == NULL) {
         evaluator_throwException(
             etor,
@@ -102,7 +102,7 @@ struct D_Triple* record_match(struct D_Record* self, struct Any* other, struct D
 
 void record_setFieldValue(struct D_Record* self, struct Any* fieldName, struct Any* value, struct Evaluator* etor) {
     struct D_HashTable* nameMap = recordDefinition_getNameMap(self->recordDefinition);
-    struct Any* indexObj = hashTable_get_unsafe(nameMap, fieldName);
+    struct Any* indexObj = hashTable_get(nameMap, fieldName);
     if (indexObj == NULL) {
         evaluator_throwException(
             etor,

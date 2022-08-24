@@ -7,7 +7,7 @@
 #include "dispatch/methodtable.h"
 #include "gc/gc.h"
 #include "utils/hash.h"
-#include "main/typedefs.h"
+#include "main/typedefs.h"  // for HashCode
 
 struct D_Address* address_new(void* value) {
     struct D_Address* self = (struct D_Address*)gc_alloc(T_Address); 
@@ -15,24 +15,13 @@ struct D_Address* address_new(void* value) {
     return self;
 }
 
-#if 0
-bool address_boolValue(struct D_Address* self);
-int address_compare(struct D_Address* self, struct D_Address* other, struct Evaluator* etor);
-void address_free(struct D_Address* self);
-HashCode address_hashCode(struct D_Address* self, struct Evaluator* etor);
-bool address_isEqual(struct D_Address* self, struct D_Address* other);
-void address_show(struct D_Address* self, FILE* fp);
-size_t address_sizeOf(struct D_Address* self);
-size_t address_structSize(void);
-#endif
-
 struct Methods* address_methodSetup(void) {
     struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
     methodTable_setupDefaults(methods);
     methods->m_boolValue = (bool (*)(struct Any*))address_boolValue;
     methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))address_compare;
     methods->m_free = (void (*)(struct Any*))address_free;
-    methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))address_hashCode;
+    methods->m_hashCode = (bool (*)(struct Any*, HashCode*))address_hashCode;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))address_isEqual;
     methods->m_show = (void (*)(struct Any*, FILE*))address_show;
     methods->m_sizeOf = (size_t (*)(struct Any*))address_sizeOf;
@@ -63,8 +52,7 @@ void* address_getValue(struct D_Address* self) {
     return self->value;
 }
 
-HashCode address_hashCode(struct D_Address* self, struct Evaluator* etor) {
-    (void)etor;
+bool address_hashCode(struct D_Address* self, HashCode* hashCode) {
     union {
         void* address;
         // TODO does this field need padding so that it overlaps the
@@ -72,7 +60,8 @@ HashCode address_hashCode(struct D_Address* self, struct Evaluator* etor) {
         HashCode hashCode;
     } u;
     u.address = self->value;
-    return u.hashCode ^ HASH_PRIMES[T_Address];
+    *hashCode = u.hashCode ^ HASH_PRIMES[T_Address];
+    return true;
 }
 
 bool address_isEqual(struct D_Address* self, struct D_Address* other) {

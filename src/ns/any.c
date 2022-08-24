@@ -5,6 +5,7 @@
 #include "data/primitive.h"
 #include "data/set.h"
 #include "data/string.h"
+#include "data/symbol.h"
 #include "etor/evaluator.h"
 #include "expr/identifier.h"
 
@@ -56,6 +57,10 @@ static void _hashCode(struct Evaluator* etor, struct D_List* args) {
     struct Any* expr;
     struct Any** paramVars[] = {&expr};
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
-    HashCode hashCode = any_hashCode(expr, etor);
+    HashCode hashCode;
+    if (!any_hashCode(expr, &hashCode)) {
+        struct D_Symbol* sym = any_typeSymbol(expr);
+        evaluator_throwException(etor, sym, "object is not hashable", expr);
+    }
     evaluator_pushObj(etor, (struct Any*)integer_new(hashCode));
 }

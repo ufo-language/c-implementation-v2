@@ -44,7 +44,7 @@ static struct E_RecordDefinition* _definition_aux(struct Evaluator* etor, struct
     else {
         struct D_Symbol* recordTypeName = (struct D_Symbol*)arg;
         struct D_HashTable* recordNs = evaluator_getRecordNamespace(etor);
-        recordDef = (struct E_RecordDefinition*)hashTable_get(recordNs, (struct Any*)recordTypeName, etor);
+        recordDef = (struct E_RecordDefinition*)hashTable_get(recordNs, (struct Any*)recordTypeName);
         if (recordDef == NULL) {
             evaluator_throwException(
                 etor,

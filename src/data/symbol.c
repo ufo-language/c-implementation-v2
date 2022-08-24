@@ -8,7 +8,7 @@
 #include "data/symbol.h"
 #include "dispatch/methodtable.h"
 #include "gc/gc.h"
-#include "main/typedefs.h"
+#include "main/typedefs.h"  // for HashCode
 #include "utils/hash.h"
 
 extern struct D_HashTable* INTERNED_SYMBOLS;
@@ -26,7 +26,7 @@ struct Methods* symbol_methodSetup(void) {
     methodTable_setupDefaults(methods);
     methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))symbol_compare;
     methods->m_free = (void (*)(struct Any*))symbol_free;
-    methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))symbol_hashCode;
+    methods->m_hashCode = (bool (*)(struct Any*, HashCode*))symbol_hashCode;
     methods->m_show = (void (*)(struct Any*, FILE*))symbol_show;
     methods->m_sizeOf = (size_t (*)(struct Any*))symbol_sizeOf;
     methods->m_structSize = symbol_structSize;
@@ -35,7 +35,7 @@ struct Methods* symbol_methodSetup(void) {
 
 struct D_Symbol* symbol_new(char* name) {
     struct D_String* nameString = string_new(name);
-    struct D_Symbol* self = (struct D_Symbol*)hashTable_get_unsafe(INTERNED_SYMBOLS, (struct Any*)nameString);
+    struct D_Symbol* self = (struct D_Symbol*)hashTable_get(INTERNED_SYMBOLS, (struct Any*)nameString);
     if (self == NULL) {    
         self = (struct D_Symbol*)gc_alloc(T_Symbol);
         int count = strlen(name);
@@ -49,7 +49,7 @@ struct D_Symbol* symbol_new(char* name) {
 
 struct D_Symbol* symbol_new_move(char* name, int count) {
     struct D_String* nameString = string_new(name);
-    struct D_Symbol* self = (struct D_Symbol*)hashTable_get_unsafe(INTERNED_SYMBOLS, (struct Any*)nameString);
+    struct D_Symbol* self = (struct D_Symbol*)hashTable_get(INTERNED_SYMBOLS, (struct Any*)nameString);
     if (self == NULL) {    
         self = (struct D_Symbol*)gc_alloc(T_Symbol);
         self->name = name;
@@ -85,9 +85,9 @@ static HashCode _hashCode(char* name, int strLen) {
     return hashCode ^ HASH_PRIMES[T_Symbol];
 }
 
-HashCode symbol_hashCode(struct D_Symbol* self, struct Evaluator* etor) {
-    (void)etor;
-    return self->hashCode;
+bool symbol_hashCode(struct D_Symbol* self, HashCode* hashCode) {
+    *hashCode = self->hashCode;
+    return true;
 }
 
 void symbol_show(struct D_Symbol* self, FILE* fd) {

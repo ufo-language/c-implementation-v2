@@ -20,7 +20,7 @@ struct Methods {
     void             (*m_eval)(struct Any* self, struct Evaluator* etor);
     void             (*m_free)(struct Any* self);
     void             (*m_freeVars)(struct Any* self, struct D_Set* freeVars, struct Evaluator* etor);
-    HashCode         (*m_hashCode)(struct Any* self, struct Evaluator* etor);
+    bool             (*m_hashCode)(struct Any* self, HashCode* hashCode);
     bool             (*m_isEqual)(struct Any* self, struct Any* other);
     void             (*m_markChildren)(struct Any* self);
     struct D_Triple* (*m_match)(struct Any* self, struct Any* other, struct D_Triple* bindings);

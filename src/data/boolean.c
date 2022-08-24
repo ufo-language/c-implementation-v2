@@ -7,7 +7,7 @@
 #include "dispatch/methodtable.h"
 #include "gc/gc.h"
 #include "main/globals.h"
-#include "main/typedefs.h"
+#include "main/typedefs.h"  // for HashCode
 #include "utils/hash.h"
 
 struct D_Boolean {
@@ -18,7 +18,7 @@ struct D_Boolean {
 bool boolean_boolValue(struct D_Boolean* self);
 int boolean_compare(struct D_Boolean* self, struct D_Boolean* other, struct Evaluator* etor);
 void boolean_free(struct D_Boolean* self);
-HashCode boolean_hashCode(struct D_Boolean* self, struct Evaluator* etor);
+bool boolean_hashCode(struct D_Boolean* self, HashCode* hashCode);
 void boolean_show(struct D_Boolean* self, FILE* fp);
 size_t boolean_sizeOf(struct D_Boolean* self);
 size_t boolean_structSize(void);
@@ -29,7 +29,7 @@ struct Methods* boolean_methodSetup(void) {
     methods->m_boolValue = (bool (*)(struct Any*))boolean_boolValue;
     methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))boolean_compare;
     methods->m_free = (void (*)(struct Any*))boolean_free;
-    methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))boolean_hashCode;
+    methods->m_hashCode = (bool (*)(struct Any*, HashCode*))boolean_hashCode;
     methods->m_show = (void (*)(struct Any*, FILE*))boolean_show;
     methods->m_sizeOf = (size_t (*)(struct Any*))boolean_sizeOf;
     methods->m_structSize = boolean_structSize;
@@ -59,10 +59,10 @@ int boolean_compare(struct D_Boolean* self, struct D_Boolean* other, struct Eval
     return (self->value == other->value) ? 0 : ((!self->value) ? -1 : 1);
 }
 
-HashCode boolean_hashCode(struct D_Boolean* self, struct Evaluator* etor) {
-    (void)etor;
-    return self->value ? HASH_PRIMES[T_Boolean] + 1
-                       : HASH_PRIMES[T_Boolean];
+bool boolean_hashCode(struct D_Boolean* self, HashCode* hashCode) {
+    *hashCode = self->value ? HASH_PRIMES[T_Boolean] + 1
+                            : HASH_PRIMES[T_Boolean];
+    return true;
 }
 
 void boolean_show(struct D_Boolean* self, FILE* fp) {

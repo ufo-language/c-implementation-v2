@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "main/typedefs.h"
+#include "main/typedefs.h"  // for HashCode
 
 struct D_Unsigned;
 struct Evaluator;
@@ -18,7 +18,7 @@ int unsigned_compare(struct D_Unsigned* self, struct D_Unsigned* other, struct E
 void unsigned_display(struct D_Unsigned* self, FILE* fp);
 bool unsigned_isEqual(struct D_Unsigned* self, struct D_Unsigned* other);
 size_t unsigned_getValue(struct D_Unsigned* self);
-HashCode unsigned_hashCode(struct D_Unsigned* self, struct Evaluator* etor);
+bool unsigned_hashCode(struct D_Unsigned* self, HashCode* hashCode);
 void unsigned_show(struct D_Unsigned* self, FILE* fp);
 size_t unsigned_sizeOf(struct D_Unsigned* self);
 size_t unsigned_structSize(void);

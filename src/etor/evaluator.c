@@ -151,7 +151,7 @@ void evaluator_handleException(struct Evaluator* self) {
 struct Any* evaluator_lookup(struct Evaluator* self, struct E_Identifier* key) {
     struct Any* value = triple_lookup(self->env, (struct Any*)key);
     if (value == NULL) {
-        value = hashTable_get_unsafe(self->globalEnv, (struct Any*)key);
+        value = hashTable_get(self->globalEnv, (struct Any*)key);
     }
     return value;
 }

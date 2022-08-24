@@ -63,7 +63,7 @@ void recordSpec_eval(struct E_RecordSpec* self, struct Evaluator* etor) {
     int nElems = queue_count(self->fieldBindings);
     struct D_Array* valueAry = array_new(nElems);
     struct D_Symbol* typeName = self->recordTypeName;
-    struct Any* recordDefObj = hashTable_get(recordNs, (struct Any*)typeName, etor);
+    struct Any* recordDefObj = hashTable_get(recordNs, (struct Any*)typeName);
     if (recordDefObj == NULL) {
         evaluator_throwException(
             etor,
@@ -77,7 +77,7 @@ void recordSpec_eval(struct E_RecordSpec* self, struct Evaluator* etor) {
     while (!list_isEmpty(bindings)) {
         struct D_Binding* binding = (struct D_Binding*)list_getFirst(bindings);
         struct Any* key = binding_getKey(binding);
-        struct Any* indexObj = hashTable_get_unsafe(recordDefinition_getNameMap(recordDef), key);
+        struct Any* indexObj = hashTable_get(recordDefinition_getNameMap(recordDef), key);
         if (indexObj == NULL) {
             evaluator_throwException(
                 etor,

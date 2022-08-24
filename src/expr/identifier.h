@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "main/typedefs.h"
+#include "main/typedefs.h"  // for HashCode
 
 struct Any;
 struct D_Set;
@@ -21,7 +21,7 @@ int identifier_compare(struct E_Identifier* self, struct E_Identifier* other, st
 void identifier_eval(struct E_Identifier* self, struct Evaluator* etor);
 void identifier_freeVars(struct E_Identifier* self, struct D_Set* freeVars,struct Evaluator* etor);
 char* identifier_getName(struct E_Identifier* self);
-HashCode identifier_hashCode(struct E_Identifier* self, struct Evaluator* etor);
+bool identifier_hashCode(struct E_Identifier* self, HashCode* hashCode);
 struct D_Triple* identifier_match(struct E_Identifier* self, struct Any* other, struct D_Triple* bindings);
 void identifier_show(struct E_Identifier* self, FILE* fd);
 size_t identifier_sizeOf(struct E_Identifier* self);

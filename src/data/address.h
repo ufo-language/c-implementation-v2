@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 #include "any.h"
+#include "main/typedefs.h"  // for HashCode
 
 struct D_Address {
     struct Any obj;
@@ -18,7 +19,7 @@ bool address_boolValue(struct D_Address* self);
 int address_compare(struct D_Address* self, struct D_Address* other, struct Evaluator* etor);
 bool address_isEqual(struct D_Address* self, struct D_Address* other);
 void* address_getValue(struct D_Address* self);
-HashCode address_hashCode(struct D_Address* self, struct Evaluator* etor);
+bool address_hashCode(struct D_Address* self, HashCode* hashCode);
 void address_setValue(struct D_Address* self, void* value);
 void address_show(struct D_Address* self, FILE* fp);
 size_t address_sizeOf(struct D_Address* self);

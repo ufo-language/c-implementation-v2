@@ -5,7 +5,7 @@
 #include "data/unsigned.h"
 #include "dispatch/methodtable.h"
 #include "gc/gc.h"
-#include "main/typedefs.h"
+#include "main/typedefs.h"  // for HashCode
 #include "utils/hash.h"
 
 struct D_Unsigned {
@@ -19,7 +19,7 @@ struct Methods* unsigned_methodSetup(void) {
     methods->m_boolValue = (bool (*)(struct Any*))unsigned_boolValue;
     methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))unsigned_compare;
     methods->m_free = (void (*)(struct Any*))unsigned_free;
-    methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))unsigned_hashCode;
+    methods->m_hashCode = (bool (*)(struct Any*, HashCode*))unsigned_hashCode;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))unsigned_isEqual;
     methods->m_show = (void (*)(struct Any*, FILE*))unsigned_show;
     methods->m_sizeOf = (size_t (*)(struct Any*))unsigned_sizeOf;
@@ -54,9 +54,9 @@ int unsigned_compare(struct D_Unsigned* self, struct D_Unsigned* other, struct E
     return (self->value < other->value) ? -1 : ((self->value > other->value) ? 1 : 0);
 }
 
-HashCode unsigned_hashCode(struct D_Unsigned* self, struct Evaluator* etor) {
-    (void)etor;
-    return self->value ^ HASH_PRIMES[T_Unsigned];
+bool unsigned_hashCode(struct D_Unsigned* self, HashCode* hashCode) {
+    *hashCode = self->value ^ HASH_PRIMES[T_Unsigned];
+    return true;
 }
 
 bool unsigned_isEqual(struct D_Unsigned* self, struct D_Unsigned* other) {

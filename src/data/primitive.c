@@ -15,7 +15,7 @@
 #include "etor/evaluator.h"
 #include "expr/identifier.h"
 #include "gc/gc.h"
-#include "main/typedefs.h"
+#include "main/typedefs.h"  // for HashCode
 #include "utils/hash.h"
 
 struct D_Primitive {
@@ -140,11 +140,11 @@ void primitive_apply(struct D_Primitive* self, struct D_List* args, struct Evalu
     self->primFunc(etor, args);
 }
 
-HashCode primitive_hashCode(struct D_Primitive* self, struct Evaluator* etor) {
-    (void)etor;
+bool primitive_hashCode(struct D_Primitive* self, HashCode* hashCode) {
     union FunctionPointerUnion fpu;
     fpu.function = self->primFunc;
-    return fpu.hashCode ^ HASH_PRIMES[T_Primitive];
+    *hashCode = fpu.hashCode ^ HASH_PRIMES[T_Primitive];
+    return true;
 }
 
 bool primitive_isMacro(struct D_Primitive* self) {

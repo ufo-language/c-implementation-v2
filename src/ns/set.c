@@ -42,7 +42,7 @@ void ns_set_has(struct Evaluator* etor, struct D_List* args) {
     struct Any** paramVars[] = {&setObj, &elem};
     primitive_checkArgs(2, paramTypes, args, paramVars, etor);
     struct D_Set* set = (struct D_Set*)setObj;
-    evaluator_pushObj(etor, (struct Any*)boolean_from(set_has(set, elem, etor)));
+    evaluator_pushObj(etor, (struct Any*)boolean_from(set_has(set, elem)));
 }
 
 static void _isEmpty(struct Evaluator* etor, struct D_List* args) {
@@ -61,5 +61,5 @@ static void _remove(struct Evaluator* etor, struct D_List* args) {
     struct Any** paramVars[] = {&setObj, &elem};
     primitive_checkArgs(2, paramTypes, args, paramVars, etor);
     struct D_Set* set = (struct D_Set*)setObj;
-    evaluator_pushObj(etor, (struct Any*)boolean_from(set_removeElem(set, elem, etor)));
+    evaluator_pushObj(etor, (struct Any*)boolean_from(set_removeElem(set, elem)));
 }

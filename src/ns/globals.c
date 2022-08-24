@@ -89,7 +89,7 @@ static void _colon_contin(struct Evaluator* etor, struct Any* arg) {
     struct Any* obj = evaluator_popObj(etor);
     if (any_isA(obj, T_HashTable)) {
         struct D_HashTable* hash = (struct D_HashTable*)obj;
-        struct Any* obj1 = hashTable_get(hash, arg, etor);
+        struct Any* obj1 = hashTable_get(hash, arg);
         evaluator_pushObj(etor, obj1);
     }
     else if (any_isA(obj, T_Record)) {

@@ -65,7 +65,7 @@ void abstraction_freeVars(struct E_Abstraction* self, struct D_Set* freeVars, st
     any_freeVars((struct Any*)self->params, paramFreeVars, etor);
     struct D_Set* bodyFreeVars = set_new();
     any_freeVars((struct Any*)self->body, bodyFreeVars, etor);
-    set_removeSet(bodyFreeVars, paramFreeVars, etor);
+    set_removeSet(bodyFreeVars, paramFreeVars);
     set_addSet(freeVars, bodyFreeVars, etor);
 }
 

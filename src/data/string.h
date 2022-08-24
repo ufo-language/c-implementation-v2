@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "main/typedefs.h"
+#include "main/typedefs.h"  // for HashCode
 
 struct D_String;
 struct Evaluator;
@@ -24,7 +24,7 @@ void string_escapify(struct D_String* self, FILE* fd);
 char string_getChar(struct D_String* self, int n, struct Evaluator* etor);
 char string_getChar_unsafe(struct D_String* self, int n);
 char* string_getChars(struct D_String* self);
-HashCode string_hashCode(struct D_String* self, struct Evaluator* etor);
+bool string_hashCode(struct D_String* self, HashCode* hashCode);
 bool string_isEqual(struct D_String* self, struct D_String* other);
 struct D_String* string_join(struct D_String* self, struct D_String* other);
 void string_show(struct D_String* self, FILE* fd);

@@ -15,6 +15,7 @@
 #include "expr/continuation.h"
 #include "gc/gc.h"
 #include "main/globals.h"
+#include "main/typedefs.h"  // for HashCode
 #include "utils/hash.h"
 
 struct D_Array {
@@ -34,7 +35,7 @@ struct Methods* array_methodSetup(void) {
     methods->m_eval = (void (*)(struct Any*, struct Evaluator*))array_eval;
     methods->m_free = (void (*)(struct Any*))array_free;
     methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))array_freeVars;
-    methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))array_hashCode;
+    methods->m_hashCode = (bool (*)(struct Any*, HashCode*))array_hashCode;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))array_isEqual;
     methods->m_markChildren = (void (*)(struct Any* self))array_markChildren;
     methods->m_match = (struct D_Triple* (*)(struct Any*, struct Any*, struct D_Triple*))array_match;
@@ -182,12 +183,18 @@ struct Any* array_get_unsafe(struct D_Array* self, int n) {
     return self->elems[n];
 }
 
-HashCode array_hashCode(struct D_Array* self, struct Evaluator* etor) {
-    HashCode hashCode = 0;
+bool array_hashCode(struct D_Array* self, HashCode* hashCode) {
+    HashCode elemHashCode = 0;
+    HashCode tempHashCode;
+    struct Any** elems = self->elems;
     for (int n=0; n<self->count; n++) {
-        hashCode = hashRotateLeft(hashCode) ^ any_hashCode(self->elems[n], etor);
+        if (!any_hashCode(elems[n], &tempHashCode)) {
+            return false;
+        }
+        elemHashCode = hashRotateLeft(elemHashCode) ^ tempHashCode;
     }
-    return hashCode ^ HASH_PRIMES[T_Array];
+    *hashCode = elemHashCode ^ HASH_PRIMES[T_Array];
+    return true;
 }
 
 void array_insert(struct D_Array* self, int index, struct Any* elem, struct Any* deadZone) {

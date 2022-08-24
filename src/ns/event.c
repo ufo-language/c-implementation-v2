@@ -40,7 +40,7 @@ static void _publish(struct Evaluator* etor, struct D_List* args) {
         for (int n=0; n<array_count(keyArray); n++) {
             struct Any* key = array_get_unsafe(keyArray, n);
             if (any_match(key, message, EMPTY_TRIPLE) != NULL) {
-                struct D_Queue* handlerQueue = (struct D_Queue*)hashTable_get_unsafe(subscriberTable, key);
+                struct D_Queue* handlerQueue = (struct D_Queue*)hashTable_get(subscriberTable, key);
                 struct D_List* args1 = list_new(message, (struct Any*)EMPTY_LIST);
                 struct D_List* handlerList = queue_asList(handlerQueue);
                 while (!list_isEmpty(handlerList)) {
@@ -67,7 +67,7 @@ static void _subscribe(struct Evaluator* etor, struct D_List* args) {
         subscriberTable = hashTable_new();
         evaluator_setSubscriberTable(etor, subscriberTable);
     }
-    struct D_Queue* subscriberQueue = (struct D_Queue*)hashTable_get_aux(subscriberTable, messagePattern, etor);
+    struct D_Queue* subscriberQueue = (struct D_Queue*)hashTable_get(subscriberTable, messagePattern);
     if (subscriberQueue == NULL) {
         subscriberQueue = queue_new();
         hashTable_put(subscriberTable, messagePattern, (struct Any*)subscriberQueue, etor);

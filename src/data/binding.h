@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "main/typedefs.h"
+#include "main/typedefs.h"  // for HashCode
 
 struct Any;
 struct D_Array;
@@ -24,7 +24,7 @@ void binding_eval(struct D_Binding* self, struct Evaluator* etor);
 void binding_freeVars(struct D_Binding* self, struct D_Set* freeVars, struct Evaluator* etor);
 struct Any* binding_getKey(struct D_Binding* self);
 struct Any* binding_getValue(struct D_Binding* self);
-HashCode binding_hashCode(struct D_Binding* self, struct Evaluator* etor);
+bool binding_hashCode(struct D_Binding* self, HashCode* hashCode);
 void binding_markChildren(struct D_Binding* self);
 struct D_Triple* binding_match(struct D_Binding* self, struct Any* other, struct D_Triple* bindings);
 void binding_setValue(struct D_Binding* self, struct Any* value);

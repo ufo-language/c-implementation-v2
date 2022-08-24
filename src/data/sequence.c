@@ -11,7 +11,7 @@
 #include "etor/evaluator.h"
 #include "gc/gc.h"
 #include "main/globals.h"
-#include "main/typedefs.h"
+#include "main/typedefs.h"  // for HashCode
 #include "utils/hash.h"
 
 struct D_Sequence {
@@ -27,7 +27,7 @@ struct Methods* sequence_methodSetup(void) {
     methods->m_boolValue = (bool (*)(struct Any*))sequence_boolValue;
     methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))sequence_compare;
     methods->m_free = (void (*)(struct Any*))sequence_free;
-    methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))sequence_hashCode;
+    methods->m_hashCode = (bool (*)(struct Any*, HashCode*))sequence_hashCode;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))sequence_isEqual;
     methods->m_show = (void (*)(struct Any*, FILE*))sequence_show;
     methods->m_sizeOf = (size_t (*)(struct Any*))sequence_sizeOf;
@@ -95,9 +95,9 @@ int sequence_getTo(struct D_Sequence* self) {
     return self->to;
 }
 
-HashCode sequence_hashCode(struct D_Sequence* self, struct Evaluator* etor) {
-    (void)etor;
-    return (self->from + self->to + self->by) ^ HASH_PRIMES[T_Sequence];
+bool sequence_hashCode(struct D_Sequence* self, HashCode* hashCode) {
+    *hashCode = (self->from + self->to + self->by) ^ HASH_PRIMES[T_Sequence];
+    return true;
 }
 
 bool sequence_isEqual(struct D_Sequence* self, struct D_Sequence* other) {

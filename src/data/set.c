@@ -95,8 +95,8 @@ void set_freeVars(struct D_Set* self, struct D_Set* freeVars, struct Evaluator* 
     hashTable_freeVars(self->hash, freeVars, etor);
 }
 
-bool set_has(struct D_Set* self, struct Any* elem, struct Evaluator* etor) {
-    struct Any* elem1 = hashTable_get(self->hash, elem, etor);
+bool set_has(struct D_Set* self, struct Any* elem) {
+    struct Any* elem1 = hashTable_get(self->hash, elem);
     return elem1 != NULL;
 }
 
@@ -108,14 +108,14 @@ void set_markChildren(struct D_Set* self) {
     any_mark((struct Any*)self->hash);
 }
 
-bool set_removeElem(struct D_Set* self, struct Any* elem, struct Evaluator* etor) {
-    return hashTable_remove(self->hash, elem, etor);
+bool set_removeElem(struct D_Set* self, struct Any* elem) {
+    return hashTable_remove(self->hash, elem);
 }
 
-void set_removeSet(struct D_Set* self, struct D_Set* other, struct Evaluator* etor) {
+void set_removeSet(struct D_Set* self, struct D_Set* other) {
     struct D_Array* keyAry = set_toArray(other);
     for (int n=0; n<array_count(keyAry); n++) {
-        set_removeElem(self, array_get_unsafe(keyAry, n), etor);
+        set_removeElem(self, array_get_unsafe(keyAry, n));
     }
 }
 

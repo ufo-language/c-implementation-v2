@@ -26,7 +26,7 @@ struct Methods* tuple_methodSetup(void) {
     methods->m_eval = (void (*)(struct Any*, struct Evaluator*))tuple_eval;
     methods->m_free = (void (*)(struct Any*))tuple_free;
     methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))tuple_freeVars;
-    methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))tuple_hashCode;
+    //methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))tuple_hashCode;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))tuple_isEqual;
     methods->m_markChildren = (void (*)(struct Any* self))tuple_markChildren;
     methods->m_match = (struct D_Triple* (*)(struct Any*, struct Any*, struct D_Triple*))tuple_match;
@@ -91,6 +91,7 @@ struct Any* tuple_get_unsafe(struct D_Tuple* self, int n) {
     return self->elems[n];
 }
 
+#if 0
 HashCode tuple_hashCode(struct D_Tuple* self, struct Evaluator* etor) {
     (void)etor;
     HashCode hashCode = 0;
@@ -99,6 +100,7 @@ HashCode tuple_hashCode(struct D_Tuple* self, struct Evaluator* etor) {
     }
     return hashCode ^ HASH_PRIMES[T_Tuple];
 }
+#endif
 
 bool tuple_isEqual(struct D_Tuple* self, struct D_Tuple* other) {
     if (self->count != other->count) {

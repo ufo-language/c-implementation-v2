@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "main/typedefs.h"
+#include "main/typedefs.h"  // for HashCode
 
 struct D_Sequence;
 struct Evaluator;
@@ -18,7 +18,7 @@ int sequence_count(struct D_Sequence* self);
 int sequence_getBy(struct D_Sequence* self);
 int sequence_getFrom(struct D_Sequence* self);
 int sequence_getTo(struct D_Sequence* self);
-HashCode sequence_hashCode(struct D_Sequence* self, struct Evaluator* etor);
+bool sequence_hashCode(struct D_Sequence* self, HashCode* hashCode);
 bool sequence_isEqual(struct D_Sequence* self, struct D_Sequence* other);
 void sequence_show(struct D_Sequence* self, FILE* fp);
 size_t sequence_sizeOf(struct D_Sequence* self);

@@ -12,7 +12,7 @@
 #include "etor/evaluator.h"
 #include "gc/gc.h"
 #include "main/globals.h"
-#include "main/typedefs.h"
+#include "main/typedefs.h"  // for HashCode
 #include "utils/hash.h"
 
 struct D_String {
@@ -28,7 +28,7 @@ struct Methods* string_methodSetup(void) {
     methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))string_compare;
     methods->m_display = (void (*)(struct Any*, FILE*))string_display;
     methods->m_free = (void (*)(struct Any*))string_free;
-    methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))string_hashCode;
+    methods->m_hashCode = (bool (*)(struct Any*, HashCode*))string_hashCode;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))string_isEqual;
     methods->m_show = (void (*)(struct Any*, FILE*))string_show;
     methods->m_sizeOf = (size_t (*)(struct Any*))string_sizeOf;
@@ -123,13 +123,13 @@ char* string_getChars(struct D_String* self) {
     return self->chars;
 }
 
-HashCode string_hashCode(struct D_String* self, struct Evaluator* etor) {
-    (void)etor;
-    HashCode hashCode = 0;
+bool string_hashCode(struct D_String* self, HashCode* hashCode) {
+    HashCode charHashCode = 0;
     for (int n=0; n<self->count; n++) {
-        hashCode = hashRotateLeft(hashCode) ^ self->chars[n];
+        charHashCode = hashRotateLeft(charHashCode) ^ self->chars[n];
     }
-    return hashCode ^ HASH_PRIMES[T_String];
+    *hashCode = charHashCode ^ HASH_PRIMES[T_String];
+    return true;
 }
 
 struct D_String* string_join(struct D_String* self, struct D_String* other) {

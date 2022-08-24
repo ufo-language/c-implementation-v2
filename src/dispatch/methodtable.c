@@ -1,27 +1,9 @@
+#include <stdbool.h>
+
 #include "data/array.h"
 #include "data/symbol.h"
 #include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
-
-#if 0
-struct Methods {
-    bool             (*m_boolValue)(struct Any* self);
-    int              (*m_compare)(struct Any* self, struct Any* other, struct Evaluator* etor);
-    struct Any*      (*m_deepCopy)(struct Any* self);
-    void             (*m_display)(struct Any* self, FILE* fp);
-    void             (*m_eval)(struct Any* self, struct Evaluator* etor);
-    void             (*m_free)(struct Any* self);
-    void             (*m_freeVars)(struct Any* self, struct D_Set* freeVars, struct Evaluator* etor);
-    HashCode         (*m_hashCode)(struct Any* self, struct Evaluator* etor);
-    bool             (*m_isEqual)(struct Any* self, struct Any* other);
-    void             (*m_markChildren)(struct Any* self);
-    struct D_Triple* (*m_match)(struct Any* self, struct Any* other, struct D_Triple* bindings);
-    void             (*m_show)(struct Any* self, FILE* fp);
-    size_t           (*m_sizeOf)(struct Any* self);
-    size_t           (*m_structSize)(void);
-    struct Any*      (*m_typeOf)(struct Any* self);
-};
-#endif
 
 struct Methods* METHOD_TABLE[T_FINAL + 1] = { NULL };
 
@@ -65,14 +47,10 @@ static void m_freeVars(struct Any* self, struct D_Set* freeVars, struct Evaluato
     (void)etor;
 }
 
-static HashCode m_hashCode(struct Any* self, struct Evaluator* etor) {
-    evaluator_throwException(
-        etor,
-        symbol_new("HashCode"),
-        "object is not hashable",
-        self
-    );
-    return 0;
+static bool m_hashCode(struct Any* self, HashCode* hashCode) {
+    (void)self;
+    (void)hashCode;
+    return false;
 }
 
 static bool m_isEqual(struct Any* self, struct Any* other) {

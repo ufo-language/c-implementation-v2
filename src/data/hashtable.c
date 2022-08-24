@@ -51,7 +51,7 @@ struct Methods* hashTable_methodSetup(void) {
 
 static struct D_HashTable* _fold(struct D_HashTable* self, struct D_HashTable* (*func)(struct BucketLink* link, struct D_HashTable* hash, struct Evaluator* etor), struct D_HashTable* newHash, struct Evaluator* etor);
 static void _forEach(struct D_HashTable* self, void (*func)(struct BucketLink* link));
-static struct BucketLink* _locateLink(struct BucketLink** buckets, int nBuckets, struct Any* key, unsigned int* bucketNum, struct Evaluator* etor);
+static struct BucketLink* _locateLink(struct BucketLink** buckets, int nBuckets, struct Any* key, unsigned int* bucketNum);
 struct D_HashTable* hashTable_newNBuckets(int nBuckets);
 static void _resize(struct D_HashTable* self, struct Evaluator* etor);
 
@@ -210,34 +210,17 @@ void hashTable_freeVars(struct D_HashTable* self, struct D_Set* freeVars, struct
     }
 }
 
-struct Any* hashTable_get(struct D_HashTable* self, struct Any* key, struct Evaluator* etor) {
+struct Any* hashTable_get(struct D_HashTable* self, struct Any* key) {
     unsigned int bucketNum = 0;
-    struct BucketLink* link = _locateLink(self->buckets, self->nBuckets, key, &bucketNum, etor);
-    if (link == NULL) {
-        evaluator_throwException(
-            etor,
-            any_typeSymbol((struct Any*)self),
-            "key not found",
-            (struct Any*)array_newN(2, (struct Any*)key, (struct Any*)self)
-        );
+    struct BucketLink* link = _locateLink(self->buckets, self->nBuckets, key, &bucketNum);
+    return link ? link->value : NULL;
+}
+
+static struct BucketLink* _locateLink(struct BucketLink** buckets, int nBuckets, struct Any* key, unsigned int* bucketNum) {
+    HashCode hashCode;
+    if (!any_hashCode(key, &hashCode)) {
+        return NULL;
     }
-    return link->value;
-}
-
-struct Any* hashTable_get_aux(struct D_HashTable* self, struct Any* key, struct Evaluator* etor) {
-    unsigned int bucketNum = 0;
-    struct BucketLink* link = _locateLink(self->buckets, self->nBuckets, key, &bucketNum, etor);
-    return link ? link->value : NULL;
-}
-
-struct Any* hashTable_get_unsafe(struct D_HashTable* self, struct Any* key) {
-    unsigned int bucketNum = 0;
-    struct BucketLink* link = _locateLink(self->buckets, self->nBuckets, key, &bucketNum, NULL);
-    return link ? link->value : NULL;
-}
-
-static struct BucketLink* _locateLink(struct BucketLink** buckets, int nBuckets, struct Any* key, unsigned int* bucketNum, struct Evaluator* etor) {
-    HashCode hashCode = any_hashCode(key, etor);
     *bucketNum = hashCode % nBuckets;
     struct BucketLink* link = buckets[*bucketNum];
     while (link != NULL) {
@@ -249,9 +232,9 @@ static struct BucketLink* _locateLink(struct BucketLink** buckets, int nBuckets,
     return NULL;
 }
 
-bool hashTable_hasKey(struct D_HashTable* self, struct Any* key, struct Evaluator* etor) {
+bool hashTable_hasKey(struct D_HashTable* self, struct Any* key) {
     unsigned int bucketNum = 0;
-    struct BucketLink* link = _locateLink(self->buckets, self->nBuckets, key, &bucketNum, etor);
+    struct BucketLink* link = _locateLink(self->buckets, self->nBuckets, key, &bucketNum);
     return link != NULL;
 }
 
@@ -290,7 +273,7 @@ int hashTable_nBuckets(struct D_HashTable* self) {
 
 void hashTable_put(struct D_HashTable* self, struct Any* key, struct Any* value, struct Evaluator* etor) {
     unsigned int bucketNum = 0;
-    struct BucketLink* link = _locateLink(self->buckets, self->nBuckets, key, &bucketNum, etor);
+    struct BucketLink* link = _locateLink(self->buckets, self->nBuckets, key, &bucketNum);
     if (link != NULL) {
         link->value = value;
     }
@@ -332,8 +315,11 @@ static void _resize(struct D_HashTable* self, struct Evaluator* etor) {
     self->loadingFactor = newLoadingFactor;
 }
 
-bool hashTable_remove(struct D_HashTable* self, struct Any* key, struct Evaluator* etor) {
-    HashCode hashCode = any_hashCode(key, etor);
+bool hashTable_remove(struct D_HashTable* self, struct Any* key) {
+    HashCode hashCode;
+    if (!any_hashCode(key, &hashCode)) {
+        return false;
+    }
     int bucketNum = hashCode % self->nBuckets;
     struct BucketLink* prev = NULL;
     struct BucketLink* link = self->buckets[bucketNum];

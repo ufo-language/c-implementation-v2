@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -10,7 +11,7 @@
 #include "expr/continuation.h"
 #include "gc/gc.h"
 #include "main/globals.h"
-#include "main/typedefs.h"
+#include "main/typedefs.h"  // for HashCode
 #include "utils/hash.h"
 
 struct D_Binding {
@@ -27,7 +28,7 @@ struct Methods* binding_methodSetup(void) {
     methods->m_eval = (void (*)(struct Any*, struct Evaluator*))binding_eval;
     methods->m_free = (void (*)(struct Any*))binding_free;
     methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))binding_freeVars;
-    methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))binding_hashCode;
+    methods->m_hashCode = (bool (*)(struct Any*, HashCode*))binding_hashCode;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))binding_isEqual;
     methods->m_markChildren = (void (*)(struct Any* self))binding_markChildren;
     methods->m_match = (struct D_Triple* (*)(struct Any*, struct Any*, struct D_Triple*))binding_match;
@@ -95,10 +96,14 @@ struct Any* binding_getValue(struct D_Binding* self) {
     return self->value;
 }
 
-HashCode binding_hashCode(struct D_Binding* self, struct Evaluator* etor) {
-    HashCode hashCode = any_hashCode(self->key, etor);
-    hashCode = hashRotateLeft(hashCode) ^ any_hashCode(self->value, etor);
-    return hashCode ^ HASH_PRIMES[T_Binding];
+bool binding_hashCode(struct D_Binding* self, HashCode* hashCode) {
+    HashCode keyHashCode;
+    HashCode valHashCode;
+    if (!any_hashCode(self->key, &keyHashCode) || !any_hashCode(self->value, &valHashCode)) {
+        return false;
+    }
+    *hashCode = hashRotateLeft(keyHashCode) ^ valHashCode ^ HASH_PRIMES[T_Binding];
+    return true;
 }
 
 void binding_markChildren(struct D_Binding* self) {

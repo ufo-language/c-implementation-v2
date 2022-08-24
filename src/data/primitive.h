@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #include "data/any.h"
-#include "main/typedefs.h"
+#include "main/typedefs.h"  // for HashCode
 
 struct D_HashTable;
 struct D_List;
@@ -26,7 +26,7 @@ void primitive_free(struct D_Primitive* self);
 
 void primitive_apply(struct D_Primitive* self, struct D_List* args, struct Evaluator* etor);
 bool primitive_isMacro(struct D_Primitive* self);
-HashCode primitive_hashCode(struct D_Primitive* self, struct Evaluator* etor);
+bool primitive_hashCode(struct D_Primitive* self, HashCode* hashCode);
 void primitive_show(struct D_Primitive* self, FILE* fp);
 size_t primitive_sizeOf(struct D_Primitive* self);
 size_t primitive_structSize(void);

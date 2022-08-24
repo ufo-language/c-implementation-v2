@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "main/typedefs.h"
+#include "main/typedefs.h"  // for HashCode
 
 enum TypeId {
     // T_NULL is not a type in UFO, but this entry is used for a few things.
@@ -81,7 +81,7 @@ struct Any* any_deepCopy(struct Any* obj);
 void any_display(struct Any* obj, FILE* fp);
 void any_eval(struct Any* obj, struct Evaluator* etor);
 void any_freeVars(struct Any* obj, struct D_Set* freeVars, struct Evaluator* etor);
-HashCode any_hashCode(struct Any* obj, struct Evaluator* etor);
+bool any_hashCode(struct Any* obj, HashCode* hashCode);
 bool any_hasType(struct Any* obj, struct Any* typeObj);
 bool any_isA(struct Any* obj, enum TypeId typeId);
 bool any_isEqual(struct Any* obj, struct Any* other);

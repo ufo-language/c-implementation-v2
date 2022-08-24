@@ -5,7 +5,7 @@
 #include "data/integer.h"
 #include "dispatch/methodtable.h"
 #include "gc/gc.h"
-#include "main/typedefs.h"
+#include "main/typedefs.h"  // for HashCode
 #include "utils/hash.h"
 
 struct D_Integer {
@@ -19,7 +19,7 @@ struct Methods* integer_methodSetup(void) {
     methods->m_boolValue = (bool (*)(struct Any*))integer_boolValue;
     methods->m_compare = (int (*)(struct Any*, struct Any*, struct Evaluator* etor))integer_compare;
     methods->m_free = (void (*)(struct Any*))integer_free;
-    methods->m_hashCode = (HashCode (*)(struct Any*, struct Evaluator*))integer_hashCode;
+    methods->m_hashCode = (bool (*)(struct Any*, HashCode*))integer_hashCode;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))integer_isEqual;
     methods->m_show = (void (*)(struct Any*, FILE*))integer_show;
     methods->m_sizeOf = (size_t (*)(struct Any*))integer_sizeOf;
@@ -50,9 +50,9 @@ int integer_compare(struct D_Integer* self, struct D_Integer* other, struct Eval
     return (self->value < other->value) ? -1 : ((self->value > other->value) ? 1 : 0);
 }
 
-HashCode integer_hashCode(struct D_Integer* self, struct Evaluator* etor) {
-    (void)etor;
-    return self->value;
+bool integer_hashCode(struct D_Integer* self, HashCode* hashCode) {
+    *hashCode = self->value;
+    return true;
 }
 
 bool integer_isEqual(struct D_Integer* self, struct D_Integer* other) {

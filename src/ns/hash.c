@@ -49,7 +49,7 @@ void ns_hash_get(struct Evaluator* etor, struct D_List* args) {
     struct Any** paramVars[] = {&hashObj, &keyObj};
     primitive_checkArgs(2, paramTypes, args, paramVars, etor);
     struct D_HashTable* hash = (struct D_HashTable*)hashObj;
-    struct Any* value = hashTable_get(hash, keyObj, etor);
+    struct Any* value = hashTable_get(hash, keyObj);
     if (value == NULL) {
         evaluator_throwException(
             etor,
@@ -68,7 +68,7 @@ static void _hasKey(struct Evaluator* etor, struct D_List* args) {
     struct Any** paramVars[] = {&hashObj, &keyObj};
     primitive_checkArgs(2, paramTypes, args, paramVars, etor);
     struct D_HashTable* hash = (struct D_HashTable*)hashObj;
-    bool res = hashTable_hasKey(hash, keyObj, etor);
+    bool res = hashTable_hasKey(hash, keyObj);
     struct D_Boolean* boolObj = boolean_from(res);
     evaluator_pushObj(etor, (struct Any*)boolObj);
 }
@@ -98,7 +98,7 @@ static void _remove(struct Evaluator* etor, struct D_List* args) {
     struct Any** paramVars[] = {&hashObj, &keyObj};
     primitive_checkArgs(2, paramTypes, args, paramVars, etor);
     struct D_HashTable* hash = (struct D_HashTable*)hashObj;
-    bool res = hashTable_remove(hash, keyObj, etor);
+    bool res = hashTable_remove(hash, keyObj);
     evaluator_pushObj(etor, (struct Any*)boolean_from(res));
 }
 

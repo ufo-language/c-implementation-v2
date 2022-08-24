@@ -20,7 +20,7 @@ struct D_Tuple* tuple_deepCopy(struct D_Tuple* self);
 void tuple_eval(struct D_Tuple* self, struct Evaluator* etor);
 void tuple_freeVars(struct D_Tuple* self, struct D_Set* freeVars, struct Evaluator* etor);
 struct Any* tuple_get_unsafe(struct D_Tuple* self, int n);
-HashCode tuple_hashCode(struct D_Tuple* self, struct Evaluator* etor);
+//HashCode tuple_hashCode(struct D_Tuple* self, struct Evaluator* etor);
 bool tuple_isEqual(struct D_Tuple* self, struct D_Tuple* other);
 void tuple_markChildren(struct D_Tuple* self);
 struct D_Triple* tuple_match(struct D_Tuple* self, struct Any* other, struct D_Triple* bindings);
