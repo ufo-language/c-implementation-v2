@@ -75,25 +75,29 @@ struct Any {
 
 void any_free(struct Any* obj);
 
+// these functions are defined in any.c
+bool any_hasType(struct Any* obj, struct Any* typeObj);
+bool any_isA(struct Any* obj, enum TypeId typeId);
+bool any_isMarked(struct Any* obj);
+enum TypeId any_typeId(struct Any* obj);
+char* any_typeName(struct Any* obj);
+struct D_Symbol* any_typeSymbol(struct Any* obj);
+
+// these functions are defined in the src/dispatch directory
 bool any_boolValue(struct Any* obj);
 int any_compare(struct Any* obj, struct Any* other, struct Evaluator* etor);
 struct Any* any_deepCopy(struct Any* obj);
 void any_display(struct Any* obj, FILE* fp);
 void any_eval(struct Any* obj, struct Evaluator* etor);
 void any_freeVars(struct Any* obj, struct D_Set* freeVars, struct Evaluator* etor);
+struct Any* any_getPairValue(struct Any* obj, struct Any* key);
 bool any_hashCode(struct Any* obj, HashCode* hashCode);
-bool any_hasType(struct Any* obj, struct Any* typeObj);
-bool any_isA(struct Any* obj, enum TypeId typeId);
 bool any_isEqual(struct Any* obj, struct Any* other);
-bool any_isMarked(struct Any* obj);
 void any_mark(struct Any* obj);
 struct D_Triple* any_match(struct Any* obj, struct Any* other, struct D_Triple* bindings);
 void any_show(struct Any* obj, FILE* fp);
 size_t any_sizeOf(struct Any* obj);
 size_t any_structSize(enum TypeId typeId);
-enum TypeId any_typeId(struct Any* obj);
-char* any_typeName(struct Any* obj);
-struct D_Symbol* any_typeSymbol(struct Any* obj);
 struct Any* any_typeOf(struct Any* obj);
 
 #endif

@@ -64,6 +64,14 @@ void any_freeVars(struct Any* obj, struct D_Set* freeVars, struct Evaluator* eto
     method(obj, freeVars, etor);
 }
 
+struct Any* any_getPairValue(struct Any* obj, struct Any* key) {
+    struct Methods* methods = METHOD_TABLE[obj->typeId];
+    assert(NULL != methods);
+    struct Any* (*method)(struct Any*, struct Any*) = methods->m_getPairValue;
+    assert(NULL != method);
+    return method(obj, key);
+}
+
 bool any_hashCode(struct Any* obj, HashCode* hashCode) {
     struct Methods* methods = METHOD_TABLE[obj->typeId];
     assert(NULL != methods);

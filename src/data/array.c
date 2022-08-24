@@ -35,6 +35,7 @@ struct Methods* array_methodSetup(void) {
     methods->m_eval = (void (*)(struct Any*, struct Evaluator*))array_eval;
     methods->m_free = (void (*)(struct Any*))array_free;
     methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))array_freeVars;
+    methods->m_getPairValue = (struct Any*)(*)(struct Any*, struct Any*))array_getPairValue;
     methods->m_hashCode = (bool (*)(struct Any*, HashCode*))array_hashCode;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))array_isEqual;
     methods->m_markChildren = (void (*)(struct Any* self))array_markChildren;
@@ -183,17 +184,15 @@ struct Any* array_get_unsafe(struct D_Array* self, int n) {
     return self->elems[n];
 }
 
-struct Any* array_getAssoc(struct D_Array* self, struct Any* key, struct Evaluator* etor) {
+struct Any* array_getAssoc(struct D_Array* self, struct Any* key) {
+    struct Any** elems = self->elems;
     for (int n=0; n<self->count; n++) {
-        
-        evaluator_throwException(
-            etor,
-            symbol_new("Array"),
-            "key not found in array",
-            (struct Any*)array_newN(2, key, (struct Any*)self)
-        );
+        struct Any* val = any_getPairValue(elems[n], key);
+        if (val) {
+            return val;
+        }
     }
-    return self->elems[n];
+    return NULL;
 }
 
 bool array_hashCode(struct D_Array* self, HashCode* hashCode) {

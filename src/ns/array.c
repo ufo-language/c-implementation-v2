@@ -159,7 +159,13 @@ void ns_array_get(struct Evaluator* etor, struct D_List* args) {
         int index = integer_getValue(indexInt);
         evaluator_pushObj(etor, array_get(array, index, etor));
     }
-    evaluator_pushObj(etor, array_getAssoc(array, indexObj, etor));
+    struct Any* val = array_getAssoc(array, indexObj);
+    if (val == NULL) {
+        struct D_Symbol* sym = symbol_new("Array");
+        struct D_Array* exn = array_newN(2, indexObj, (struct Any*)array);
+        evaluator_throwException(etor, sym, "key not found in array", (struct Any*)exn);
+    }
+    evaluator_pushObj(etor, val);
 }
 
 static void _reverse(struct Evaluator* etor, struct D_List* args) {

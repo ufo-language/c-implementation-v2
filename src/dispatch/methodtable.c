@@ -47,6 +47,13 @@ static void m_freeVars(struct Any* self, struct D_Set* freeVars, struct Evaluato
     (void)etor;
 }
 
+
+static struct Any* m_getPairValue(struct Any* obj, struct Any* key) {
+    (void)obj;
+    (void)key;
+    return NULL;
+}
+
 static bool m_hashCode(struct Any* self, HashCode* hashCode) {
     (void)self;
     (void)hashCode;
@@ -99,6 +106,7 @@ void methodTable_setupDefaults(struct Methods* methods) {
     methods->m_eval = m_eval;
     methods->m_free = m_free;
     methods->m_freeVars = m_freeVars;
+    methods->m_getPairValue = m_getPairValue;
     methods->m_hashCode = m_hashCode;
     methods->m_isEqual = m_isEqual;
     methods->m_markChildren = m_markChildren;

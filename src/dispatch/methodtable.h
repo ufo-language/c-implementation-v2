@@ -20,6 +20,7 @@ struct Methods {
     void             (*m_eval)(struct Any* self, struct Evaluator* etor);
     void             (*m_free)(struct Any* self);
     void             (*m_freeVars)(struct Any* self, struct D_Set* freeVars, struct Evaluator* etor);
+    struct Any*      (*m_getPairValue)(struct Any* self, struct Any* key);
     bool             (*m_hashCode)(struct Any* self, HashCode* hashCode);
     bool             (*m_isEqual)(struct Any* self, struct Any* other);
     void             (*m_markChildren)(struct Any* self);
