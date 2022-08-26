@@ -99,7 +99,7 @@ static void _domain(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     struct D_Array* array = (struct D_Array*)arrayObj;
     int count = array_count(array);
-    struct D_Sequence* seq = sequence_new(0, count - 1, 1, etor);
+    struct D_Sequence* seq = sequence_new(0, count - 1, 1);
     evaluator_pushObj(etor, (struct Any*)seq);
 }
 

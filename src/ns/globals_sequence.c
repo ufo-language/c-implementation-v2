@@ -26,6 +26,6 @@ void globals_sequence(struct Any* lhs, struct Any* rhs, struct Evaluator* etor) 
     }
     int from = integer_getValue((struct D_Integer*)lhs);
     int to = integer_getValue((struct D_Integer*)rhs);
-    struct D_Sequence* seq = sequence_new(from, to, 1, etor);
+    struct D_Sequence* seq = sequence_new(from, to, 1);
     evaluator_pushObj(etor, (struct Any*)seq);
 }

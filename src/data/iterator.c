@@ -12,7 +12,7 @@
 
 struct D_Iterator {
     struct Any obj;
-    struct Any* subtypeObject;
+    struct Any* state;
     struct IteratorMethods* iteratorMethods;
 };
 
@@ -28,9 +28,9 @@ struct Methods* iterator_methodSetup(void) {
     return methods;
 }
 
-struct D_Iterator* iterator_new(struct Any* subtypeObject, struct IteratorMethods* iteratorMethods) {
+struct D_Iterator* iterator_new(struct Any* state, struct IteratorMethods* iteratorMethods) {
     struct D_Iterator* self = (struct D_Iterator*)gc_alloc(T_Iterator);
-    self->subtypeObject = subtypeObject;
+    self->state = state;
     self->iteratorMethods = iteratorMethods;
     return self;
 }
@@ -43,25 +43,25 @@ bool iterator_boolValue(struct D_Iterator* self) {
     return self->iteratorMethods->m_boolValue(self);
 }
 
-struct Any* iterator_getSubtypeObject(struct D_Iterator* self) {
-    return self->subtypeObject;
+struct Any* iterator_getStateObject(struct D_Iterator* self) {
+    return self->state;
 }
 
 void iterator_markChildren(struct D_Iterator* self) {
-    any_mark(self->subtypeObject);
+    any_mark(self->state);
 }
 
 struct Any* iterator_next(struct D_Iterator* self) {
     return self->iteratorMethods->m_next(self);
 }
 
-void iterator_setSubtypeObject(struct D_Iterator* self, struct Any* object) {
-    self->subtypeObject = object;
+void iterator_setStateObject(struct D_Iterator* self, struct Any* state) {
+    self->state = state;
 }
 
 void iterator_show(struct D_Iterator* self, FILE* fp) {
     fputs("Iterator{", fp);
-    any_show(self->subtypeObject, fp);
+    any_show(self->state, fp);
     fputc('}', fp);
 }
 

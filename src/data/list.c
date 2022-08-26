@@ -260,12 +260,12 @@ struct D_Iterator* list_iterator(struct D_List* self) {
 }
 
 bool list_iteratorBoolValue(struct D_Iterator* iterator) {
-    struct D_List* list = (struct D_List*)iterator_getSubtypeObject(iterator);
+    struct D_List* list = (struct D_List*)iterator_getStateObject(iterator);
     return list_boolValue(list);
 }
 
 struct Any* list_iteratorNext(struct D_Iterator* iterator) {
-    struct D_List* list = (struct D_List*)iterator_getSubtypeObject(iterator);
+    struct D_List* list = (struct D_List*)iterator_getStateObject(iterator);
     if (!list_boolValue(list)) {
         return NULL;
     }
@@ -276,7 +276,7 @@ struct Any* list_iteratorNext(struct D_Iterator* iterator) {
     else {
         rest = list->rest;
     }
-    iterator_setSubtypeObject(iterator, rest);
+    iterator_setStateObject(iterator, rest);
     return list->first;
 }
 

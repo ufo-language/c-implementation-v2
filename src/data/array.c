@@ -302,19 +302,18 @@ bool array_isEqual(struct D_Array* self, struct D_Array* other) {
 
 struct D_Iterator* array_iterator(struct D_Array* self) {
     struct D_Array* iterObj = array_newN(2, integer_new(0), self);
-    struct D_Iterator* iter = iterator_new((struct Any*)iterObj, array_iteratorMethodSetup());
-    return iter;
+    return iterator_new((struct Any*)iterObj, array_iteratorMethodSetup());
 }
 
 bool array_iteratorBoolValue(struct D_Iterator* iterator) {
-    struct D_Array* iterObj = (struct D_Array*)iterator_getSubtypeObject(iterator);
+    struct D_Array* iterObj = (struct D_Array*)iterator_getStateObject(iterator);
     struct D_Integer* indexObj = (struct D_Integer*)iterObj->elems[0];
     struct D_Array* elemAry = (struct D_Array*)iterObj->elems[1];
     return boolean_from(integer_getValue(indexObj) < elemAry->count);
 }
 
 struct Any* array_iteratorNext(struct D_Iterator* iterator) {
-    struct D_Array* iterObj = (struct D_Array*)iterator_getSubtypeObject(iterator);
+    struct D_Array* iterObj = (struct D_Array*)iterator_getStateObject(iterator);
     struct D_Integer* indexObj = (struct D_Integer*)iterObj->elems[0];
     struct D_Array* elemAry = (struct D_Array*)iterObj->elems[1];
     int index = integer_getValue(indexObj);

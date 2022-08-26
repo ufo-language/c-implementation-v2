@@ -39,7 +39,7 @@ void globals_percent(struct Any* lhs, struct Any* rhs, struct Evaluator* etor) {
         int from = sequence_getFrom(seq);
         int to = sequence_getTo(seq);
         int by = integer_getValue((struct D_Integer*)rhs);
-        struct D_Sequence* newSeq = sequence_new(from, to, by, etor);
+        struct D_Sequence* newSeq = sequence_new(from, to, by);
         evaluator_pushObj(etor, (struct Any*)newSeq);
         return;
     }

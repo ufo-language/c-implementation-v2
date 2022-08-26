@@ -13,6 +13,7 @@ static void _by(struct Evaluator* etor, struct D_List* args);
 static void _compare(struct Evaluator* etor, struct D_List* args);
 static void _count(struct Evaluator* etor, struct D_List* args);
 static void _from(struct Evaluator* etor, struct D_List* args);
+static void _iterator(struct Evaluator* etor, struct D_List* args);
 static void _new(struct Evaluator* etor, struct D_List* args);
 static void _to(struct Evaluator* etor, struct D_List* args);
 
@@ -24,6 +25,7 @@ void ns_sequence_defineAll(struct D_HashTable* env) {
     primitive_define(nsHash, "compare", _compare);
     primitive_define(nsHash, "count", _count);
     primitive_define(nsHash, "from", _from);
+    primitive_define(nsHash, "iterator", _iterator);
     primitive_define(nsHash, "new", _new);
     primitive_define(nsHash, "to", _to);
 }
@@ -70,6 +72,15 @@ static void _from(struct Evaluator* etor, struct D_List* args) {
     evaluator_pushObj(etor, (struct Any*)fromInt);
 }
 
+static void _iterator(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_Sequence};
+    struct Any* seqObj;
+    struct Any** paramVars[] = {&seqObj};
+    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
+    struct D_Sequence* seq = (struct D_Sequence*)seqObj;
+    evaluator_pushObj(etor, (struct Any*)sequence_iterator(seq));
+}
+
 static void _new(struct Evaluator* etor, struct D_List* args) {
     static enum TypeId paramTypes[] = {T_Integer, T_Integer, T_Integer};
     struct Any* fromObj = NULL;
@@ -95,7 +106,7 @@ static void _new(struct Evaluator* etor, struct D_List* args) {
             by = integer_getValue((struct D_Integer*)byObj);
             break;
     }
-    struct D_Sequence* sequence = sequence_new(from, to, by, etor);
+    struct D_Sequence* sequence = sequence_new(from, to, by);
     evaluator_pushObj(etor, (struct Any*)sequence);
 }
 

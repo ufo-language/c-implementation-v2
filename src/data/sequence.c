@@ -4,7 +4,9 @@
 
 #include "data/any.h"
 #include "data/array.h"
+#include "data/boolean.h"
 #include "data/integer.h"
+#include "data/iterator.h"
 #include "data/sequence.h"
 #include "data/symbol.h"
 #include "dispatch/methodtable.h"
@@ -21,6 +23,9 @@ struct D_Sequence {
     int by;
 };
 
+bool sequence_iteratorBoolValue(struct D_Iterator* iterator);
+struct Any* sequence_iteratorNext(struct D_Iterator* iterator);
+
 struct Methods* sequence_methodSetup(void) {
     struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
     methodTable_setupDefaults(methods);
@@ -35,17 +40,18 @@ struct Methods* sequence_methodSetup(void) {
     return methods;
 }
 
-struct D_Sequence* sequence_new(int from, int to, int by, struct Evaluator* etor) {
-    if (by == 0) {
-        evaluator_throwException(
-            etor,
-            symbol_new("Sequence"),
-            "'by' component can't be 0",
-            (struct Any*)array_newN(3, (struct Any*)integer_new(from),
-                                       (struct Any*)integer_new(to),
-                                       (struct Any*)integer_new(by))
-        );
+static struct IteratorMethods* ITERATOR_METHODS = NULL;
+
+struct IteratorMethods* sequence_iteratorMethodSetup(void) {
+    if (!ITERATOR_METHODS) {
+        ITERATOR_METHODS = (struct IteratorMethods*)malloc(sizeof(struct IteratorMethods));
+        ITERATOR_METHODS->m_boolValue = sequence_iteratorBoolValue;
+        ITERATOR_METHODS->m_next = sequence_iteratorNext;
     }
+    return ITERATOR_METHODS;
+}
+
+struct D_Sequence* sequence_new(int from, int to, int by) {
     struct D_Sequence* self = (struct D_Sequence*)gc_alloc(T_Sequence);
     self->from = from;
     self->to = to;
@@ -78,6 +84,25 @@ int sequence_compare(struct D_Sequence* self, struct D_Sequence* other, struct E
     return 0;
   }
 
+/*
+
+  1..7 % 3  contains  4 ?
+  0..6 % 3  contains  3 ?
+
+*/
+bool sequence_contains(struct D_Sequence* self, int n) {
+    int from = self->from;
+    int to = self->to;
+    int by = self->by;
+    if (by < 0) {
+        to = -to;
+        by = -by;
+    }
+    to -= from;
+    n -= from;
+    return (n >= 0) && (n <= to) && (n % by == 0);
+}
+
 int sequence_count(struct D_Sequence* self) {
     int count = (self->to - self->from) / self->by + 1;
     return count >= 0 ? count : 0;
@@ -104,6 +129,41 @@ bool sequence_isEqual(struct D_Sequence* self, struct D_Sequence* other) {
     return self->from == other->from
         && self->to == other->to
         && self->by == other->by;
+}
+
+struct D_Iterator* sequence_iterator(struct D_Sequence* self) {
+    struct Any* nObj;
+    if (sequence_contains(self, self->from)) {
+        nObj = (struct Any*)integer_new(self->from);
+    }
+    else {
+        nObj = (struct Any*)NIL;
+        }
+    struct D_Array* iterObj = array_newN(2, nObj, self);
+    return iterator_new((struct Any*)iterObj, sequence_iteratorMethodSetup());
+}
+
+bool sequence_iteratorBoolValue(struct D_Iterator* iterator) {
+    struct D_Array* state = (struct D_Array*)iterator_getStateObject(iterator);
+    return T_Integer == any_typeId(array_get_unsafe(state, 0));
+}
+
+struct Any* sequence_iteratorNext(struct D_Iterator* iterator) {
+    struct D_Array* state = (struct D_Array*)iterator_getStateObject(iterator);
+    struct Any* nObj = array_get_unsafe(state, 0);
+    if (T_Integer != any_typeId(nObj)) {
+        return NULL;
+    }
+    int n = integer_getValue((struct D_Integer*)nObj);
+    struct D_Sequence* seq = (struct D_Sequence*)array_get_unsafe(state, 1);
+    int nextInt = n + seq->by;
+    if (sequence_contains(seq, nextInt)) {
+        array_set_unsafe(state, 0, (struct Any*)integer_new(nextInt));
+    }
+    else {
+        array_set_unsafe(state, 0, (struct Any*)NIL);
+    }
+    return nObj;
 }
 
 void sequence_show(struct D_Sequence* self, FILE* fp) {
