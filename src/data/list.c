@@ -6,6 +6,7 @@
 #include "data/any.h"
 #include "data/array.h"
 #include "data/integer.h"
+#include "data/iterator.h"
 #include "data/list.h"
 #include "data/queue.h"
 #include "data/symbol.h"
@@ -22,6 +23,8 @@ struct D_List {
 };
 
 struct Any* list_getPairValue(struct D_List* self, struct Any* key);
+bool list_iteratorBoolValue(struct D_Iterator* iterator);
+struct Any* list_iteratorNext(struct D_Iterator* iterator);
 
 struct Methods* list_methodSetup(void) {
     struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
@@ -40,6 +43,13 @@ struct Methods* list_methodSetup(void) {
     methods->m_sizeOf = (size_t (*)(struct Any*))list_sizeOf;
     methods->m_structSize = list_structSize;
     return methods;
+}
+
+struct IteratorMethods* list_iteratorMethodSetup(void) {
+    struct IteratorMethods* iteratorMethods = (struct IteratorMethods*)malloc(sizeof(struct IteratorMethods));
+    iteratorMethods->m_boolValue = list_iteratorBoolValue;
+    iteratorMethods->m_next = list_iteratorNext;
+    return iteratorMethods;
 }
 
 struct D_List* list_new(struct Any* first, struct Any* rest) {
@@ -238,6 +248,32 @@ bool list_isEqual(struct D_List* self, struct D_List* other) {
         }
     }
     return list_isEmpty(other);
+}
+
+struct D_Iterator* list_iterator(struct D_List* self) {
+    struct D_Iterator* iter = iterator_new((struct Any*)self, list_iteratorMethodSetup());
+    return iter;
+}
+
+bool list_iteratorBoolValue(struct D_Iterator* iterator) {
+    struct D_List* list = (struct D_List*)iterator_getSubtypeObject(iterator);
+    return list_boolValue(list);
+}
+
+struct Any* list_iteratorNext(struct D_Iterator* iterator) {
+    struct D_List* list = (struct D_List*)iterator_getSubtypeObject(iterator);
+    if (!list_boolValue(list)) {
+        return NULL;
+    }
+    struct Any* rest;
+    if (T_List != any_typeId(list->rest)) {
+        rest = (struct Any*)list_new(list->rest, (struct Any*)EMPTY_LIST);
+    }
+    else {
+        rest = list->rest;
+    }
+    iterator_setSubtypeObject(iterator, rest);
+    return list->first;
 }
 
 // TODO This is written recursively. Rewrite it to be iterative like the isEqual function.

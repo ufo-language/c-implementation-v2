@@ -12,6 +12,8 @@
 
 struct D_Iterator {
     struct Any obj;
+    struct Any* subtypeObject;
+    struct IteratorMethods* iteratorMethods;
 };
 
 struct Methods* iterator_methodSetup(void) {
@@ -26,8 +28,10 @@ struct Methods* iterator_methodSetup(void) {
     return methods;
 }
 
-struct D_Iterator* iterator_new(void) {
+struct D_Iterator* iterator_new(struct Any* subtypeObject, struct IteratorMethods* iteratorMethods) {
     struct D_Iterator* self = (struct D_Iterator*)gc_alloc(T_Iterator);
+    self->subtypeObject = subtypeObject;
+    self->iteratorMethods = iteratorMethods;
     return self;
 }
 
@@ -36,19 +40,29 @@ void iterator_free(struct D_Iterator* self) {
 }
 
 bool iterator_boolValue(struct D_Iterator* self) {
-    (void)self;
-    printf("%s is incomplete", __func__);
-    return false;
+    return self->iteratorMethods->m_boolValue(self);
+}
+
+struct Any* iterator_getSubtypeObject(struct D_Iterator* self) {
+    return self->subtypeObject;
 }
 
 void iterator_markChildren(struct D_Iterator* self) {
-    (void)self;
-    printf("%s is incomplete", __func__);
+    any_mark(self->subtypeObject);
+}
+
+struct Any* iterator_next(struct D_Iterator* self) {
+    return self->iteratorMethods->m_next(self);
+}
+
+void iterator_setSubtypeObject(struct D_Iterator* self, struct Any* object) {
+    self->subtypeObject = object;
 }
 
 void iterator_show(struct D_Iterator* self, FILE* fp) {
-    (void)self;
-    fputs("iterator", fp);
+    fputs("Iterator{", fp);
+    any_show(self->subtypeObject, fp);
+    fputc('}', fp);
 }
 
 size_t iterator_sizeOf(struct D_Iterator* self) {

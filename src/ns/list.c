@@ -31,6 +31,7 @@ static void _count(struct Evaluator* etor, struct D_List* args);
 static void _first(struct Evaluator* etor, struct D_List* args);
 void ns_list_get(struct Evaluator* etor, struct D_List* args);
 static void _isEmpty(struct Evaluator* etor, struct D_List* args);
+static void _iterator(struct Evaluator* etor, struct D_List* args);
 static void _map(struct Evaluator* etor, struct D_List* args);
 static void _new(struct Evaluator* etor, struct D_List* args);
 static void _rest(struct Evaluator* etor, struct D_List* args);
@@ -44,6 +45,7 @@ void ns_list_defineAll(struct D_HashTable* env) {
     primitive_define(nsHash, "first", _first);
     primitive_define(nsHash, "get", ns_list_get);
     primitive_define(nsHash, "isEmpty", _isEmpty);
+    primitive_define(nsHash, "iterator", _iterator);
     primitive_define(nsHash, "map", _map);
     primitive_define(nsHash, "new", _new);
     primitive_define(nsHash, "rest", _rest);
@@ -109,6 +111,16 @@ static void _isEmpty(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     struct D_List* list = (struct D_List*)listObj;
     evaluator_pushObj(etor, (struct Any*)(list_isEmpty(list) ? TRUE : FALSE));
+}
+
+static void _iterator(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_List};
+    struct Any* listObj;
+    struct Any** paramVars[] = {&listObj};
+    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
+    struct D_List* list = (struct D_List*)listObj;
+    struct D_Iterator* iterator = list_iterator(list);
+    evaluator_pushObj(etor, (struct Any*)iterator);
 }
 
 // TODO move this into data/list.c (see data/array.c for example)
