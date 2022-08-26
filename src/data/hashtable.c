@@ -3,8 +3,10 @@
 
 #include "data/any.h"
 #include "data/array.h"
+#include "data/binding.h"
 #include "data/hashtable.h"
 #include "data/integer.h"
+#include "data/list.h"
 #include "data/set.h"
 #include "data/symbol.h"
 #include "dispatch/methodtable.h"
@@ -132,6 +134,19 @@ void hashTable_free(struct D_HashTable* self) {
     _forEach(self, _free);
     free(self->buckets);
     free(self);
+}
+
+struct D_List* hashTable_asList(struct D_HashTable* self) {
+    struct D_List* list = EMPTY_LIST;
+    for (int n=0; n<self->nBuckets; n++) {
+        struct BucketLink* link = self->buckets[n];
+        while (link) {
+            struct D_Binding* binding = binding_new(link->key, link->value);
+            list = list_new((struct Any*)binding, (struct Any*)list);
+            link = link->next;
+        }
+    }
+    return list;
 }
 
 bool hashTable_boolValue(struct D_HashTable* self) {
