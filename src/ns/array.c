@@ -21,6 +21,7 @@ static void _delete(struct Evaluator* etor, struct D_List* args);
 static void _domain(struct Evaluator* etor, struct D_List* args);
 static void _insert(struct Evaluator* etor, struct D_List* args);
 static void _insertionSort(struct Evaluator* etor, struct D_List* args);
+static void _iterator(struct Evaluator* etor, struct D_List* args);
 static void _map(struct Evaluator* etor, struct D_List* args);
 static void _new(struct Evaluator* etor, struct D_List* args);
 void ns_array_get(struct Evaluator* etor, struct D_List* args);
@@ -41,6 +42,7 @@ void ns_array_defineAll(struct D_HashTable* env) {
     primitive_define(nsHash, "get", ns_array_get);  // used by src/expr/bracketexpr.c
     primitive_define(nsHash, "insert", _insert);
     primitive_define(nsHash, "insertionSort", _insertionSort);
+    primitive_define(nsHash, "iterator", _iterator);
     primitive_define(nsHash, "map", _map);
     primitive_define(nsHash, "new", _new);
     primitive_define(nsHash, "reverse", _reverse);
@@ -173,6 +175,16 @@ void ns_array_get(struct Evaluator* etor, struct D_List* args) {
         }
         evaluator_pushObj(etor, val);
     }
+}
+
+static void _iterator(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_Array};
+    struct Any* arrayObj;
+    struct Any** paramVars[] = {&arrayObj};
+    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
+    struct D_Array* array = (struct D_Array*)arrayObj;
+    struct D_Iterator* iterator = array_iterator(array);
+    evaluator_pushObj(etor, (struct Any*)iterator);
 }
 
 static void _reverse(struct Evaluator* etor, struct D_List* args) {

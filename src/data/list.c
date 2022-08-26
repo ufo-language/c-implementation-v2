@@ -45,11 +45,15 @@ struct Methods* list_methodSetup(void) {
     return methods;
 }
 
+static struct IteratorMethods* ITERATOR_METHODS = NULL;
+
 struct IteratorMethods* list_iteratorMethodSetup(void) {
-    struct IteratorMethods* iteratorMethods = (struct IteratorMethods*)malloc(sizeof(struct IteratorMethods));
-    iteratorMethods->m_boolValue = list_iteratorBoolValue;
-    iteratorMethods->m_next = list_iteratorNext;
-    return iteratorMethods;
+    if (!ITERATOR_METHODS) {
+        ITERATOR_METHODS = (struct IteratorMethods*)malloc(sizeof(struct IteratorMethods));
+        ITERATOR_METHODS->m_boolValue = list_iteratorBoolValue;
+        ITERATOR_METHODS->m_next = list_iteratorNext;
+    }
+    return ITERATOR_METHODS;
 }
 
 struct D_List* list_new(struct Any* first, struct Any* rest) {

@@ -5,7 +5,9 @@
 
 #include "data/any.h"
 #include "data/array.h"
+#include "data/boolean.h"
 #include "data/integer.h"
+#include "data/iterator.h"
 #include "data/list.h"
 #include "data/queue.h"
 #include "data/sequence.h"
@@ -27,6 +29,8 @@ struct D_Array {
 
 bool array_boolValue(struct D_Array* self);
 struct Any* array_getPairValue(struct D_Array* self, struct Any* key);
+bool array_iteratorBoolValue(struct D_Iterator* iterator);
+struct Any* array_iteratorNext(struct D_Iterator* iterator);
 
 struct Methods* array_methodSetup(void) {
     struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
@@ -46,6 +50,17 @@ struct Methods* array_methodSetup(void) {
     methods->m_sizeOf = (size_t (*)(struct Any*))array_sizeOf;
     methods->m_structSize = array_structSize;
     return methods;
+}
+
+static struct IteratorMethods* ITERATOR_METHODS = NULL;
+
+struct IteratorMethods* array_iteratorMethodSetup(void) {
+    if (!ITERATOR_METHODS) {
+        ITERATOR_METHODS = (struct IteratorMethods*)malloc(sizeof(struct IteratorMethods));
+        ITERATOR_METHODS->m_boolValue = array_iteratorBoolValue;
+        ITERATOR_METHODS->m_next = array_iteratorNext;
+    }
+    return ITERATOR_METHODS;
 }
 
 struct D_Array* array_new(int count) {
@@ -283,6 +298,32 @@ bool array_isEqual(struct D_Array* self, struct D_Array* other) {
         }
     }
     return true;
+}
+
+struct D_Iterator* array_iterator(struct D_Array* self) {
+    struct D_Array* iterObj = array_newN(2, integer_new(0), self);
+    struct D_Iterator* iter = iterator_new((struct Any*)iterObj, array_iteratorMethodSetup());
+    return iter;
+}
+
+bool array_iteratorBoolValue(struct D_Iterator* iterator) {
+    struct D_Array* iterObj = (struct D_Array*)iterator_getSubtypeObject(iterator);
+    struct D_Integer* indexObj = (struct D_Integer*)iterObj->elems[0];
+    struct D_Array* elemAry = (struct D_Array*)iterObj->elems[1];
+    return boolean_from(integer_getValue(indexObj) < elemAry->count);
+}
+
+struct Any* array_iteratorNext(struct D_Iterator* iterator) {
+    struct D_Array* iterObj = (struct D_Array*)iterator_getSubtypeObject(iterator);
+    struct D_Integer* indexObj = (struct D_Integer*)iterObj->elems[0];
+    struct D_Array* elemAry = (struct D_Array*)iterObj->elems[1];
+    int index = integer_getValue(indexObj);
+    if (index < elemAry->count) {
+        struct Any* elem = elemAry->elems[index];
+        iterObj->elems[0] = (struct Any*)integer_new(index + 1);
+        return elem;
+    }
+    return NULL;
 }
 
 // builds the apply structure for the map function
