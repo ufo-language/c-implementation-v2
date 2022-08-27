@@ -13,9 +13,10 @@ void iterator_free(struct D_Iterator* self);
 
 bool iterator_boolValue(struct D_Iterator* self);
 struct Any* iterator_getStateObject(struct D_Iterator* self);
+bool iterator_hasNext(struct D_Iterator* self);
 void iterator_markChildren(struct D_Iterator* self);
-void iterator_setStateObject(struct D_Iterator* self, struct Any* state);
 struct Any* iterator_next(struct D_Iterator* self);
+void iterator_setStateObject(struct D_Iterator* self, struct Any* state);
 void iterator_show(struct D_Iterator* self, FILE* fp);
 size_t iterator_sizeOf(struct D_Iterator* self);
 size_t iterator_structSize(void);

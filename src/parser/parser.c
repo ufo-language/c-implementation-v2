@@ -23,6 +23,7 @@
 #include "expr/let.h"
 #include "expr/letin.h"
 #include "expr/letrec.h"
+#include "expr/loop.h"
 #include "expr/recorddef.h"
 #include "expr/recordspec.h"
 #include "expr/trycatch.h"
@@ -127,6 +128,7 @@ static String IF;
 static String IN;
 static String LET;
 static String LETREC;
+static String LOOP;
 static String RECORD;
 static String THEN;
 static String TRY;
@@ -157,6 +159,7 @@ void parser_permanentObjects(void) {
     IN = string_new("in");
     LET = string_new("let");
     LETREC = string_new("letrec");
+    LOOP = string_new("loop");
     RECORD = string_new("record");
     THEN = string_new("then");
     TRY = string_new("try");
@@ -616,6 +619,10 @@ Obj p_LETREC(List* tokens) {
     return p_reserved(tokens, LETREC);
 }
 
+Obj p_LOOP(List* tokens) {
+    return p_reserved(tokens, LOOP);
+}
+
 Obj p_RECORD(List* tokens) {
     return p_reserved(tokens, RECORD);
 }
@@ -795,6 +802,16 @@ Obj p_letRec(List* tokens) {
     return (Obj)letRec_new(queue_asList(bindings), queue_count(bindings));
 }
 
+Obj p_loop(List* tokens) {
+    struct D_Queue* parts = p_seq(tokens, p_LOOP, p_any_required, p_any_required, 0);
+    if (parts == NULL) {
+        return NULL;
+    }
+    struct Any* iterExpr = queue_deq_unsafe(parts);
+    struct Any* body = queue_deq_unsafe(parts);
+    return (Obj)loop_new(iterExpr, body);
+}
+
 Obj p_parenExpr(List* tokens) {
     struct D_Queue* parts = p_seq(tokens, p_parenOpen, p_any_required, p_parenClose_required, 0);
     if (parts == NULL) {
@@ -903,6 +920,7 @@ Obj p_any(List* tokens) {
         p_letIn,  // must precede p_let
         p_let,
         p_letRec,
+        p_loop,
         p_if,
         p_do,
         p_binding,

@@ -36,6 +36,7 @@ char* TYPE_NAMES[] = {
     "Let",
     "LetIn",
     "LetRec",
+    "Loop",
     "List",
     "Nil",
     "Primitive",
@@ -183,6 +184,15 @@ bool any_isEqual(struct Any* obj, struct Any* other) {
     bool (*method)(struct Any*, struct Any*) = methods->m_isEqual;
     assert(NULL != method);
     return method(obj, other);
+}
+
+struct D_Iterator* any_iterator(struct Any* obj) {
+    assert(obj != NULL);
+    struct Methods* methods = METHOD_TABLE[obj->typeId];
+    assert(NULL != methods);
+    struct D_Iterator* (*method)(struct Any*) = methods->m_iterator;
+    assert(NULL != method);
+    return method(obj);
 }
 
 void any_mark(struct Any* obj) {

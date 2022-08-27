@@ -32,6 +32,7 @@ static char* reservedWords[] = {
     "in",
     "let",
     "letrec",
+    "loop",
     "macro",
     "record",
     "then",

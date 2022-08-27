@@ -27,6 +27,7 @@ struct Methods* let_methodSetup();
 struct Methods* letIn_methodSetup();
 struct Methods* letRec_methodSetup();
 struct Methods* list_methodSetup();
+struct Methods* loop_methodSetup();
 struct Methods* nil_methodSetup();
 struct Methods* primitive_methodSetup();
 struct Methods* protocol_methodSetup();
@@ -74,6 +75,7 @@ void methodTable_setupMethods(void) {
     METHOD_TABLE[T_Let] = let_methodSetup();
     METHOD_TABLE[T_LetIn] = letIn_methodSetup();
     METHOD_TABLE[T_LetRec] = letRec_methodSetup();
+    METHOD_TABLE[T_Loop] = loop_methodSetup();
     METHOD_TABLE[T_List] = list_methodSetup();
     METHOD_TABLE[T_Nil] = nil_methodSetup();
     METHOD_TABLE[T_Primitive] = primitive_methodSetup();

@@ -4,7 +4,6 @@
 #include "data/any.h"
 #include "data/array.h"
 #include "data/binding.h"
-#include "data/integer.h"
 #include "data/list.h"
 #include "data/symbol.h"
 #include "dispatch/methodtable.h"

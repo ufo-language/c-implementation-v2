@@ -32,6 +32,7 @@ enum TypeId {
     T_Let,
     T_LetIn,
     T_LetRec,
+    T_Loop,
     T_List,
     T_Nil,
     T_Primitive,
@@ -62,6 +63,7 @@ enum TypeId {
 extern char* TYPE_NAMES[T_FINAL + 1];
 
 struct Evaluator;
+struct D_Iterator;
 struct D_List;
 struct D_Set;
 struct D_Symbol;
@@ -93,6 +95,7 @@ void any_freeVars(struct Any* obj, struct D_Set* freeVars, struct Evaluator* eto
 struct Any* any_getPairValue(struct Any* obj, struct Any* key);
 bool any_hashCode(struct Any* obj, HashCode* hashCode);
 bool any_isEqual(struct Any* obj, struct Any* other);
+struct D_Iterator* any_iterator(struct Any* obj);
 void any_mark(struct Any* obj);
 struct D_Triple* any_match(struct Any* obj, struct Any* other, struct D_Triple* bindings);
 void any_show(struct Any* obj, FILE* fp);
