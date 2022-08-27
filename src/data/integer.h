@@ -7,6 +7,7 @@
 #include "main/typedefs.h"  // for HashCode
 
 struct D_Integer;
+struct D_Iterator;
 struct Evaluator;
 
 struct D_Integer* integer_new(int value);
@@ -18,6 +19,7 @@ int integer_compare(struct D_Integer* self, struct D_Integer* other, struct Eval
 bool integer_isEqual(struct D_Integer* self, struct D_Integer* other);
 int integer_getValue(struct D_Integer* self);
 bool integer_hashCode(struct D_Integer* self, HashCode* hashCode);
+struct D_Iterator* integer_iterator(struct D_Integer* self);
 void integer_show(struct D_Integer* self, FILE* fp);
 size_t integer_sizeOf(struct D_Integer* self);
 size_t integer_structSize(void);
