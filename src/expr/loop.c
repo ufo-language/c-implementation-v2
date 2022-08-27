@@ -7,6 +7,7 @@
 #include "data/iterator.h"
 #include "data/list.h"
 #include "data/symbol.h"
+#include "data/triple.h"
 #include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
@@ -48,52 +49,21 @@ void loop_free(struct E_Loop* self) {
     free(self);
 }
 
-#if 0
-static void _contin(struct Evaluator* etor, struct Any* arg) {
-    struct E_Loop* loop = (struct E_Loop*)arg;
-    struct D_Triple* env = evaluator_getEnv(etor);
-    struct D_List* bindings = loop->bindings;
-    while (!list_isEmpty(bindings)) {
-        struct D_Binding* binding = (struct D_Binding*)list_getFirst(bindings);
-        struct Any* lhs = binding_getKey(binding);
-        struct Any* rhsValue = evaluator_popObj(etor);
-        env = any_match(lhs, rhsValue, env);
-        if (env == NULL) {
-            evaluator_throwException(
-                etor,
-                symbol_new("Loop"),
-                "no match between lhs and rhs",
-                (struct Any*)array_newN(2, lhs, rhsValue)
-            );
-        }
-        bindings = (struct D_List*)list_getRest(bindings);
-    }
-    evaluator_setEnv(etor, env);
-    evaluator_pushObj(etor, (struct Any*)NIL);
-}
-#endif
-
 struct E_Loop* loop_deepCopy(struct E_Loop* self) {
     return loop_new(any_deepCopy(self->iterExpr), any_deepCopy(self->body));
 }
 
 static void _contin2(struct Evaluator* etor, struct Any* arg) {
-    printf("%s got here 1, arg = ", __func__); any_show((struct Any*)arg, stdout); printf("\n");
-    // pop & discard previous value
-    struct Any* res = evaluator_popObj(etor);
-    (void)res;
-
     struct D_Array* argAry = (struct D_Array*)arg;
-    struct E_Identifier* ident = (struct E_Identifier*)array_get_unsafe(argAry, 0);
-    struct D_Iterator* iter = (struct D_Iterator*)array_get_unsafe(argAry, 1);
-    struct Any* body = array_get_unsafe(argAry, 2);
-    struct D_Triple* binding = (struct D_Triple*)array_get_unsafe(argAry, 3);
-    printf("  ident = "); any_show((struct Any*)ident, stdout); printf("\n");
-    printf("  iter = "); any_show((struct Any*)iter, stdout); printf("\n");
-    printf("  body = "); any_show((struct Any*)body, stdout); printf("\n");
-    printf("  binding = "); any_show((struct Any*)binding, stdout); printf("\n");
+    struct D_Iterator* iter = (struct D_Iterator*)array_get_unsafe(argAry, 0);
+    struct Any* body = array_get_unsafe(argAry, 1);
+    struct D_Triple* binding = (struct D_Triple*)array_get_unsafe(argAry, 2);
     if (iterator_hasNext(iter)) {
-        
+        struct Any* elem = iterator_next(iter);
+        triple_setSecond(binding, elem);
+        struct E_Continuation* contin = continuation_new(_contin2, "loop", (struct Any*)arg);
+        evaluator_pushExpr(etor, (struct Any*)contin);
+        evaluator_pushExpr(etor, body);
     }
     else {
         evaluator_pushObj(etor, (struct Any*)NIL);
@@ -101,9 +71,7 @@ static void _contin2(struct Evaluator* etor, struct Any* arg) {
 }
 
 static void _contin1(struct Evaluator* etor, struct Any* arg) {
-    printf("%s got here 1, arg = ", __func__); any_show((struct Any*)arg, stdout); printf("\n");
     struct D_Array* argAry = (struct D_Array*)arg;
-
     struct Any* identObj = array_get_unsafe(argAry, 0);
     struct D_Triple* binding = EMPTY_TRIPLE;
     if (T_Identifier == any_typeId(identObj)) {
@@ -115,21 +83,14 @@ static void _contin1(struct Evaluator* etor, struct Any* arg) {
     }
     struct Any* body = array_get_unsafe(argAry, 1);
     struct Any* iterExpr = evaluator_popObj(etor);
-
-    printf("%s got here 2, iterExpr = ", __func__); any_show((struct Any*)iterExpr, stdout); printf("\n");
     // create the iterator from the iterator expression
     struct D_Iterator* iter = any_iterator(iterExpr);
-    printf("%s got here 3, iterator = ", __func__); any_show((struct Any*)iter, stdout); printf("\n");
-
-    struct D_Array* contin2arg = array_newN(4, identObj, iter, body, binding);
+    struct D_Array* contin2arg = array_newN(4, iter, body, binding);
     struct E_Continuation* contin = continuation_new(_contin2, "loop", (struct Any*)contin2arg);
     evaluator_pushExpr(etor, (struct Any*)contin);
-    // contin2 pops the previous value and discards it, so push a dummy value
-    evaluator_pushObj(etor, (struct Any*)NIL);
 }
 
 void loop_eval(struct E_Loop* self, struct Evaluator* etor) {
-    printf("%s got here 1, self = ", __func__); any_show((struct Any*)self, stdout); printf("\n");
     struct Any* iterExpr = self->iterExpr;
     struct Any* identObj = (struct Any*)NIL;
     if (T_Binding == any_typeId(iterExpr)) {
@@ -139,6 +100,7 @@ void loop_eval(struct E_Loop* self, struct Evaluator* etor) {
     }
     struct D_Array* contin1Arg = array_newN(2, identObj, self->body);
     struct E_Continuation* contin = continuation_new(_contin1, "loop", (struct Any*)contin1Arg);
+    evaluator_saveEnv(etor);
     evaluator_pushExpr(etor, (struct Any*)contin);
     evaluator_pushExpr(etor, iterExpr);
 }
