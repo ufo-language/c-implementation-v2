@@ -30,6 +30,7 @@ struct Methods* queue_methodSetup(void) {
     methods->m_free = (void (*)(struct Any*))queue_free;
     methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))queue_freeVars;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))queue_isEqual;
+    methods->m_iterator = (struct D_Iterator* (*)(struct Any*))queue_iterator;
     methods->m_markChildren = (void (*)(struct Any* self))queue_markChildren;
     methods->m_match = (struct D_Triple* (*)(struct Any*, struct Any*, struct D_Triple*))queue_match;
     methods->m_show = (void (*)(struct Any*, FILE*))queue_show;
@@ -152,6 +153,10 @@ bool queue_isEmpty(struct D_Queue* self) {
 
 bool queue_isEqual(struct D_Queue* self, struct D_Queue* other) {
     return list_isEqual(self->head, other->head);
+}
+
+struct D_Iterator* queue_iterator(struct D_Queue* self) {
+    return list_iterator(self->head);
 }
 
 void queue_markChildren(struct D_Queue* self) {

@@ -17,6 +17,7 @@ static void _count(struct Evaluator* etor, struct D_List* args);
 static void _deq(struct Evaluator* etor, struct D_List* args);
 static void _enq(struct Evaluator* etor, struct D_List* args);
 static void _isEmpty(struct Evaluator* etor, struct D_List* args);
+static void _iterator(struct Evaluator* etor, struct D_List* args);
 static void _peek(struct Evaluator* etor, struct D_List* args);
 
 void ns_queue_defineAll(struct D_HashTable* env) {
@@ -28,6 +29,7 @@ void ns_queue_defineAll(struct D_HashTable* env) {
     primitive_define(nsHash, "deq", _deq);
     primitive_define(nsHash, "enq", _enq);
     primitive_define(nsHash, "isEmpty", _isEmpty);
+    primitive_define(nsHash, "iterator", _iterator);
     primitive_define(nsHash, "peek", _peek);
 }
 
@@ -76,6 +78,15 @@ static void _isEmpty(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     struct D_Queue* queue = (struct D_Queue*)queueObj;
     evaluator_pushObj(etor, (struct Any*)(queue_isEmpty(queue) ? TRUE : FALSE));
+}
+
+static void _iterator(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_Queue};
+    struct Any* queueObj;
+    struct Any** paramVars[] = {&queueObj};
+    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
+    struct D_Queue* queue = (struct D_Queue*)queueObj;
+    evaluator_pushObj(etor, (struct Any*)queue_iterator(queue));
 }
 
 static void _peek(struct Evaluator* etor, struct D_List* args) {

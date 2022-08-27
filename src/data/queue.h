@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 struct Any;
+struct D_Iterator;
 struct D_Queue;
 struct D_Set;
 struct Evaluator;
@@ -25,6 +26,7 @@ void queue_freeVars(struct D_Queue* self, struct D_Set* freeVars, struct Evaluat
 struct D_List* queue_getTail(struct D_Queue* self);
 bool queue_isEmpty(struct D_Queue* self);
 bool queue_isEqual(struct D_Queue* self, struct D_Queue* other);
+struct D_Iterator* queue_iterator(struct D_Queue* self);
 void queue_markChildren(struct D_Queue* self);
 struct D_Triple* queue_match(struct D_Queue* self, struct Any* other, struct D_Triple* bindings);
 struct Any* queue_peek(struct D_Queue* self);
