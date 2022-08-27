@@ -23,7 +23,7 @@ struct D_Sequence {
     int by;
 };
 
-bool sequence_iteratorBoolValue(struct D_Iterator* iterator);
+bool sequence_iteratorHasNext(struct D_Iterator* iterator);
 struct Any* sequence_iteratorNext(struct D_Iterator* iterator);
 
 struct Methods* sequence_methodSetup(void) {
@@ -34,21 +34,13 @@ struct Methods* sequence_methodSetup(void) {
     methods->m_free = (void (*)(struct Any*))sequence_free;
     methods->m_hashCode = (bool (*)(struct Any*, HashCode*))sequence_hashCode;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))sequence_isEqual;
+    methods->m_iterator = (struct D_Iterator* (*)(struct Any*))sequence_iterator;
+    methods->m_iteratorHasNext = (bool (*)(struct D_Iterator*))sequence_iteratorHasNext;
+    methods->m_iteratorNext = (struct Any* (*)(struct D_Iterator*))sequence_iteratorNext;
     methods->m_show = (void (*)(struct Any*, FILE*))sequence_show;
     methods->m_sizeOf = (size_t (*)(struct Any*))sequence_sizeOf;
     methods->m_structSize = sequence_structSize;
     return methods;
-}
-
-static struct IteratorMethods* ITERATOR_METHODS = NULL;
-
-struct IteratorMethods* sequence_iteratorMethodSetup(void) {
-    if (!ITERATOR_METHODS) {
-        ITERATOR_METHODS = (struct IteratorMethods*)malloc(sizeof(struct IteratorMethods));
-        ITERATOR_METHODS->m_boolValue = sequence_iteratorBoolValue;
-        ITERATOR_METHODS->m_next = sequence_iteratorNext;
-    }
-    return ITERATOR_METHODS;
 }
 
 struct D_Sequence* sequence_new(int from, int to, int by) {
@@ -140,10 +132,10 @@ struct D_Iterator* sequence_iterator(struct D_Sequence* self) {
         nObj = (struct Any*)NIL;
         }
     struct D_Array* iterObj = array_newN(2, nObj, self);
-    return iterator_new((struct Any*)iterObj, sequence_iteratorMethodSetup());
+    return iterator_new((struct Any*)iterObj, T_Sequence);
 }
 
-bool sequence_iteratorBoolValue(struct D_Iterator* iterator) {
+bool sequence_iteratorHasNext(struct D_Iterator* iterator) {
     struct D_Array* state = (struct D_Array*)iterator_getStateObject(iterator);
     return T_Integer == any_typeId(array_get_unsafe(state, 0));
 }

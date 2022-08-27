@@ -29,7 +29,7 @@ struct D_Array {
 
 bool array_boolValue(struct D_Array* self);
 struct Any* array_getPairValue(struct D_Array* self, struct Any* key);
-bool array_iteratorBoolValue(struct D_Iterator* iterator);
+bool array_iteratorHasNext(struct D_Iterator* iterator);
 struct Any* array_iteratorNext(struct D_Iterator* iterator);
 
 struct Methods* array_methodSetup(void) {
@@ -44,23 +44,15 @@ struct Methods* array_methodSetup(void) {
     methods->m_getPairValue = (struct Any* (*)(struct Any*, struct Any*))array_getPairValue;
     methods->m_hashCode = (bool (*)(struct Any*, HashCode*))array_hashCode;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))array_isEqual;
+    methods->m_iterator = (struct D_Iterator* (*)(struct Any*))array_iterator;
+    methods->m_iteratorHasNext = array_iteratorHasNext;
+    methods->m_iteratorNext = array_iteratorNext;
     methods->m_markChildren = (void (*)(struct Any* self))array_markChildren;
     methods->m_match = (struct D_Triple* (*)(struct Any*, struct Any*, struct D_Triple*))array_match;
     methods->m_show = (void (*)(struct Any*, FILE*))array_show;
     methods->m_sizeOf = (size_t (*)(struct Any*))array_sizeOf;
     methods->m_structSize = array_structSize;
     return methods;
-}
-
-static struct IteratorMethods* ITERATOR_METHODS = NULL;
-
-struct IteratorMethods* array_iteratorMethodSetup(void) {
-    if (!ITERATOR_METHODS) {
-        ITERATOR_METHODS = (struct IteratorMethods*)malloc(sizeof(struct IteratorMethods));
-        ITERATOR_METHODS->m_boolValue = array_iteratorBoolValue;
-        ITERATOR_METHODS->m_next = array_iteratorNext;
-    }
-    return ITERATOR_METHODS;
 }
 
 struct D_Array* array_new(int count) {
@@ -302,14 +294,14 @@ bool array_isEqual(struct D_Array* self, struct D_Array* other) {
 
 struct D_Iterator* array_iterator(struct D_Array* self) {
     struct D_Array* iterObj = array_newN(2, integer_new(0), self);
-    return iterator_new((struct Any*)iterObj, array_iteratorMethodSetup());
+    return iterator_new((struct Any*)iterObj, T_Array);
 }
 
-bool array_iteratorBoolValue(struct D_Iterator* iterator) {
+bool array_iteratorHasNext(struct D_Iterator* iterator) {
     struct D_Array* iterObj = (struct D_Array*)iterator_getStateObject(iterator);
     struct D_Integer* indexObj = (struct D_Integer*)iterObj->elems[0];
     struct D_Array* elemAry = (struct D_Array*)iterObj->elems[1];
-    return boolean_from(integer_getValue(indexObj) < elemAry->count);
+    return integer_getValue(indexObj) < elemAry->count;
 }
 
 struct Any* array_iteratorNext(struct D_Iterator* iterator) {

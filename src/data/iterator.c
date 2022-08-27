@@ -13,7 +13,7 @@
 struct D_Iterator {
     struct Any obj;
     struct Any* state;
-    struct IteratorMethods* iteratorMethods;
+    enum TypeId iteratorTypeId;
 };
 
 struct Methods* iterator_methodSetup(void) {
@@ -28,10 +28,10 @@ struct Methods* iterator_methodSetup(void) {
     return methods;
 }
 
-struct D_Iterator* iterator_new(struct Any* state, struct IteratorMethods* iteratorMethods) {
+struct D_Iterator* iterator_new(struct Any* state, enum TypeId iteratorTypeId) {
     struct D_Iterator* self = (struct D_Iterator*)gc_alloc(T_Iterator);
     self->state = state;
-    self->iteratorMethods = iteratorMethods;
+    self->iteratorTypeId = iteratorTypeId;
     return self;
 }
 
@@ -40,11 +40,15 @@ void iterator_free(struct D_Iterator* self) {
 }
 
 bool iterator_boolValue(struct D_Iterator* self) {
-    return self->iteratorMethods->m_boolValue(self);
+    return METHOD_TABLE[self->iteratorTypeId]->m_iteratorHasNext(self);
 }
 
 struct Any* iterator_getStateObject(struct D_Iterator* self) {
     return self->state;
+}
+
+bool iterator_hasNext(struct D_Iterator* self) {
+    return METHOD_TABLE[self->iteratorTypeId]->m_iteratorHasNext(self);
 }
 
 void iterator_markChildren(struct D_Iterator* self) {
@@ -52,7 +56,7 @@ void iterator_markChildren(struct D_Iterator* self) {
 }
 
 struct Any* iterator_next(struct D_Iterator* self) {
-    return self->iteratorMethods->m_next(self);
+    return METHOD_TABLE[self->iteratorTypeId]->m_iteratorNext(self);
 }
 
 void iterator_setStateObject(struct D_Iterator* self, struct Any* state) {
@@ -60,7 +64,7 @@ void iterator_setStateObject(struct D_Iterator* self, struct Any* state) {
 }
 
 void iterator_show(struct D_Iterator* self, FILE* fp) {
-    fputs("Iterator{", fp);
+    fprintf(fp, "Iterator{%s, ", TYPE_NAMES[self->iteratorTypeId]);
     any_show(self->state, fp);
     fputc('}', fp);
 }

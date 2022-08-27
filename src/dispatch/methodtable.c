@@ -1,9 +1,11 @@
 #include <stdbool.h>
 
 #include "data/array.h"
+#include "data/list.h"
 #include "data/symbol.h"
 #include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
+#include "main/globals.h"
 
 struct Methods* METHOD_TABLE[T_FINAL + 1] = { NULL };
 
@@ -66,6 +68,20 @@ static bool m_isEqual(struct Any* self, struct Any* other) {
     return false;
 }
 
+struct D_Iterator* m_iterator(struct Any* self) {
+    return list_iterator(list_new(self, (struct Any*)NIL));
+}
+
+bool m_iteratorHasNext(struct D_Iterator* iter) {
+    (void)iter;
+    return false;
+}
+
+struct Any* m_iteratorNext(struct D_Iterator* iter) {
+    (void)iter;
+    return (struct Any*)NIL;
+}
+
 static void m_markChildren(struct Any* self) {
     (void)self;
 }
@@ -109,6 +125,9 @@ void methodTable_setupDefaults(struct Methods* methods) {
     methods->m_getPairValue = m_getPairValue;
     methods->m_hashCode = m_hashCode;
     methods->m_isEqual = m_isEqual;
+    methods->m_iterator = m_iterator;
+    methods->m_iteratorHasNext = m_iteratorHasNext;
+    methods->m_iteratorNext = m_iteratorNext;
     methods->m_markChildren = m_markChildren;
     methods->m_match = m_match;
     methods->m_show = m_show;

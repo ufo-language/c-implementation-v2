@@ -23,7 +23,7 @@ struct D_List {
 };
 
 struct Any* list_getPairValue(struct D_List* self, struct Any* key);
-bool list_iteratorBoolValue(struct D_Iterator* iterator);
+bool list_iteratorHasNext(struct D_Iterator* iterator);
 struct Any* list_iteratorNext(struct D_Iterator* iterator);
 
 struct Methods* list_methodSetup(void) {
@@ -37,23 +37,15 @@ struct Methods* list_methodSetup(void) {
     methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))list_freeVars;
     methods->m_getPairValue = (struct Any* (*)(struct Any*, struct Any*))list_getPairValue;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))list_isEqual;
+    methods->m_iterator = (struct D_Iterator* (*)(struct Any*))list_iterator;
+    methods->m_iteratorHasNext = list_iteratorHasNext;
+    methods->m_iteratorNext = list_iteratorNext;
     methods->m_markChildren = (void (*)(struct Any* self))list_markChildren;
     methods->m_match = (struct D_Triple* (*)(struct Any*, struct Any*, struct D_Triple*))list_match;
     methods->m_show = (void (*)(struct Any*, FILE*))list_show;
     methods->m_sizeOf = (size_t (*)(struct Any*))list_sizeOf;
     methods->m_structSize = list_structSize;
     return methods;
-}
-
-static struct IteratorMethods* ITERATOR_METHODS = NULL;
-
-struct IteratorMethods* list_iteratorMethodSetup(void) {
-    if (!ITERATOR_METHODS) {
-        ITERATOR_METHODS = (struct IteratorMethods*)malloc(sizeof(struct IteratorMethods));
-        ITERATOR_METHODS->m_boolValue = list_iteratorBoolValue;
-        ITERATOR_METHODS->m_next = list_iteratorNext;
-    }
-    return ITERATOR_METHODS;
 }
 
 struct D_List* list_new(struct Any* first, struct Any* rest) {
@@ -255,11 +247,10 @@ bool list_isEqual(struct D_List* self, struct D_List* other) {
 }
 
 struct D_Iterator* list_iterator(struct D_List* self) {
-    struct D_Iterator* iter = iterator_new((struct Any*)self, list_iteratorMethodSetup());
-    return iter;
+    return iterator_new((struct Any*)self, T_List);
 }
 
-bool list_iteratorBoolValue(struct D_Iterator* iterator) {
+bool list_iteratorHasNext(struct D_Iterator* iterator) {
     struct D_List* list = (struct D_List*)iterator_getStateObject(iterator);
     return list_boolValue(list);
 }

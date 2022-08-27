@@ -8,12 +8,7 @@
 struct D_Iterator;
 struct Evaluator;
 
-struct IteratorMethods {
-    bool        (*m_boolValue)(struct D_Iterator*);
-    struct Any* (*m_next)(struct D_Iterator*);
-};
-
-struct D_Iterator* iterator_new(struct Any* state, struct IteratorMethods* iteratorMethods);
+struct D_Iterator* iterator_new(struct Any* state, enum TypeId iteratorTypeId);
 void iterator_free(struct D_Iterator* self);
 
 bool iterator_boolValue(struct D_Iterator* self);
