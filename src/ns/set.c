@@ -12,6 +12,7 @@
 static void _add(struct Evaluator* etor, struct D_List* args);
 void ns_set_has(struct Evaluator* etor, struct D_List* args);
 static void _isEmpty(struct Evaluator* etor, struct D_List* args);
+static void _iterator(struct Evaluator* etor, struct D_List* args);
 static void _remove(struct Evaluator* etor, struct D_List* args);
 
 void ns_set_defineAll(struct D_HashTable* env) {
@@ -21,6 +22,7 @@ void ns_set_defineAll(struct D_HashTable* env) {
     primitive_define(nsHash, "add", _add);
     primitive_define(nsHash, "has", ns_set_has);
     primitive_define(nsHash, "isEmpty", _isEmpty);
+    primitive_define(nsHash, "iterator", _iterator);
     primitive_define(nsHash, "remove", _remove);
 }
 
@@ -52,6 +54,15 @@ static void _isEmpty(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     struct D_Set* set = (struct D_Set*)setObj;
     evaluator_pushObj(etor, (struct Any*)boolean_from(0 == set_count(set)));
+}
+
+static void _iterator(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_Set};
+    struct Any* setObj;
+    struct Any** paramVars[] = {&setObj};
+    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
+    struct D_Set* set = (struct D_Set*)setObj;
+    evaluator_pushObj(etor, (struct Any*)set_iterator(set));
 }
 
 static void _remove(struct Evaluator* etor, struct D_List* args) {

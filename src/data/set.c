@@ -28,6 +28,7 @@ struct Methods* set_methodSetup(void) {
     methods->m_free = (void (*)(struct Any*))set_free;
     methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))set_freeVars;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))set_isEqual;
+    methods->m_iterator = (struct D_Iterator* (*)(struct Any*))set_iterator;
     methods->m_markChildren = (void (*)(struct Any* self))set_markChildren;
     //methods->m_match = (struct D_Triple* (*)(struct Any*, struct Any*, struct D_Triple*))set_match;
     methods->m_show = (void (*)(struct Any*, FILE*))set_show;
@@ -102,6 +103,11 @@ bool set_has(struct D_Set* self, struct Any* elem) {
 
 bool set_isEqual(struct D_Set* self, struct D_Set* other) {
     return hashTable_isEqual(self->hash, other->hash);
+}
+
+struct D_Iterator* set_iterator(struct D_Set* self) {
+    struct D_Array* keys = hashTable_keyArray(self->hash);
+    return array_iterator(keys);
 }
 
 void set_markChildren(struct D_Set* self) {

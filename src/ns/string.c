@@ -13,6 +13,7 @@
 
 void ns_string_get(struct Evaluator* etor, struct D_List* args);
 static void _isEmpty(struct Evaluator* etor, struct D_List* args);
+static void _iterator(struct Evaluator* etor, struct D_List* args);
 static void _join(struct Evaluator* etor, struct D_List* args);
 static void _startsWith(struct Evaluator* etor, struct D_List* args);
 
@@ -22,6 +23,7 @@ void ns_string_defineAll(struct D_HashTable* env) {
     hashTable_put_unsafe(env, (struct Any*)nsName, (struct Any*)nsHash);
     primitive_define(nsHash, "get", ns_string_get);
     primitive_define(nsHash, "isEmpty", _isEmpty);
+    primitive_define(nsHash, "iterator", _iterator);
     primitive_define(nsHash, "join", _join);
     primitive_define(nsHash, "startsWith", _startsWith);
 }
@@ -46,6 +48,15 @@ static void _isEmpty(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     struct D_String* string = (struct D_String*)stringObj;
     evaluator_pushObj(etor, (struct Any*)boolean_from(0 == string_count(string)));
+}
+
+static void _iterator(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_String};
+    struct Any* stringObj;
+    struct Any** paramVars[] = {&stringObj};
+    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
+    struct D_String* string = (struct D_String*)stringObj;
+    evaluator_pushObj(etor, (struct Any*)string_iterator(string));
 }
 
 static void _join(struct Evaluator* etor, struct D_List* args) {

@@ -6,6 +6,7 @@
 
 #include "any.h"
 
+struct D_Iterator;
 struct D_Set;
 struct D_Triple;
 struct Evaluator;
@@ -22,6 +23,7 @@ void set_eval(struct D_Set* self, struct Evaluator* etor);
 void set_freeVars(struct D_Set* self, struct D_Set* freeVars, struct Evaluator* etor);
 bool set_has(struct D_Set* self, struct Any* elem);
 bool set_isEqual(struct D_Set* self, struct D_Set* other);
+struct D_Iterator* set_iterator(struct D_Set* self);
 void set_markChildren(struct D_Set* self);
 //struct D_Triple* set_match(struct D_Set* self, struct Any* other, struct D_Triple* bindings);
 bool set_removeElem(struct D_Set* self, struct Any* elem);

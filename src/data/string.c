@@ -5,6 +5,8 @@
 #include "data/any.h"
 #include "data/array.h"
 #include "data/integer.h"
+#include "data/iterator.h"
+#include "data/list.h"
 #include "data/queue.h"
 #include "data/string.h"
 #include "data/symbol.h"
@@ -22,6 +24,8 @@ struct D_String {
 };
 
 struct Any* string_getPairValue(struct D_String* self, struct Any* prefix);
+bool string_iteratorHasNext(struct D_Iterator* iterator);
+struct Any* string_iteratorNext(struct D_Iterator* iterator);
 
 struct Methods* string_methodSetup(void) {
     struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
@@ -33,6 +37,9 @@ struct Methods* string_methodSetup(void) {
     methods->m_getPairValue = (struct Any* (*)(struct Any*, struct Any*))string_getPairValue;
     methods->m_hashCode = (bool (*)(struct Any*, HashCode*))string_hashCode;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))string_isEqual;
+    methods->m_iterator = (struct D_Iterator* (*)(struct Any*))string_iterator;
+    methods->m_iteratorHasNext = string_iteratorHasNext;
+    methods->m_iteratorNext = string_iteratorNext;
     methods->m_show = (void (*)(struct Any*, FILE*))string_show;
     methods->m_sizeOf = (size_t (*)(struct Any*))string_sizeOf;
     methods->m_structSize = string_structSize;
@@ -161,6 +168,31 @@ bool string_isEqual(struct D_String* self, struct D_String* other) {
         }
     }
     return true;
+}
+
+struct D_Iterator* string_iterator(struct D_String* self) {
+    struct D_List* pair = list_new((struct Any*)integer_new(0), (struct Any*)self);
+    return iterator_new((struct Any*)pair, T_String);
+}
+
+bool string_iteratorHasNext(struct D_Iterator* iterator) {
+    struct D_List* iterObj = (struct D_List*)iterator_getStateObject(iterator);
+    struct D_Integer* indexObj = (struct D_Integer*)list_getFirst(iterObj);
+    struct D_String* string = (struct D_String*)list_getRest(iterObj);
+    return integer_getValue(indexObj) < string->count;
+}
+
+struct Any* string_iteratorNext(struct D_Iterator* iterator) {
+    struct D_List* iterObj = (struct D_List*)iterator_getStateObject(iterator);
+    struct D_Integer* indexObj = (struct D_Integer*)list_getFirst(iterObj);
+    struct D_String* string = (struct D_String*)list_getRest(iterObj);
+    int index = integer_getValue(indexObj);
+    if (index < string->count) {
+        struct D_String* chr = string_fromChar(string->chars[index]);
+        list_setFirst(iterObj, (struct Any*)integer_new(index + 1));
+        return (struct Any*)chr;
+    }
+    return NULL;
 }
 
 void string_show(struct D_String* self, FILE* fd) {
