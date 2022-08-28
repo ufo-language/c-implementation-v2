@@ -12,6 +12,7 @@
 #include "methods/methods.h"
 
 extern struct D_HashTable* INTERNED_SYMBOLS;
+extern struct D_HashTable* GENERATED_SMBOL_NUMBERS;
 
 struct D_Symbol {
     struct Any obj;

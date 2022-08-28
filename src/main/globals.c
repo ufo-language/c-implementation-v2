@@ -19,6 +19,7 @@ struct D_Array*     EMPTY_ARRAY;
 struct D_List*      EMPTY_LIST;
 struct D_String*    EMPTY_STRING;
 struct D_Triple*    EMPTY_TRIPLE;
+struct D_HashTable* GENERATED_SYMBOL_NUMBERS;
 struct D_HashTable* INTERNED_SYMBOLS;
 struct D_HashTable* INTERNED_IDENTIFIERS;
 struct D_Nil*       NIL;
@@ -45,6 +46,7 @@ void globals_permanentObjects(void) {
 }
 
 void globals_rootObjects(void) {
+    GENERATED_SYMBOL_NUMBERS = hashTable_new();
     INTERNED_SYMBOLS = hashTable_new();
     INTERNED_IDENTIFIERS = hashTable_new();
     SYM_ANY = symbol_new("Any");
