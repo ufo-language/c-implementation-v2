@@ -2,7 +2,10 @@
 
 import os
 
-EXEC_NAME='bin/ufo'
+#=====================================================================
+# Modify these options as desired
+EXEC_NAME='ufo'
+EXEC_DIR='bin'
 HEADER_DIR='src'
 SOURCE_DIR='src'
 OBJ_DIR='obj'
@@ -11,6 +14,7 @@ C_VERSION='c11'
 COMPILE_OPTS=f"-Os -Wall -Wextra -Wswitch-enum -pedantic -std={C_VERSION}"
 #LINK_OPTS="-fsanitize=address -ldl"
 LINK_OPTS="-ldl"
+#=====================================================================
 
 SourceFiles = {}
 HeaderFiles = {}
@@ -108,17 +112,20 @@ def compileSourceFiles():
         compileSourceFile(sourceFile)
 
 def makeExecutable():
-    backupName = EXEC_NAME + '-backup'
-    if os.path.exists(EXEC_NAME):
-        os.rename(EXEC_NAME, backupName)
-    cmd = f"gcc -o {EXEC_NAME} {OBJ_DIR}/*.o {LINK_OPTS}"
+    if not os.path.exists(EXEC_DIR):
+        os.mkdir(EXEC_DIR)
+    execName = EXEC_DIR + "/" + EXEC_NAME
+    backupName = execName + '-backup'
+    if os.path.exists(execName):
+        os.rename(execName, backupName)
+    cmd = f"gcc -o {execName} {OBJ_DIR}/*.o {LINK_OPTS}"
     print(cmd)
     os.system(cmd)
-    if os.path.exists(EXEC_NAME):
+    if os.path.exists(execName):
         if os.path.exists(backupName):
             os.remove(backupName)
     elif os.path.exists(backupName):
-        os.rename(backupName, EXEC_NAME)
+        os.rename(backupName, execName)
 
 def main():
     dirSet = set()
