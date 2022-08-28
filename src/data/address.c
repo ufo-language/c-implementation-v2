@@ -4,10 +4,10 @@
 #include "data/address.h"
 #include "data/address.h"
 #include "data/any.h"
-#include "dispatch/methodtable.h"
 #include "gc/gc.h"
 #include "utils/hash.h"
 #include "main/typedefs.h"  // for HashCode
+#include "methods/methods.h"
 
 struct D_Address* address_new(void* value) {
     struct D_Address* self = (struct D_Address*)gc_alloc(T_Address); 

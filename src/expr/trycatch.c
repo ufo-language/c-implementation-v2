@@ -3,13 +3,13 @@
 
 #include "data/any.h"
 #include "data/array.h"
-#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/abstraction.h"
 #include "expr/exnhandler.h"
 #include "expr/trycatch.h"
 #include "gc/gc.h"
 #include "main/globals.h"
+#include "methods/methods.h"
 
 struct E_TryCatch {
     struct Any obj;

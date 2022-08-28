@@ -3,10 +3,10 @@
 
 #include "expr/continuation.h"
 #include "data/any.h"
-#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "gc/gc.h"
 #include "main/globals.h"
+#include "methods/methods.h"
 
 struct E_Continuation {
     struct Any obj;

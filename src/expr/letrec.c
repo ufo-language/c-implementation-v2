@@ -9,12 +9,12 @@
 #include "data/queue.h"
 #include "data/set.h"
 #include "data/triple.h"
-#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
 #include "expr/letrec.h"
 #include "gc/gc.h"
 #include "main/globals.h"
+#include "methods/methods.h"
 
 struct E_LetRec {
     struct Any obj;

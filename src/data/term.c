@@ -7,10 +7,10 @@
 #include "data/set.h"
 #include "data/symbol.h"
 #include "data/term.h"
-#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
 #include "gc/gc.h"
+#include "methods/methods.h"
 
 struct D_Term {
     struct Any obj;

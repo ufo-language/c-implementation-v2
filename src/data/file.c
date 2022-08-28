@@ -10,10 +10,10 @@
 #include "data/string.h"
 #include "data/stringbuffer.h"
 #include "data/symbol.h"
-#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "gc/gc.h"
 #include "main/globals.h"
+#include "methods/methods.h"
 
 struct D_File {
     struct Any obj;

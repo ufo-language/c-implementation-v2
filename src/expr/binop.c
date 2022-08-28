@@ -5,13 +5,13 @@
 #include "data/any.h"
 #include "data/closure.h"
 #include "data/list.h"
-#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/binop.h"
 #include "expr/continuation.h"
 #include "expr/identifier.h"
-#include "main/globals.h"
 #include "gc/gc.h"
+#include "main/globals.h"
+#include "methods/methods.h"
 
 struct E_BinOp {
     struct Any obj;

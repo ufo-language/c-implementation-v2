@@ -4,11 +4,11 @@
 
 #include "data/any.h"
 #include "data/list.h"
-#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
 #include "expr/if.h"
 #include "gc/gc.h"
+#include "methods/methods.h"
 
 struct E_If {
     struct Any obj;

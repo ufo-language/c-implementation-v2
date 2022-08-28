@@ -1,7 +1,7 @@
 #include <stdlib.h>
 
 #include "data/any.h"
-#include "dispatch/methodtable.h"
+#include "methods/methods.h"
 
 struct Methods* abstraction_methodSetup();
 struct Methods* address_methodSetup();

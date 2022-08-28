@@ -6,13 +6,13 @@
 #include "data/integer.h"
 #include "data/list.h"
 #include "data/symbol.h"
-#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/bracketexpr.h"
 #include "expr/continuation.h"
 #include "expr/do.h"
 #include "gc/gc.h"
 #include "main/globals.h"
+#include "methods/methods.h"
 
 struct E_BracketExpr {
     struct Any obj;

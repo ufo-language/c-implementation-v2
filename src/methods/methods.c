@@ -3,9 +3,9 @@
 #include "data/array.h"
 #include "data/list.h"
 #include "data/symbol.h"
-#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "main/globals.h"
+#include "methods/methods.h"
 
 struct Methods* METHOD_TABLE[T_FINAL + 1] = { NULL };
 

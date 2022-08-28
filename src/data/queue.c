@@ -4,14 +4,14 @@
 #include "data/any.h"
 #include "data/integer.h"
 #include "data/list.h"
+#include "data/list.h"
+#include "data/queue.h"
 #include "data/symbol.h"
-#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
 #include "gc/gc.h"
 #include "main/globals.h"
-#include "data/list.h"
-#include "data/queue.h"
+#include "methods/methods.h"
 
 struct D_Queue {
     struct Any obj;

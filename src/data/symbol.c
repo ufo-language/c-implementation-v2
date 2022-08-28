@@ -6,10 +6,10 @@
 #include "data/hashtable.h"
 #include "data/string.h"
 #include "data/symbol.h"
-#include "dispatch/methodtable.h"
 #include "gc/gc.h"
 #include "main/typedefs.h"  // for HashCode
 #include "utils/hash.h"
+#include "methods/methods.h"
 
 extern struct D_HashTable* INTERNED_SYMBOLS;
 

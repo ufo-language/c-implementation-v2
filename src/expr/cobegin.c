@@ -4,12 +4,12 @@
 #include "data/any.h"
 #include "data/array.h"
 #include "data/integer.h"
-#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
 #include "expr/cobegin.h"
 #include "gc/gc.h"
 #include "main/globals.h"
+#include "methods/methods.h"
 
 struct E_Cobegin {
     struct Any obj;

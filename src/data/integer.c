@@ -5,9 +5,10 @@
 #include "data/integer.h"
 #include "data/iterator.h"
 #include "data/list.h"
-#include "dispatch/methodtable.h"
+#include "data/sequence.h"
 #include "gc/gc.h"
 #include "main/typedefs.h"  // for HashCode
+#include "methods/methods.h"
 #include "utils/hash.h"
 
 struct D_Integer {
@@ -27,8 +28,6 @@ struct Methods* integer_methodSetup(void) {
     methods->m_hashCode = (bool (*)(struct Any*, HashCode*))integer_hashCode;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))integer_isEqual;
     methods->m_iterator = (struct D_Iterator* (*)(struct Any*))integer_iterator;
-    methods->m_iteratorHasNext = integer_iteratorHasNext;
-    methods->m_iteratorNext = integer_iteratorNext;
     methods->m_show = (void (*)(struct Any*, FILE*))integer_show;
     methods->m_sizeOf = (size_t (*)(struct Any*))integer_sizeOf;
     methods->m_structSize = integer_structSize;
@@ -72,27 +71,8 @@ bool integer_isEqual(struct D_Integer* self, struct D_Integer* other) {
 }
 
 struct D_Iterator* integer_iterator(struct D_Integer* self) {
-    struct D_List* pair = list_new((struct Any*)integer_new(0), (struct Any*)self);
-    return iterator_new((struct Any*)pair, T_Integer);
-}
-
-bool integer_iteratorHasNext(struct D_Iterator* iterator) {
-    struct D_List* iterObj = (struct D_List*)iterator_getStateObject(iterator);
-    struct D_Integer* indexObj = (struct D_Integer*)list_getFirst(iterObj);
-    struct D_Integer* maxObj = (struct D_Integer*)list_getRest(iterObj);
-    return indexObj->value < maxObj->value;
-}
-
-struct Any* integer_iteratorNext(struct D_Iterator* iterator) {
-    struct D_List* iterObj = (struct D_List*)iterator_getStateObject(iterator);
-    struct D_Integer* indexObj = (struct D_Integer*)list_getFirst(iterObj);
-    struct D_Integer* maxObj = (struct D_Integer*)list_getRest(iterObj);
-    int index = indexObj->value;
-    if (index < maxObj->value) {
-        list_setFirst(iterObj, (struct Any*)integer_new(index + 1));
-        return (struct Any*)indexObj;
-    }
-    return NULL;
+    struct D_Sequence* seq = sequence_new(0, self->value - 1, 1);
+    return sequence_iterator(seq);
 }
 
 void integer_show(struct D_Integer* self, FILE* fp) {

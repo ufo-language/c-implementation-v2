@@ -12,13 +12,13 @@
 #include "data/string.h"
 #include "data/symbol.h"
 #include "data/triple.h"
-#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/exnhandler.h"
 #include "expr/identifier.h"
 #include "expr/savedenv.h"
 #include "gc/gc.h"
 #include "main/globals.h"
+#include "methods/methods.h"
 #include "ns/all.h"
 
 static struct D_Queue* _runningEvaluators;

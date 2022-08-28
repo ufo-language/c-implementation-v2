@@ -4,10 +4,10 @@
 
 #include "data/any.h"
 #include "data/boolean.h"
-#include "dispatch/methodtable.h"
 #include "gc/gc.h"
 #include "main/globals.h"
 #include "main/typedefs.h"  // for HashCode
+#include "methods/methods.h"
 #include "utils/hash.h"
 
 struct D_Boolean {

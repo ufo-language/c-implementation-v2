@@ -6,8 +6,8 @@
 #include "data/any.h"
 #include "data/integer.h"
 #include "data/stringstream.h"
-#include "dispatch/methodtable.h"
 #include "gc/gc.h"
+#include "methods/methods.h"
 
 struct D_StringStream {
     struct Any obj;

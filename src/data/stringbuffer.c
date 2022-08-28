@@ -7,8 +7,8 @@
 #include "data/string.h"
 #include "data/stringbuffer.h"
 #include "data/stringbufferstruct.h"
-#include "dispatch/methodtable.h"
 #include "gc/gc.h"
+#include "methods/methods.h"
 
 struct Methods* stringBuffer_methodSetup(void) {
     struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));

@@ -5,11 +5,11 @@
 
 #include "data/any.h"
 #include "data/tuple.h"
-#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "gc/gc.h"
 #include "main/globals.h"
 #include "main/typedefs.h"
+#include "methods/methods.h"
 #include "utils/hash.h"
 
 struct D_Tuple {

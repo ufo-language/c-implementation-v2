@@ -3,14 +3,14 @@
 
 #include "expr/savedenv.h"
 #include "data/any.h"
-#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "gc/gc.h"
+#include "methods/methods.h"
 
 // This is an expression that gets pushed onto the expression stack
-// before an application is evaluated. After the application is
-// finished, this expression is evaluated and it restores the
-// environment.
+// before an application is evaluated (and one or two other
+// places). After the application is finished, this expression is
+// evaluated and it restores the environment.
 
 struct E_SavedEnv {
     struct Any obj;

@@ -9,11 +9,11 @@
 #include "data/iterator.h"
 #include "data/sequence.h"
 #include "data/symbol.h"
-#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "gc/gc.h"
 #include "main/globals.h"
 #include "main/typedefs.h"  // for HashCode
+#include "methods/methods.h"
 #include "utils/hash.h"
 
 struct D_Sequence {

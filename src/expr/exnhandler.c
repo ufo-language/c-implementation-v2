@@ -10,12 +10,12 @@
 #include "data/string.h"
 #include "data/symbol.h"
 #include "data/triple.h"
-#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/abstraction.h"
 #include "expr/exnhandler.h"
 #include "gc/gc.h"
 #include "main/globals.h"
+#include "methods/methods.h"
 #include "utils/hash.h"
 
 struct E_ExceptionHandler {

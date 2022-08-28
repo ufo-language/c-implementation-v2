@@ -5,9 +5,9 @@
 #include "data/any.h"
 #include "data/hashtable.h"
 #include "data/symbol.h"
-#include "dispatch/methodtable.h"
 #include "gc/gc.h"
 #include "data/triple.h"
+#include "methods/methods.h"
 
 struct D_Triple {
     struct Any obj;

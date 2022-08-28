@@ -5,7 +5,7 @@
 
 #include "data/any.h"
 #include "data/symbol.h"
-#include "dispatch/methodtable.h"
+#include "methods/methods.h"
 #include "utils/hash.h"
 
 struct Evaluator;

@@ -5,12 +5,12 @@
 #include "data/binding.h"
 #include "data/integer.h"
 #include "data/list.h"
-#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
 #include "expr/protocol.h"
 #include "gc/gc.h"
 #include "main/globals.h"
+#include "methods/methods.h"
 
 struct E_Protocol {
     struct Any obj;

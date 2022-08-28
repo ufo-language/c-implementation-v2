@@ -9,12 +9,12 @@
 #include "data/queue.h"
 #include "data/symbol.h"
 #include "data/triple.h"
-#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/identifier.h"
 #include "expr/recorddef.h"
 #include "gc/gc.h"
 #include "main/globals.h"
+#include "methods/methods.h"
 
 struct E_RecordDefinition {
     struct Any obj;

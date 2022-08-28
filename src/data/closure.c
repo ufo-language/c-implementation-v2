@@ -5,9 +5,9 @@
 #include "data/array.h"
 #include "data/closure.h"
 #include "data/list.h"
-#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/abstraction.h"
+#include "methods/methods.h"
 #include "gc/gc.h"
 
 struct D_Closure {

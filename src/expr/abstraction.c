@@ -5,10 +5,10 @@
 #include "data/closure.h"
 #include "data/list.h"
 #include "data/set.h"
-#include "dispatch/methodtable.h"
 #include "etor/evaluator.h"
 #include "expr/abstraction.h"
 #include "gc/gc.h"
+#include "methods/methods.h"
 
 struct E_Abstraction {
     struct Any obj;
