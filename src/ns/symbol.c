@@ -33,21 +33,17 @@ static void _generate(struct Evaluator* etor, struct D_List* args) {
     struct Any** paramVars[] = {&nameObj};
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     struct D_String* name = (struct D_String*)nameObj;
-
     struct D_Integer* symbolNumInt = (struct D_Integer*)hashTable_get(GENERATED_SYMBOL_NUMBERS, (struct Any*)name);
     int symbolNum = 0;
     if (symbolNumInt != NULL) {
         symbolNum = integer_getValue(symbolNumInt);
     }
-
-    char buffer[64];
+    // TODO replace this buffer size with something dynamic
+    char buffer[32];
     sprintf(buffer, "%d", symbolNum);
-
     struct D_String* numberString = string_new(buffer);
     struct D_String* completeName = string_join(name, numberString);
     struct D_Symbol* symbol = symbol_new(string_getChars(completeName));
-
     hashTable_put_unsafe(GENERATED_SYMBOL_NUMBERS, (struct Any*)name, (struct Any*)integer_new(symbolNum + 1));
-    
     evaluator_pushObj(etor, (struct Any*)symbol);
 }
