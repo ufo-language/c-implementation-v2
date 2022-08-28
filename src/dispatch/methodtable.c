@@ -69,7 +69,7 @@ static bool m_isEqual(struct Any* self, struct Any* other) {
 }
 
 struct D_Iterator* m_iterator(struct Any* self) {
-    return list_iterator(list_new(self, (struct Any*)NIL));
+    return list_iterator(list_new(self, (struct Any*)EMPTY_LIST));
 }
 
 bool m_iteratorHasNext(struct D_Iterator* iter) {
