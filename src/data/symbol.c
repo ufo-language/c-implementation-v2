@@ -36,7 +36,8 @@ struct Methods* symbol_methodSetup(void) {
 
 struct D_Symbol* symbol_new(char* name) {
     struct D_String* nameString = string_new(name);
-    struct D_Symbol* self = (struct D_Symbol*)hashTable_get(INTERNED_SYMBOLS, (struct Any*)nameString);
+    //struct D_Symbol* self = (struct D_Symbol*)hashTable_get(INTERNED_SYMBOLS, (struct Any*)nameString);
+    struct D_Symbol* self = symbol_lookup(nameString);
     if (self == NULL) {    
         self = (struct D_Symbol*)gc_alloc(T_Symbol);
         int count = strlen(name);
@@ -50,7 +51,7 @@ struct D_Symbol* symbol_new(char* name) {
 
 struct D_Symbol* symbol_new_move(char* name, int count) {
     struct D_String* nameString = string_new(name);
-    struct D_Symbol* self = (struct D_Symbol*)hashTable_get(INTERNED_SYMBOLS, (struct Any*)nameString);
+    struct D_Symbol* self = symbol_lookup(nameString);
     if (self == NULL) {    
         self = (struct D_Symbol*)gc_alloc(T_Symbol);
         self->name = name;
@@ -90,6 +91,10 @@ bool symbol_hashCode(struct D_Symbol* self, HashCode* hashCode) {
     *hashCode = self->hashCode;
     return true;
 }
+
+struct D_Symbol* symbol_lookup(struct D_String* name) {
+    return (struct D_Symbol*)hashTable_get(INTERNED_SYMBOLS, (struct Any*)name);
+ }
 
 void symbol_show(struct D_Symbol* self, FILE* fd) {
     fputs(self->name, fd);

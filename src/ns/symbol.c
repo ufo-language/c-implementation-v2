@@ -1,3 +1,4 @@
+#include <limits.h>  // for INT_MAX
 #include <stdio.h>  // for sprintf()
 
 #include "data/any.h"
@@ -38,12 +39,21 @@ static void _generate(struct Evaluator* etor, struct D_List* args) {
     if (symbolNumInt != NULL) {
         symbolNum = integer_getValue(symbolNumInt);
     }
-    // TODO replace this buffer size with something dynamic
+    struct D_String* completeName = NULL;
+    // TODO replace this statically-sized buffer with something dynamic
     char buffer[32];
-    sprintf(buffer, "%d", symbolNum);
-    struct D_String* numberString = string_new(buffer);
-    struct D_String* completeName = string_join(name, numberString);
-    struct D_Symbol* symbol = symbol_new(string_getChars(completeName));
-    hashTable_put_unsafe(GENERATED_SYMBOL_NUMBERS, (struct Any*)name, (struct Any*)integer_new(symbolNum + 1));
-    evaluator_pushObj(etor, (struct Any*)symbol);
+    for (; symbolNum>0; symbolNum++) {
+        sprintf(buffer, "%d", symbolNum);
+        struct D_String* numberString = string_new(buffer);
+        completeName = string_join(name, numberString);
+        struct D_Symbol* symbol = symbol_lookup(completeName);
+        if (symbol == NULL) {
+            symbol = symbol_new(string_getChars(completeName));
+            hashTable_put_unsafe(GENERATED_SYMBOL_NUMBERS, (struct Any*)name, (struct Any*)integer_new(symbolNum + 1));
+            evaluator_pushObj(etor, (struct Any*)symbol);
+            return;
+        }
+    }
+    struct D_Symbol* sym = symbol_new("Symbol");
+    evaluator_throwException(etor, sym, "unable to generate symbol from string", (struct Any*)name);
 }
