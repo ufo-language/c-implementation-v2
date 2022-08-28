@@ -6,9 +6,7 @@
 #include "data/iterator.h"
 #include "data/symbol.h"
 #include "gc/gc.h"
-#include "main/typedefs.h"
 #include "methods/methods.h"
-#include "utils/hash.h"
 
 struct D_Iterator {
     struct Any obj;

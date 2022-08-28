@@ -3,8 +3,6 @@
 
 #include <stdio.h>
 
-#include "main/typedefs.h"
-
 struct D_Iterator;
 struct Evaluator;
 
