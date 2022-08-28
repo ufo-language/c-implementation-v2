@@ -50,6 +50,7 @@ char* TYPE_NAMES[] = {
     "SavedEnv",
     "Sequence",
     "Set",
+    "Stream",
     "String",
     "StringBuffer",
     "StringStream",
