@@ -46,6 +46,7 @@ enum TypeId {
     T_SavedEnv,
     T_Sequence,
     T_Set,
+    T_Stream,
     T_String,
     T_StringBuffer,
     T_StringStream,
