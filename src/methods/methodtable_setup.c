@@ -40,6 +40,7 @@ struct Methods* recordSpec_methodSetup();
 struct Methods* savedEnv_methodSetup();
 struct Methods* sequence_methodSetup();
 struct Methods* set_methodSetup();
+struct Methods* stream_methodSetup();
 struct Methods* string_methodSetup();
 struct Methods* stringBuffer_methodSetup();
 struct Methods* stringStream_methodSetup();
@@ -89,6 +90,7 @@ void methodTable_setupMethods(void) {
     METHOD_TABLE[T_SavedEnv] = savedEnv_methodSetup();
     METHOD_TABLE[T_Sequence] = sequence_methodSetup();
     METHOD_TABLE[T_Set] = set_methodSetup();
+    METHOD_TABLE[T_Stream] = stream_methodSetup();
     METHOD_TABLE[T_String] = string_methodSetup();
     METHOD_TABLE[T_StringBuffer] = stringBuffer_methodSetup();
     METHOD_TABLE[T_StringStream] = stringStream_methodSetup();

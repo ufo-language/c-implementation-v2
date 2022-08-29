@@ -10,6 +10,7 @@
 
 struct D_Iterator;
 struct D_Set;
+struct D_Stream;
 struct D_Triple;
 struct Evaluator;
 
@@ -25,14 +26,18 @@ struct Methods {
     bool               (*m_hashCode)(struct Any* self, HashCode* hashCode);
     bool               (*m_isEqual)(struct Any* self, struct Any* other);
     struct D_Iterator* (*m_iterator)(struct Any* self);
-    bool               (*m_iteratorHasNext)(struct D_Iterator* iter);
-    struct Any*        (*m_iteratorNext)(struct D_Iterator* iter);
     void               (*m_markChildren)(struct Any* self);
     struct D_Triple*   (*m_match)(struct Any* self, struct Any* other, struct D_Triple* bindings);
     void               (*m_show)(struct Any* self, FILE* fp);
     size_t             (*m_sizeOf)(struct Any* self);
+    bool               (*m_streamReadChar)(struct Any* self, char* c);
+    bool               (*m_streamWriteChar)(struct Any* self, char c);
     size_t             (*m_structSize)(void);
     struct Any*        (*m_typeOf)(struct Any* self);
+    // iterator methods
+    bool               (*m_iteratorHasNext)(struct D_Iterator* iter);
+    struct Any*        (*m_iteratorNext)(struct D_Iterator* iter);
+    // stream methods
 };
 
 extern struct Methods* METHOD_TABLE[];

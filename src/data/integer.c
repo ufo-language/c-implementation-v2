@@ -5,6 +5,7 @@
 #include "data/integer.h"
 #include "data/iterator.h"
 #include "data/list.h"
+#include "data/stream.h"
 #include "data/sequence.h"
 #include "gc/gc.h"
 #include "main/typedefs.h"  // for HashCode
@@ -86,4 +87,23 @@ size_t integer_sizeOf(struct D_Integer* self) {
 
 size_t integer_structSize() {
     return sizeof(struct D_Integer);
+}
+
+void _writeToStream_recursive(int n, struct D_Stream* stream) {
+    if (n < 10) {
+        stream_writeChar(stream, '0' + n);
+    }
+    else {
+        _writeToStream_recursive(n / 10, stream);
+        stream_writeChar(stream, '0' + n % 10);
+    }
+}
+
+void integer_writeToStream(struct D_Integer* self, struct D_Stream* stream) {
+    int n = self->value;
+    if (n < 0) {
+        n = -n;
+        stream_writeChar(stream, '-');
+    }
+    _writeToStream_recursive(n, stream);
 }

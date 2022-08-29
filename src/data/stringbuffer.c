@@ -18,6 +18,8 @@ struct Methods* stringBuffer_methodSetup(void) {
     methods->m_show = (void (*)(struct Any*, FILE*))stringBuffer_show;
     methods->m_sizeOf = (size_t (*)(struct Any*))stringBuffer_sizeOf;
     methods->m_structSize = stringBuffer_structSize;
+    methods->m_streamReadChar = (bool (*)(struct Any*, char*))stringBuffer_readChar;
+    methods->m_streamWriteChar = (bool (*)(struct Any*, char))stringBuffer_writeChar;
     return methods;
 }
 
@@ -106,9 +108,6 @@ bool stringBuffer_readChar(struct D_StringBuffer* self, char* c) {
     if (self->count == 0) {
         return false;
     }
-    //    printf("ERROR: attempt to read from an empty StringBuffer\n");
-    //    exit(1);
-    //}
     struct BufferSegment* segment = self->readSegment;
     *c = segment->chars[segment->readIndex++];
     if (segment->readIndex == STRINGBUFFER_SEGMENT_SIZE) {
@@ -118,7 +117,7 @@ bool stringBuffer_readChar(struct D_StringBuffer* self, char* c) {
         self->readSegment = next;
     }
     self->count--;
-    return c;
+    return true;
 }
 
 void stringBuffer_show(struct D_StringBuffer* self, FILE* fd) {
@@ -141,7 +140,7 @@ void stringBuffer_write(struct D_StringBuffer* self, struct D_String* string) {
     stringBuffer_writeChars(self, string_getChars(string));
 }
 
-void stringBuffer_writeChar(struct D_StringBuffer* self, char c) {
+bool stringBuffer_writeChar(struct D_StringBuffer* self, char c) {
     struct BufferSegment* segment = self->writeSegment;
     if (segment == self->readSegment) {
         if (segment->readIndex == segment->writeIndex) {
@@ -156,14 +155,16 @@ void stringBuffer_writeChar(struct D_StringBuffer* self, char c) {
     }
     segment->chars[segment->writeIndex++] = c;
     self->count++;
+    return true;
 }
 
-void stringBuffer_writeChars(struct D_StringBuffer* self, char* chars) {
+bool stringBuffer_writeChars(struct D_StringBuffer* self, char* chars) {
     char c;
     while ((c = *chars)) {
         stringBuffer_writeChar(self, c);
         chars++;
     }
+    return true;
 }
 
 size_t stringBuffer_sizeOf(struct D_StringBuffer* self) {

@@ -4,14 +4,16 @@
 
 #include "data/any.h"
 #include "data/stream.h"
+#include "data/string.h"
+#include "data/stringbuffer.h"
 #include "data/symbol.h"
+#include "etor/evaluator.h"
 #include "gc/gc.h"
 #include "methods/methods.h"
 
 struct D_Stream {
     struct Any obj;
     struct Any* substream;
-    struct Methods* substreamMethods;
 };
 
 struct Methods* stream_methodSetup(void) {
@@ -22,6 +24,8 @@ struct Methods* stream_methodSetup(void) {
     methods->m_markChildren = (void (*)(struct Any* self))stream_markChildren;
     methods->m_show = (void (*)(struct Any*, FILE*))stream_show;
     methods->m_sizeOf = (size_t (*)(struct Any*))stream_sizeOf;
+    methods->m_streamReadChar = (bool (*)(struct Any*, char*))stream_readChar;
+    methods->m_streamWriteChar = (bool (*)(struct Any*, char))stream_writeChar;
     methods->m_structSize = stream_structSize;
     return methods;
 }
@@ -29,8 +33,21 @@ struct Methods* stream_methodSetup(void) {
 struct D_Stream* stream_new(struct Any* substream) {
     struct D_Stream* self = (struct D_Stream*)gc_alloc(T_Stream);
     self->substream = substream;
-    self->substreamMethods = METHOD_TABLE[substream->typeId];
     return self;
+}
+
+struct D_Stream* stream_newFrom(struct Any* obj, struct Evaluator* etor) {
+    enum TypeId typeId = any_typeId(obj);
+    if (typeId == T_String) {
+        struct D_StringBuffer* buffer = stringBuffer_new();
+        stringBuffer_write(buffer, (struct D_String*)obj);
+        struct D_Stream* stream = stream_new((struct Any*)buffer);
+        return stream;
+    }
+    else {
+        evaluator_throwException(etor, symbol_new("Stream"), "unable to create stream from object", obj);
+    }
+    return NULL;
 }
 
 void stream_free(struct D_Stream* self) {
@@ -38,7 +55,7 @@ void stream_free(struct D_Stream* self) {
 }
 
 bool stream_boolValue(struct D_Stream* self) {
-    return self->substreamMethods->m_boolValue(self->substream);
+    return METHOD_TABLE[self->substream->typeId]->m_boolValue(self->substream);
 }
 
 bool stream_hasNext(struct D_Stream* self) {
@@ -57,6 +74,12 @@ struct Any* stream_next(struct D_Stream* self) {
     return NULL;
 }
 
+bool stream_readChar(struct D_Stream* self, char* c) {
+    struct Any* substream = self->substream;
+    enum TypeId substreamId = any_typeId(substream);
+    return METHOD_TABLE[substreamId]->m_streamReadChar((struct Any*)substream, c);
+}
+
 void stream_show(struct D_Stream* self, FILE* fp) {
     fprintf(fp, "Stream{");
     any_show(self->substream, fp);
@@ -72,8 +95,24 @@ size_t stream_structSize(void) {
     return sizeof(struct D_Stream);
 }
 
-struct Any* stream_typeOf(struct Any* self) {
+struct Any* stream_typeOf(struct D_Stream* self) {
     (void)self;
     char* typeName = TYPE_NAMES[T_Stream];
     return (struct Any*)symbol_new(typeName);
+}
+
+bool stream_writeChar(struct D_Stream* self, char c) {
+    enum TypeId substreamId = any_typeId(self->substream);
+    bool res = METHOD_TABLE[substreamId]->m_streamWriteChar((struct Any*)self->substream, c);
+    return res;
+}
+
+bool stream_writeString(struct D_Stream* self, struct D_String* string) {
+    for (int n=0; n<string_count(string); n++) {
+        char c = string_getChar_unsafe(string, n);
+        if (!stream_writeChar(self, c)) {
+            return false;
+        }
+    }
+    return true;
 }

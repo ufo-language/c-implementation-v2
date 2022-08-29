@@ -7,6 +7,8 @@
 #include "main/globals.h"
 #include "methods/methods.h"
 
+struct D_Stream;
+
 struct Methods* METHOD_TABLE[T_FINAL + 1] = { NULL };
 
 // These are the default functions for all the methods.
@@ -102,6 +104,18 @@ static size_t m_sizeOf(struct Any* self) {
     return 0;
 }
 
+static bool m_streamReadChar(struct Any* stream, char* c) {
+    (void)stream;
+    (void)c;
+    return false;
+}
+
+static bool m_streamWriteChar(struct Any* stream, char c) {
+    (void)stream;
+    (void)c;
+    return false;
+}
+
 static size_t m_structSize(void) {
     fprintf(stderr, "ERROR: call to '%s' is not valid, no TypeId information\n", __func__);
     exit(1);
@@ -132,6 +146,8 @@ void methodTable_setupDefaults(struct Methods* methods) {
     methods->m_match = m_match;
     methods->m_show = m_show;
     methods->m_sizeOf = m_sizeOf;
+    methods->m_streamReadChar = m_streamReadChar;
+    methods->m_streamWriteChar = m_streamWriteChar;
     methods->m_structSize = m_structSize;
     methods->m_typeOf = m_typeOf;
 }

@@ -23,6 +23,7 @@ void ns_rand_defineAll(struct D_HashTable* env);
 void ns_record_defineAll(struct D_HashTable* env);
 void ns_sequence_defineAll(struct D_HashTable* env);
 void ns_set_defineAll(struct D_HashTable* env);
+void ns_stream_defineALl(struct D_HashTable* env);
 void ns_string_defineAll(struct D_HashTable* env);
 void ns_symbol_defineAll(struct D_HashTable* env);
 void ns_thread_defineAll(struct D_HashTable* env);
@@ -61,6 +62,7 @@ void ns_all_rootObjects(void) {
     ns_record_defineAll(_globalEnv);
     ns_sequence_defineAll(_globalEnv);
     ns_set_defineAll(_globalEnv);
+    ns_stream_defineAll(_globalEnv);
     ns_string_defineAll(_globalEnv);
     ns_symbol_defineAll(_globalEnv);
     ns_thread_defineAll(_globalEnv);

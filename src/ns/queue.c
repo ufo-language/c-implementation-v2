@@ -6,7 +6,6 @@
 #include "data/queue.h"
 #include "data/symbol.h"
 #include "etor/evaluator.h"
-#include "expr/continuation.h"
 #include "expr/identifier.h"
 #include "main/globals.h"
 
