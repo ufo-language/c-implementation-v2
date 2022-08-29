@@ -15,7 +15,7 @@ struct D_String* stringBuffer_asString(struct D_StringBuffer* self);
 bool stringBuffer_boolValue(struct D_StringBuffer* self);
 void stringBuffer_clear(struct D_StringBuffer* self);
 int stringBuffer_count(struct D_StringBuffer* self);
-char* stringBuffer_getChars(struct D_StringBuffer* self, int* count);
+char* stringBuffer_readChars(struct D_StringBuffer* self, int* count);
 bool stringBuffer_readChar(struct D_StringBuffer* self, char* c);
 void stringBuffer_show(struct D_StringBuffer* self, FILE* fd);
 void stringBuffer_write(struct D_StringBuffer* self, struct D_String* string);

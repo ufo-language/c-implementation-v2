@@ -56,7 +56,7 @@ void stringBuffer_free(struct D_StringBuffer* self) {
 
 struct D_String* stringBuffer_asString(struct D_StringBuffer* self) {
     int count;
-    char* chars = stringBuffer_getChars(self, &count);
+    char* chars = stringBuffer_readChars(self, &count);
     struct D_String* string = string_new_move(chars, count);
     return string;
 }
@@ -86,7 +86,7 @@ int stringBuffer_count(struct D_StringBuffer* self) {
 
 // Read all characters from the buffer but do not remove them.
 // Returns a heap-allocated string that the caller owns.
-char* stringBuffer_getChars(struct D_StringBuffer* self, int* count) {
+char* stringBuffer_readChars(struct D_StringBuffer* self, int* count) {
     *count = self->count;
     char* chars = (char*)malloc(*count + 1);
     int writeIndex = 0;
