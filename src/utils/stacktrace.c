@@ -10,7 +10,7 @@ void stackTrace(void) {
     size = backtrace(array, MAX_SIZE);
     strings = backtrace_symbols(array, size);
     for (i = 0; i < size; i++) {
-      printf("%s\n", strings[i]);
+        printf("%s\n", strings[i]);
     }
     puts("");
     free(strings);
