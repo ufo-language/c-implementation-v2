@@ -21,6 +21,7 @@ void ns_os_defineAll(struct D_HashTable* env);
 void ns_parser_defineAll(struct D_HashTable* env);
 void ns_queue_defineAll(struct D_HashTable* env);
 void ns_rand_defineAll(struct D_HashTable* env);
+void ns_real_defineAll(struct D_HashTable* env);
 void ns_record_defineAll(struct D_HashTable* env);
 void ns_sequence_defineAll(struct D_HashTable* env);
 void ns_set_defineAll(struct D_HashTable* env);
@@ -61,6 +62,7 @@ void ns_all_rootObjects(void) {
     ns_parser_defineAll(_globalEnv);
     ns_queue_defineAll(_globalEnv);
     ns_rand_defineAll(_globalEnv);
+    ns_real_defineAll(_globalEnv);
     ns_record_defineAll(_globalEnv);
     ns_sequence_defineAll(_globalEnv);
     ns_set_defineAll(_globalEnv);
