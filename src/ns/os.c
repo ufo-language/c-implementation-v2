@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "defines.h"
 #include "data/any.h"
 #include "data/array.h"
 #include "data/hashtable.h"
@@ -17,6 +18,7 @@
 
 static void _cwd(struct Evaluator* etor, struct D_List* args);
 static void _dir(struct Evaluator* etor, struct D_List* args);
+static void _platform(struct Evaluator* etor, struct D_List* args);
 
 void ns_os_defineAll(struct D_HashTable* env) {
     struct E_Identifier* nsName = identifier_new(NS_NAME);
@@ -24,6 +26,7 @@ void ns_os_defineAll(struct D_HashTable* env) {
     hashTable_put_unsafe(env, (struct Any*)nsName, (struct Any*)nsHash);
     primitive_define(nsHash, "cwd", _cwd);
     primitive_define(nsHash, "dir", _dir);
+    primitive_define(nsHash, "platform", _platform);
 }
 
 static void _cwd(struct Evaluator* etor, struct D_List* args) {
@@ -59,4 +62,10 @@ static void _dir(struct Evaluator* etor, struct D_List* args) {
         closedir(d);
     }
     evaluator_pushObj(etor, (struct Any*)queue_asList(dirNameQ));
+}
+
+static void _platform(struct Evaluator* etor, struct D_List* args) {
+    primitive_checkArgs(0, NULL, args, NULL, etor);
+    struct D_String* platform = string_new(OS_PLATFORM);
+    evaluator_pushObj(etor, (struct Any*)platform);
 }
