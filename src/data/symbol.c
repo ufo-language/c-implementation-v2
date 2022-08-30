@@ -36,7 +36,6 @@ struct Methods* symbol_methodSetup(void) {
 
 struct D_Symbol* symbol_new(char* name) {
     struct D_String* nameString = string_new(name);
-    //struct D_Symbol* self = (struct D_Symbol*)hashTable_get(INTERNED_SYMBOLS, (struct Any*)nameString);
     struct D_Symbol* self = symbol_lookup(nameString);
     if (self == NULL) {    
         self = (struct D_Symbol*)gc_alloc(T_Symbol);

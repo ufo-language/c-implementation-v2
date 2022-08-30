@@ -8,8 +8,8 @@ struct D_String;
 struct Evaluator;
 struct StreamMethods;
 
-struct D_Stream* stream_new(struct Any* substream);
-struct D_Stream* stream_newFrom(struct Any* obj, struct Evaluator* etor);
+struct D_Stream* stream_new(struct D_Symbol* typeSym, struct Any* obj, struct Evaluator* etor);
+struct D_Stream* stream_new_aux(struct Any* substream);
 void stream_free(struct D_Stream* self);
 
 bool stream_boolValue(struct D_Stream* self);

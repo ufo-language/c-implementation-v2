@@ -3,12 +3,14 @@
 #include <stdlib.h>
 
 #include "data/any.h"
+#include "data/array.h"
 #include "data/stream.h"
 #include "data/string.h"
 #include "data/stringbuffer.h"
 #include "data/symbol.h"
 #include "etor/evaluator.h"
 #include "gc/gc.h"
+#include "main/globals.h"
 #include "methods/methods.h"
 
 struct D_Stream {
@@ -30,24 +32,27 @@ struct Methods* stream_methodSetup(void) {
     return methods;
 }
 
-struct D_Stream* stream_new(struct Any* substream) {
+struct D_Stream* stream_new(struct D_Symbol* typeSym, struct Any* obj, struct Evaluator* etor) {
+    if (typeSym == SYM_STRING) {
+        enum TypeId typeId = any_typeId(obj);
+        if (typeId == T_String) {
+            struct D_StringBuffer* buffer = stringBuffer_new();
+            stringBuffer_write(buffer, (struct D_String*)obj);
+            struct D_Stream* stream = stream_new_aux((struct Any*)buffer);
+            return stream;
+        }
+    }
+    else if (typeSym == SYM_FILE) {
+    }
+    struct D_Array* arg = array_newN(2, typeSym, obj);
+    evaluator_throwException(etor, symbol_new("Stream"), "unable to create stream", (struct Any*)arg);
+    return NULL;
+}
+
+struct D_Stream* stream_new_aux(struct Any* substream) {
     struct D_Stream* self = (struct D_Stream*)gc_alloc(T_Stream);
     self->substream = substream;
     return self;
-}
-
-struct D_Stream* stream_newFrom(struct Any* obj, struct Evaluator* etor) {
-    enum TypeId typeId = any_typeId(obj);
-    if (typeId == T_String) {
-        struct D_StringBuffer* buffer = stringBuffer_new();
-        stringBuffer_write(buffer, (struct D_String*)obj);
-        struct D_Stream* stream = stream_new((struct Any*)buffer);
-        return stream;
-    }
-    else {
-        evaluator_throwException(etor, symbol_new("Stream"), "unable to create stream from object", obj);
-    }
-    return NULL;
 }
 
 void stream_free(struct D_Stream* self) {

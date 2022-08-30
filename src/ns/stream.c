@@ -11,8 +11,6 @@
 
 #define NS_NAME "stream"
 
-//static void _isEmpty(struct Evaluator* etor, struct D_List* args);
-//static void _iterator(struct Evaluator* etor, struct D_List* args);
 static void _new(struct Evaluator* etor, struct D_List* args);
 static void _readChar(struct Evaluator* etor, struct D_List* args);
 static void _writeString(struct Evaluator* etor, struct D_List* args);
@@ -27,11 +25,13 @@ void ns_stream_defineAll(struct D_HashTable* env) {
 }
 
 static void _new(struct Evaluator* etor, struct D_List* args) {
-    static enum TypeId paramTypes[] = {T_NULL};
+    static enum TypeId paramTypes[] = {T_Symbol, T_NULL};
+    struct Any* typeSymObj;
     struct Any* obj;
-    struct Any** paramVars[] = {&obj};
-    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
-    struct D_Stream* stream = stream_newFrom(obj, etor);
+    struct Any** paramVars[] = {&typeSymObj, &obj};
+    primitive_checkArgs(2, paramTypes, args, paramVars, etor);
+    struct D_Symbol* typeSym = (struct D_Symbol*)typeSymObj;
+    struct D_Stream* stream = stream_new(typeSym, obj, etor);
     evaluator_pushObj(etor, (struct Any*)stream);
 }
 
