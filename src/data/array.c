@@ -285,7 +285,7 @@ bool array_isEqual(struct D_Array* self, struct D_Array* other) {
         return false;
     }
     for (int n=0; n<self->count; n++) {
-        if (!any_isEqual(array_get_unsafe(self, n), array_get_unsafe(other, n))) {
+        if (!any_isEqual(self->elems[n], other->elems[n])) {
             return false;
         }
     }
@@ -357,7 +357,7 @@ void array_map(struct D_Array* self, struct Any* abstr, struct Evaluator* etor) 
 
 void array_markChildren(struct D_Array* self) {
     for (int n=0; n<self->count; n++) {
-        any_mark(array_get_unsafe(self, n));
+        any_mark(self->elems[n]);
     }
 }
 
@@ -370,7 +370,7 @@ struct D_Triple* array_match(struct D_Array* self, struct Any* other, struct D_T
         return NULL;
     }
     for (int n=0; n<self->count; n++) {
-        bindings = any_match(array_get_unsafe(self, n), array_get_unsafe(otherArray, n), bindings);
+        bindings = any_match(self->elems[n], otherArray->elems[n], bindings);
         if (bindings == NULL) {
             return NULL;
         }
