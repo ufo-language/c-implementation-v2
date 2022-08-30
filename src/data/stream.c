@@ -4,6 +4,7 @@
 
 #include "data/any.h"
 #include "data/array.h"
+#include "data/file.h"
 #include "data/stream.h"
 #include "data/string.h"
 #include "data/stringbuffer.h"
@@ -48,8 +49,18 @@ struct D_Stream* stream_new(struct D_Symbol* typeSym, struct Any* obj, struct Ev
                                  (struct Any*)arg);
     }
     else if (typeSym == SYM_INFILE) {
-        printf("%s InFile\n", __func__);
-        // TODO finish
+        enum TypeId typeId = any_typeId(obj);
+        if (typeId == T_String) {
+            struct D_String* fileNameStr = (struct D_String*)obj;
+            struct D_File* file = file_new(fileNameStr);
+            struct D_Stream* stream = stream_new_aux((struct Any*)file);
+            return stream;
+        }
+        struct D_Array* arg = array_newN(2, typeSym, obj);
+        evaluator_throwException(etor,
+                                 symbol_new("Stream"),
+                                 "illegal stream object for stream type",
+                                 (struct Any*)arg);
     }
     else if (typeSym == SYM_OUTFILE) {
         printf("%s OutFile\n", __func__);
