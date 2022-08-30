@@ -41,11 +41,24 @@ struct D_Stream* stream_new(struct D_Symbol* typeSym, struct Any* obj, struct Ev
             struct D_Stream* stream = stream_new_aux((struct Any*)buffer);
             return stream;
         }
+        struct D_Array* arg = array_newN(2, typeSym, obj);
+        evaluator_throwException(etor,
+                                 symbol_new("Stream"),
+                                 "illegal stream object for stream type",
+                                 (struct Any*)arg);
     }
-    else if (typeSym == SYM_FILE) {
+    else if (typeSym == SYM_INFILE) {
+        printf("%s InFile\n", __func__);
+        // TODO finish
     }
-    struct D_Array* arg = array_newN(2, typeSym, obj);
-    evaluator_throwException(etor, symbol_new("Stream"), "unable to create stream", (struct Any*)arg);
+    else if (typeSym == SYM_OUTFILE) {
+        printf("%s OutFile\n", __func__);
+        // TODO finish
+    }
+    evaluator_throwException(etor,
+                             symbol_new("Stream"),
+                             "illegal stream type",
+                             (struct Any*)typeSym);
     return NULL;
 }
 

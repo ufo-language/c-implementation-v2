@@ -29,10 +29,11 @@ struct D_Boolean*   FALSE;
 struct D_Symbol*    SYM_ANY;
 struct D_Symbol*    SYM_ARRAY;
 struct D_Symbol*    SYM_BOOLEAN;
-struct D_Symbol*    SYM_FILE;
 struct D_Symbol*    SYM_IDENTIFIER;
+struct D_Symbol*    SYM_INFILE;
 struct D_Symbol*    SYM_INTEGER;
 struct D_Symbol*    SYM_NIL;
+struct D_Symbol*    SYM_OUTFILE;
 struct D_Symbol*    SYM_STRING;
 struct D_Symbol*    SYM_SYMBOL;
 
@@ -53,10 +54,11 @@ void globals_rootObjects(void) {
     SYM_ANY = symbol_new("Any");
     SYM_ARRAY = symbol_new("Array");
     SYM_BOOLEAN = symbol_new("Boolean");
-    SYM_FILE = symbol_new("File");
+    SYM_INFILE = symbol_new("InFile");
     SYM_IDENTIFIER = symbol_new("Identifier");
     SYM_INTEGER = symbol_new("Integer");
     SYM_NIL = symbol_new("Nil");
+    SYM_OUTFILE = symbol_new("OutFile");
     SYM_STRING = symbol_new("String");
     SYM_SYMBOL = symbol_new("Symbol");
 }

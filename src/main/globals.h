@@ -22,10 +22,11 @@ extern struct D_Boolean*   FALSE;
 extern struct D_Symbol*    SYM_ANY;
 extern struct D_Symbol*    SYM_ARRAY;
 extern struct D_Symbol*    SYM_BOOLEAN;
-extern struct D_Symbol*    SYM_FILE;
 extern struct D_Symbol*    SYM_IDENTIFIER;
+extern struct D_Symbol*    SYM_INFILE;
 extern struct D_Symbol*    SYM_INTEGER;
 extern struct D_Symbol*    SYM_NIL;
+extern struct D_Symbol*    SYM_OUTFILE;
 extern struct D_Symbol*    SYM_STRING;
 extern struct D_Symbol*    SYM_SYMBOL;
 
