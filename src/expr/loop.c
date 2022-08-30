@@ -85,7 +85,7 @@ static void _contin1(struct Evaluator* etor, struct Any* arg) {
     struct Any* iterExpr = evaluator_popObj(etor);
     // create the iterator from the iterator expression
     struct D_Iterator* iter = any_iterator(iterExpr);
-    struct D_Array* contin2arg = array_newN(4, iter, body, binding);
+    struct D_Array* contin2arg = array_newN(3, iter, body, binding);
     struct E_Continuation* contin = continuation_new(_contin2, "loop", (struct Any*)contin2arg);
     evaluator_pushExpr(etor, (struct Any*)contin);
 }
