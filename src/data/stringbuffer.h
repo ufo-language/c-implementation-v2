@@ -8,7 +8,6 @@ struct Array;
 struct D_StringBuffer;
 
 struct D_StringBuffer* stringBuffer_new(void);
-struct D_StringBuffer* stringBuffer_initialize(struct D_StringBuffer* self);
 void stringBuffer_free(struct D_StringBuffer* self);
 
 struct D_String* stringBuffer_asString(struct D_StringBuffer* self);

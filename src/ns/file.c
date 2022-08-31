@@ -72,8 +72,15 @@ static void _readChar(struct Evaluator* etor, struct D_List* args) {
         struct D_Symbol* sym = symbol_new("File");
         evaluator_throwException(etor, sym, "file is closed", (struct Any*)file);
     }
-    int c = file_readChar((struct D_File*)file);
-    evaluator_pushObj(etor, (c == EOF) ? (struct Any*)NIL : (struct Any*)string_fromChar(c));
+    char c;
+    struct Any* res;
+    if (file_readChar((struct D_File*)file, &c)) {
+        res = (struct Any*)string_fromChar(c);
+    }
+    else {
+        res = (struct Any*)NIL;
+    }
+    evaluator_pushObj(etor, res);
 }
 
 static void _readAll(struct Evaluator* etor, struct D_List* args) {

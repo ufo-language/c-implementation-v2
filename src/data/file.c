@@ -30,6 +30,7 @@ struct Methods* file_methodSetup(void) {
     methods->m_markChildren = (void (*)(struct Any* self))file_markChildren;
     methods->m_show = (void (*)(struct Any*, FILE*))file_show;
     methods->m_sizeOf = (size_t (*)(struct Any*))file_sizeOf;
+    methods->m_streamReadChar = (bool (*)(struct Any*, char*))file_readChar;
     methods->m_structSize = array_structSize;
     return methods;
 }
@@ -96,13 +97,15 @@ bool file_open_aux(struct D_File* self) {
     return self->fp != NULL;
 }
 
-char file_readChar(struct D_File* self) {
-    return fgetc(self->fp);
+bool file_readChar(struct D_File* self, char* c) {
+    int c1 = fgetc(self->fp);
+    if (c1 == EOF) {
+        return false;
+    }
+    *c = c1;
+    return true;
 }
 
-// This returns the number of bytes read, but since the number is an int
-// and the number of bytes read can be an unsigned long, the integer is
-// split into two parts returned as an array.
 size_t file_readAll(struct D_File* self, struct D_StringBuffer* stringBuffer, struct Evaluator* etor) {
     size_t nBytesRead = file_readAll_stringBuffer(self, stringBuffer, etor);
     return nBytesRead;

@@ -23,7 +23,7 @@ bool file_open_aux(struct D_File* self);
 //struct D_StringBuffer* file_readAll(struct D_File* self, struct Evaluator* etor);
 size_t file_readAll(struct D_File* self, struct D_StringBuffer* stringBuffer, struct Evaluator* etor);
 size_t file_readAll_stringBuffer(struct D_File* self, struct D_StringBuffer* stringBuffer, struct Evaluator* etor);
-char file_readChar(struct D_File* self);
+bool file_readChar(struct D_File* self, char* c);
 void file_show(struct D_File* self, FILE* fp);
 // returns the size of the file on disk
 long file_size(struct D_File* self);

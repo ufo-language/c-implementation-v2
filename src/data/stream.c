@@ -33,6 +33,7 @@ struct Methods* stream_methodSetup(void) {
     return methods;
 }
 
+/*
 struct D_Stream* stream_new(struct D_Symbol* typeSym, struct Any* obj, struct Evaluator* etor) {
     if (typeSym == SYM_STRING) {
         enum TypeId typeId = any_typeId(obj);
@@ -72,8 +73,9 @@ struct D_Stream* stream_new(struct D_Symbol* typeSym, struct Any* obj, struct Ev
                              (struct Any*)typeSym);
     return NULL;
 }
+*/
 
-struct D_Stream* stream_new_aux(struct Any* substream) {
+struct D_Stream* stream_new(struct Any* substream) {
     struct D_Stream* self = (struct D_Stream*)gc_alloc(T_Stream);
     self->substream = substream;
     return self;

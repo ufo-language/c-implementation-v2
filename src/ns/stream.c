@@ -5,6 +5,7 @@
 #include "data/primitive.h"
 #include "data/stream.h"
 #include "data/string.h"
+#include "data/stringbuffer.h"
 #include "etor/evaluator.h"
 #include "expr/identifier.h"
 #include "main/globals.h"
@@ -25,13 +26,15 @@ void ns_stream_defineAll(struct D_HashTable* env) {
 }
 
 static void _new(struct Evaluator* etor, struct D_List* args) {
-    static enum TypeId paramTypes[] = {T_Symbol, T_NULL};
-    struct Any* typeSymObj;
-    struct Any* obj;
-    struct Any** paramVars[] = {&typeSymObj, &obj};
-    primitive_checkArgs(2, paramTypes, args, paramVars, etor);
-    struct D_Symbol* typeSym = (struct D_Symbol*)typeSymObj;
-    struct D_Stream* stream = stream_new(typeSym, obj, etor);
+    static enum TypeId paramTypes[] = {T_String, T_File};
+    struct Any* obj = NULL;
+    enum TypeId typeId = primitive_checkArgsOneOf(2, paramTypes, args, &obj, etor);
+    if (typeId == T_String) {
+        struct D_StringBuffer* sb = stringBuffer_new();
+        stringBuffer_write((struct D_StringBuffer*)sb, (struct D_String*)obj);
+        obj = (struct Any*)sb;
+    }
+    struct D_Stream* stream = stream_new(obj);
     evaluator_pushObj(etor, (struct Any*)stream);
 }
 

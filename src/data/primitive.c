@@ -67,6 +67,10 @@ void primitive_argTypeException(enum TypeId expectedTypeId, enum TypeId foundTyp
     evaluator_throwException(etor, argSym, "type mismatch", (struct Any*)exn);
 }
 
+void primitive_argTypeExceptionOneOf(int nTypes, enum TypeId paramTypes[], struct Any* arg, struct Evaluator* etor) {
+    // TODO
+}
+
 void primitive_checkArgs(int nParams, enum TypeId paramTypes[], struct D_List* argList, struct Any** paramVars[], struct Evaluator* etor) {
     struct D_List* savedArgList = argList;
     for (int n=0; n<nParams; n++) {
@@ -106,6 +110,23 @@ int primitive_checkArgs2(int nParams1, int nParams2, enum TypeId paramTypes[], s
         primitive_argCountException(nParams2, savedArgList, etor);
     }
     return n;
+}
+
+enum TypeId primitive_checkArgsOneOf(int nTypes, enum TypeId paramTypes[], struct D_List* args, struct Any** paramVar, struct Evaluator* etor) {
+    if (list_isEmpty(args)|| !any_isA(list_getRest(args), T_List) || !list_isEmpty((struct D_List*)list_getRest(args))) {
+        primitive_argCountException(1, args, etor);
+    }
+    struct Any* arg = list_getFirst(args);
+    enum TypeId argType = any_typeId(arg);
+    for (int n=0; n<nTypes; n++) {
+        enum TypeId paramType = paramTypes[n];
+        if (paramType == T_NULL || paramType == argType) {
+            *paramVar = arg;
+            return paramType;
+        }
+    }
+    primitive_argTypeExceptionOneOf(nTypes, paramTypes, arg, etor);
+    return T_NULL;
 }
 
 void primitive_define(struct D_HashTable* namespace, char* name, PrimitiveFunction prim) {

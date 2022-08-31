@@ -14,10 +14,15 @@ struct Evaluator;
 
 typedef void (*PrimitiveFunction)(struct Evaluator* etor, struct D_List* args);
 
+// Checks for a specific number of arguments.
+void primitive_checkArgs(int nParams, enum TypeId paramTypes[], struct D_List* argList, struct Any** paramVars[], struct Evaluator* etor);
+// Checks for a number of arguments in the range nParams1 to nParams2
+int primitive_checkArgs2(int nParams1, int nParams2, enum TypeId paramTypes[], struct D_List* argList, struct Any** paramVars[], struct Evaluator* etor);
+// Checks a single argument for one of a number of types
+enum TypeId primitive_checkArgsOneOf(int nTypes, enum TypeId paramTypes[], struct D_List* args, struct Any** paramVar, struct Evaluator* etor);
+
 void primitive_argCountException(int nArgs, struct D_List* argList, struct Evaluator* etor);
 void primitive_argTypeException(enum TypeId expectedTypeId, enum TypeId foundTypeId, struct Any* argument, struct Evaluator* etor);
-void primitive_checkArgs(int nParams, enum TypeId paramTypes[], struct D_List* argList, struct Any** paramVars[], struct Evaluator* etor);
-int primitive_checkArgs2(int nParams1, int nParams2, enum TypeId paramTypes[], struct D_List* argList, struct Any** paramVars[], struct Evaluator* etor);
 void primitive_define(struct D_HashTable* namespace, char* name, PrimitiveFunction prim);
 void primitive_defineMacro(struct D_HashTable* namespace, char* name, PrimitiveFunction prim);
 

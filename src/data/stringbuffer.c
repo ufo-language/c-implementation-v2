@@ -10,6 +10,8 @@
 #include "gc/gc.h"
 #include "methods/methods.h"
 
+static struct D_StringBuffer* _initialize(struct D_StringBuffer* self);
+
 struct Methods* stringBuffer_methodSetup(void) {
     struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
     methodTable_setupDefaults(methods);
@@ -33,11 +35,11 @@ struct BufferSegment* bufferSegment_new(void) {
 
 struct D_StringBuffer* stringBuffer_new(void) {
     struct D_StringBuffer* self = (struct D_StringBuffer*)gc_alloc(T_StringBuffer);
-    stringBuffer_initialize(self);
+    _initialize(self);
     return self;
 }
 
-struct D_StringBuffer* stringBuffer_initialize(struct D_StringBuffer* self) {
+static struct D_StringBuffer* _initialize(struct D_StringBuffer* self) {
     self->count = 0;
     self->readSegment = self->writeSegment = bufferSegment_new();
     self->nSegments++;
