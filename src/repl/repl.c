@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "data/any.h"
 #include "data/array.h"
@@ -9,6 +10,7 @@
 #include "data/list.h"
 #include "data/string.h"
 #include "data/stringbuffer.h"
+#include "data/symbol.h"
 #include "etor/evaluator.h"
 #include "gc/gc.h"
 #include "lexer/lexer.h"
@@ -51,6 +53,20 @@ struct REPL* repl_new(bool makeRoot) {
 
 void repl_free(struct REPL* self) {
     free(self);
+}
+
+// If the only token in the token list is an EOI token,
+// then remove it.
+void repl_consumeEOIToken(struct REPL* self) {
+    if (list_isEmpty(self->tokens)) {
+        return;
+    }
+    struct D_Array* token = (struct D_Array*)list_getFirst(self->tokens);
+    struct D_Symbol* tokenSym = (struct D_Symbol*)array_get_unsafe(token, 0);
+    if (strcmp("EOI", symbol_getName(tokenSym))) {
+        return;
+    }
+    self->tokens = EMPTY_LIST;
 }
 
 struct D_String* repl_getInputString(struct REPL* self) {
@@ -137,7 +153,9 @@ static int repl_readLines(struct REPL* self) {
     return nCharsLines;
 }
 
-// Reads a string from stdin or from a file
+// Reads a string from stdin or from a file.
+// Places the string in self->inputString.
+// Returns the number of characters read.
 static int repl_read(struct REPL* self) {
     stringBuffer_clear(self->inputStringBuffer);
     int nChars = repl_readLine(self->inputStringBuffer);
@@ -161,6 +179,12 @@ static int repl_read(struct REPL* self) {
                 case READ_FILE:
                     stringBuffer_clear(self->inputStringBuffer);
                     nChars = repl_readFile(self);
+                    if (nChars == -1) {
+                        fprintf(stderr, "File not found: ");
+                        any_show((struct Any*)self->loadFileName, stderr);
+                        fputc('\n', stderr);
+                        nChars = 0;
+                    }
                     break;
             }
             self->inputString = stringBuffer_asString(self->inputStringBuffer);
@@ -222,21 +246,27 @@ static bool repl_printValue(struct REPL* self) {
 void repl_run(struct REPL* self) {
     repl_intro();
     while (true) {
-        repl_prompt();
-        int nChars = repl_read(self);
-        if (nChars == -1) {
-            break;
-        }
-        if (nChars == 0) {
-            continue;
-        }
-        if (!self->keepRunning) {
-            break;
-        }
-        if (!repl_tokenize(self)) {
-            continue;
+        if (list_isEmpty(self->tokens)) {
+            repl_prompt();
+            int nChars = repl_read(self);
+            if (!self->keepRunning) {
+                break;
+            }
+            if (nChars == -1) {
+                // user pressed ^D
+                break;
+            }
+            if (nChars == 0) {
+                // user pressed Enter without typing anything
+                continue;
+            }
+            if (!repl_tokenize(self)) {
+                // the repl_tokenize function displays the error message
+                continue;
+            }
         }
         if (!repl_parse(self)) {
+            // the parser displays the error message
             continue;
         }
         if (!repl_eval(self)) {
@@ -245,6 +275,7 @@ void repl_run(struct REPL* self) {
         else {
             repl_printValue(self);
         }
+        repl_consumeEOIToken(self);
         gc_commit();
     }
     fputc('\n', stdout);
