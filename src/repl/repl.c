@@ -22,7 +22,6 @@
 struct Methods* repl_methodSetup(void) {
     struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
     methodTable_setupDefaults(methods);
-    //methods->m_deepCopy = (struct Any* (*)(struct Any*))repl_deepCopy;
     methods->m_free = (void (*)(struct Any*))repl_free;
     methods->m_markChildren = (void (*)(struct Any* self))repl_markChildren;
     methods->m_show = (void (*)(struct Any*, FILE*))repl_show;
