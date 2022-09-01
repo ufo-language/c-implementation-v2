@@ -6,7 +6,7 @@ do
     io:displn(" |___|_| |___| type :? for help")
 end
 
-let replFields = {nothing, nothing, nothing}
+let replFields = {nil, nil, nil}
 
 fun repl() =
 do
