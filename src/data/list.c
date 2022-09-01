@@ -181,6 +181,13 @@ struct Any* list_getRest(struct D_List* self) {
     return self->rest;
 }
 
+struct D_List* list_getRestAsList(struct D_List* self) {
+    if (T_List == any_typeId(self->rest)) {
+        return (struct D_List*)self->rest;
+    }
+    return list_new(self->rest, (struct Any*)EMPTY_LIST);
+}
+
 struct Any* list_getSecond(struct D_List* self) {
     if (any_isA(self->rest, T_List)) {
         return ((struct D_List*)self->rest)->first;

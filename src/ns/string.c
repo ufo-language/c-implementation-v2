@@ -3,8 +3,10 @@
 #include "data/boolean.h"
 #include "data/hashtable.h"
 #include "data/integer.h"
+#include "data/list.h"
 #include "data/primitive.h"
 #include "data/string.h"
+#include "data/stringbuffer.h"
 #include "etor/evaluator.h"
 #include "expr/identifier.h"
 #include "main/globals.h"
@@ -12,6 +14,7 @@
 #define NS_NAME "string"
 
 void ns_string_get(struct Evaluator* etor, struct D_List* args);
+static void _count(struct Evaluator* etor, struct D_List* args);
 static void _isEmpty(struct Evaluator* etor, struct D_List* args);
 static void _iterator(struct Evaluator* etor, struct D_List* args);
 static void _join(struct Evaluator* etor, struct D_List* args);
@@ -21,11 +24,21 @@ void ns_string_defineAll(struct D_HashTable* env) {
     struct E_Identifier* nsName = identifier_new(NS_NAME);
     struct D_HashTable* nsHash = hashTable_new();
     hashTable_put_unsafe(env, (struct Any*)nsName, (struct Any*)nsHash);
+    primitive_define(nsHash, "count", _count);
     primitive_define(nsHash, "get", ns_string_get);
     primitive_define(nsHash, "isEmpty", _isEmpty);
     primitive_define(nsHash, "iterator", _iterator);
     primitive_define(nsHash, "join", _join);
     primitive_define(nsHash, "startsWith", _startsWith);
+}
+
+static void _count(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_String};
+    struct Any* stringObj;
+    struct Any** paramVars[] = {&stringObj};
+    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
+    struct D_String* string = (struct D_String*)stringObj;
+    evaluator_pushObj(etor, (struct Any*)integer_new(string_count(string)));
 }
 
 void ns_string_get(struct Evaluator* etor, struct D_List* args) {
@@ -60,15 +73,18 @@ static void _iterator(struct Evaluator* etor, struct D_List* args) {
 }
 
 static void _join(struct Evaluator* etor, struct D_List* args) {
-    static enum TypeId paramTypes[] = {T_String, T_String};
-    struct Any* string1Obj;
-    struct Any* string2Obj;
-    struct Any** paramVars[] = {&string1Obj, &string2Obj};
-    primitive_checkArgs(2, paramTypes, args, paramVars, etor);
-    struct D_String* string1 = (struct D_String*)string1Obj;
-    struct D_String* string2 = (struct D_String*)string2Obj;
-    struct D_String* string3 = string_join(string1, string2);
-    evaluator_pushObj(etor, (struct Any*)string3);
+    struct D_StringBuffer* sb = stringBuffer_new();
+    while (!list_isEmpty(args)) {
+        struct Any* arg = list_getFirst(args);
+        enum TypeId argTypeId = any_typeId(arg);
+        if (T_String != any_typeId(arg)) {
+            primitive_argTypeException(T_String, argTypeId, arg, etor);
+        }
+        struct D_String* string = (struct D_String*)arg;
+        stringBuffer_writeChars(sb, string_getChars(string));
+        args = (struct D_List*)list_getRestAsList(args);
+    }
+    evaluator_pushObj(etor, (struct Any*)stringBuffer_asString(sb));
 }
 
 static void _startsWith(struct Evaluator* etor, struct D_List* args) {

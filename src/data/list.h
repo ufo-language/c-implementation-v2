@@ -25,6 +25,7 @@ void list_eval(struct D_List* self, struct Evaluator* etor);
 void list_freeVars(struct D_List* self, struct D_Set* freeVars, struct Evaluator* etor);
 struct Any* list_getFirst(struct D_List* self);
 struct Any* list_getRest(struct D_List* self);
+struct D_List* list_getRestAsList(struct D_List* self);
 struct Any* list_getSecond(struct D_List* self);
 struct Any* list_getNth(struct D_List* self, int n, struct Evaluator* etor);
 bool list_isEmpty(struct D_List* self);
