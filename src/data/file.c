@@ -22,6 +22,8 @@ struct D_File {
     bool isOpen;
 };
 
+bool file_writeChar(struct D_File* self, char c);
+
 struct Methods* file_methodSetup(void) {
     struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
     methodTable_setupDefaults(methods);
@@ -31,7 +33,8 @@ struct Methods* file_methodSetup(void) {
     methods->m_show = (void (*)(struct Any*, FILE*))file_show;
     methods->m_sizeOf = (size_t (*)(struct Any*))file_sizeOf;
     methods->m_streamReadChar = (bool (*)(struct Any*, char*))file_readChar;
-    methods->m_structSize = array_structSize;
+    methods->m_structSize = file_structSize;
+    methods->m_streamWriteChar = (bool (*)(struct Any* self, char c))file_writeChar;
     return methods;
 }
 
@@ -158,4 +161,9 @@ size_t file_sizeOf(struct D_File* self) {
 
 size_t file_structSize(void) {
     return sizeof(struct D_File);
+}
+
+bool file_writeChar(struct D_File* self, char c) {
+    fputc(c, self->fp);
+    return true;
 }
