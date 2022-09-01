@@ -22,6 +22,7 @@ static void _readChar(struct Evaluator* etor, struct D_List* args);
 static void _size(struct Evaluator* etor, struct D_List* args);
 
 void ns_file_defineAll(struct D_HashTable* env) {
+    hashTable_put_unsafe(env, (struct Any*)identifier_new("stdout"), (struct Any*)STDOUT_STREAM);
     struct E_Identifier* nsName = identifier_new(NS_NAME);
     struct D_HashTable* nsHash = hashTable_new();
     hashTable_put_unsafe(env, (struct Any*)nsName, (struct Any*)nsHash);
