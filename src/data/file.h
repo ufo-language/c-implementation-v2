@@ -11,7 +11,8 @@ struct D_String;
 struct D_StringBuffer;
 
 struct D_File* file_new(struct D_String* fileName);
-struct D_File* file_new_charString(char* fileName);
+struct D_File* file_fromFilePointer(struct D_String* fileName, FILE* fp);
+struct D_File* file_new_charStringName(char* fileName);
 void file_free(struct D_File* self);
 
 bool file_boolValue(struct D_File* self);

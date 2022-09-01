@@ -35,6 +35,13 @@ struct Methods* file_methodSetup(void) {
     return methods;
 }
 
+struct D_File* file_fromFilePointer(struct D_String* fileName, FILE* fp) {
+    struct D_File* self = (struct D_File*)gc_alloc(T_File);
+    self->fileName = fileName;
+    self->fp = fp;
+    return self;
+}
+
 struct D_File* file_new(struct D_String* fileName) {
     struct D_File* self = (struct D_File*)gc_alloc(T_File);
     self->fileName = fileName;
@@ -42,7 +49,7 @@ struct D_File* file_new(struct D_String* fileName) {
     return self;
 }
 
-struct D_File* file_new_charString(char* fileName) {
+struct D_File* file_new_charStringName(char* fileName) {
     struct D_String* fileNameString = string_new(fileName);
     return file_new(fileNameString);
 }

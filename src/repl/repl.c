@@ -86,7 +86,7 @@ extern volatile sig_atomic_t SIGNAL_STATUS;
 
 static int repl_readFile(struct REPL* self) {
     char* fileName = string_getChars(self->loadFileName);
-    struct D_File* file = file_new_charString(fileName);
+    struct D_File* file = file_new_charStringName(fileName);
     if (file_open_aux(file)) {
         file_readAll_stringBuffer(file, self->inputStringBuffer, self->etor);
         file_close(file, self->etor);

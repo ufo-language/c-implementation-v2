@@ -18,6 +18,9 @@ extern struct D_Nil*       NIL;
 extern struct D_Boolean*   TRUE;
 extern struct D_Boolean*   FALSE;
 
+extern struct D_File*      STDOUT_FILE;
+extern struct D_Stream*    STDOUT_STREAM;
+
 // symbols represnting type names
 extern struct D_Symbol*    SYM_ANY;
 extern struct D_Symbol*    SYM_ARRAY;
