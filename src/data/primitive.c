@@ -68,6 +68,7 @@ void primitive_argTypeException(enum TypeId expectedTypeId, enum TypeId foundTyp
 }
 
 void primitive_argTypeExceptionOneOf(int nTypes, enum TypeId paramTypes[], struct Any* arg, struct Evaluator* etor) {
+    fprintf(stderr, "%s is incomplete\n", __func__);
     // TODO
 }
 
