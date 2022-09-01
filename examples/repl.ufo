@@ -1,4 +1,4 @@
-fun logo() =
+fun logo_old() =
 do
     io:displn("  _ _ ___ ___")
     io:displn(" | | | __|   | UFO version 5-rc-1")
@@ -6,9 +6,25 @@ do
     io:displn(" |___|_| |___| type :? for help")
 end
 
-let replFields = {nil, nil, nil}
+fun logo() =
+do
+    let version = "5-rc-1"
+    io:displn("▌▐ ▛▘▛▜ UFO version ", version)
+    io:displn("▙▟ ▛ ▙▟ http://github.com/ufo-language")
+    io:displn("type :? for help")
+end
 
-fun repl() =
+record REPL =
+    keepLooping :: Boolean,
+    tokens :: List,
+    expr
+
+let replRec = #REPL{keepLooping = true,
+                    tokens = [],
+                    expr = nil
+                   }
+
+fun replLoop() =
 do
     let prompt = "[UFO]> "
     io:disp(prompt)
@@ -25,6 +41,7 @@ do
             let expr = parser:parse(tokens)
             io:displn("expr = ", expr)
             let it = any:eval(expr)
-            repl()
+            replLoop()
         end
 end
+
