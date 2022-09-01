@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-import os
-
 #=====================================================================
 # Modify these options as desired
 EXEC_NAME='ufo'
@@ -15,6 +13,8 @@ COMPILE_OPTS=f"-Os -Wall -Wextra -Wswitch-enum -pedantic -std={C_VERSION}"
 #LINK_OPTS="-fsanitize=address -ldl"
 LINK_OPTS="-ldl"
 #=====================================================================
+
+import os
 
 SourceFiles = {}
 HeaderFiles = {}
