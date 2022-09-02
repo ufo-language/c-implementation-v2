@@ -1,10 +1,13 @@
 #include <stdlib.h>
 #include <string.h>
-#include <sys/prctl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
+
+#if defined(linux)
+#include <sys/prctl.h>
+#endif
 
 #include "gc/gc.h"
 #include "ipc/ipc.h"
@@ -33,10 +36,12 @@ int main(int argc, char* argv[]) {
     pid_t pid = fork();
     if (pid == 0) {
         // child = UFO evaluator
+        #if defined(linux)
         char* name = "ufo_evaluator";
         if (prctl(PR_SET_NAME, name, NULL, NULL, NULL) < 0) {
             perror("prctl()");
         }
+        #endif
         //printf("I am the child\n");
         //char string[32] = {0};
         //ipc_readString(PARENT_TO_CHILD[0], 5, string);
@@ -55,10 +60,12 @@ int main(int argc, char* argv[]) {
     }
     else {
         // parent = resource server
+        #if defined(linux)
         char* name = "ufo_server";
         if (prctl(PR_SET_NAME, name, NULL, NULL, NULL) < 0) {
             perror("prctl()");
         }
+        #endif
         //printf("I am the parent\n");
         //ipc_writeString(PARENT_TO_CHILD[1], 5, "Hello");
         //char string[32] = {0};
