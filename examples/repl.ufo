@@ -19,10 +19,11 @@ record REPL =
     tokens :: List,
     expr
 
-let replRec = #REPL{keepLooping = true,
-                    tokens = [],
-                    expr = nil
-                   }
+let replRec =
+    #REPL{keepLooping = true,
+          tokens = [],
+          expr = nil
+         }
 
 fun replLoop() =
 do
