@@ -19,6 +19,8 @@ struct D_Set {
     struct D_HashTable* hash;
 };
 
+static struct D_Set* set_new_fromHash(struct D_HashTable* hash);
+
 struct Methods* set_methodSetup(void) {
     struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
     methodTable_setupDefaults(methods);
@@ -38,8 +40,12 @@ struct Methods* set_methodSetup(void) {
 }
 
 struct D_Set* set_new(void) {
+    return set_new_fromHash(hashTable_new());
+}
+
+static struct D_Set* set_new_fromHash(struct D_HashTable* hash) {
     struct D_Set* self = (struct D_Set*)gc_alloc(T_Set);
-    self->hash = hashTable_new();
+    self->hash = hash;
     return self;
 }
 
@@ -76,11 +82,8 @@ int set_count(struct D_Set* self) {
 }
 
 struct D_Set* set_deepCopy(struct D_Set* self) {
-    struct D_Set* newSet = set_new();
-    // TODO finish
-    (void)self;
-    fprintf(stderr, "%s is incomplete\n", __func__);
-    return newSet;
+    struct D_HashTable* hashCopy = hashTable_deepCopy(self->hash);
+    return set_new_fromHash(hashCopy);
 }
 
 void set_eval(struct D_Set* self, struct Evaluator* etor) {
