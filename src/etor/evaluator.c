@@ -22,9 +22,6 @@
 #include "methods/methods.h"
 #include "ns/all.h"
 
-static struct D_Queue* _runningEvaluators;
-static struct D_HashTable* _blockedEvaluators;
-
 struct Evaluator {
     struct Any obj;
     struct D_List* ostack;
@@ -35,7 +32,9 @@ struct Evaluator {
     struct Any* exception;
     struct D_List* savedEnvList;
     struct D_HashTable* subscriberTable;
+    struct Any* blockingObject;
     // NB: If you add a field to this struct, you must add it to the _mark function.
+    enum ThreadStatus threadStatus;
     jmp_buf jumpBuf;
     bool showSteps;
 };
@@ -49,11 +48,6 @@ struct Methods* evaluator_methodSetup(void) {
     methods->m_sizeOf = (size_t (*)(struct Any*))evaluator_sizeOf;
     methods->m_structSize = evaluator_structSize;
     return methods;
-}
-
-void evaluator_rootObjects(void) {
-    _runningEvaluators = queue_new();
-    _blockedEvaluators = hashTable_new();
 }
 
 struct Evaluator* evaluator_new(void) {
@@ -71,7 +65,9 @@ void evaluator_initialize(struct Evaluator* self) {
     self->exception = (struct Any*)NIL;
     self->savedEnvList = EMPTY_LIST;
     self->subscriberTable = NULL;
+    self->blockingObject = (struct Any*)NIL;
     self->showSteps = false;
+    self->threadStatus = TS_Running;
 }    
 
 void evaluator_free(struct Evaluator* self) {
@@ -95,6 +91,10 @@ void evaluator_exit(struct Evaluator* self, int exitCode) {
         "evaluator_exit() is not finished",
         (struct Any*)integer_new(exitCode)
     );
+}
+
+struct Any* evaluator_getBlockingObject(struct Evaluator* self) {
+    return self->blockingObject;
 }
 
 struct D_Triple* evaluator_getEnv(struct Evaluator* self) {
@@ -127,6 +127,10 @@ struct D_HashTable* evaluator_getRecordNamespace(struct Evaluator* self) {
 
 struct D_HashTable* evaluator_getSubscriberTable(struct Evaluator* self) {
     return self->subscriberTable;
+}
+
+enum ThreadStatus evaluator_getThreadStatus(struct Evaluator* self) {
+    return self->threadStatus;
 }
 
 void evaluator_handleException(struct Evaluator* self) {
@@ -167,6 +171,7 @@ void evaluator_markChildren(struct Evaluator* self) {
     if (self->subscriberTable != NULL) {
         any_mark((struct Any*)self->subscriberTable);
     }
+    any_mark((struct Any*)self->blockingObject);
 }
 
 void evaluator_pushExpr(struct Evaluator* self, struct Any* expr) {
@@ -231,11 +236,36 @@ void evaluator_reassignBinding(struct Evaluator* self, struct E_Identifier* iden
     triple_setSecond(binding, value);
 }
 
+/*
 void evaluator_run(struct Evaluator* self) {
     if (setjmp(self->jumpBuf) > 0) {
         evaluator_handleException(self);
     }
     while (self->estack != EMPTY_TRIPLE) {
+        gc_commit();
+        if (GC_NEEDED) {
+            gc_collect();
+        }
+        struct Any* expr = evaluator_popExpr(self);
+        if (self->showSteps) {
+            printf("%s expr = ", __func__);
+            any_show(expr, stdout);
+            printf(" :: %s\n", any_typeName(expr));
+        }
+        any_eval(expr, self);
+    }
+}
+*/
+
+void evaluator_runSteps(struct Evaluator* self, int nSteps) {
+    if (setjmp(self->jumpBuf) > 0) {
+        evaluator_handleException(self);
+    }
+    while (nSteps--) {
+        if (self->estack == EMPTY_TRIPLE) {
+            self->threadStatus = TS_Terminated;
+            break;
+        }
         gc_commit();
         if (GC_NEEDED) {
             gc_collect();

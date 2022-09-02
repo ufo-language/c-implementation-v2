@@ -5,6 +5,12 @@
 #include <setjmp.h>
 #include <stdio.h>
 
+enum ThreadStatus {
+    TS_Running,
+    TS_Blocked,
+    TS_Terminated
+};
+
 struct Any;
 struct D_HashTable;
 struct D_Symbol;
@@ -18,6 +24,7 @@ void evaluator_free(struct Evaluator* self);
 struct D_Triple* evaluator_bind(struct Evaluator* self, struct E_Identifier* key, struct Any* value);
 void evaluator_clearException(struct Evaluator* self);
 void evaluator_exit(struct Evaluator* self, int exitCode);
+struct Any* evaluator_getBlockingObject(struct Evaluator* self);
 struct D_Triple* evaluator_getEnv(struct Evaluator* self);
 struct Any* evaluator_getException(struct Evaluator* self);
 struct D_Triple* evaluator_getEStack(struct Evaluator* self);
@@ -26,6 +33,7 @@ struct D_HashTable* evaluator_getGlobalEnv(struct Evaluator* self);
 void evaluator_getJumpBuf(struct Evaluator* self, jmp_buf* jumpBuf);
 struct D_HashTable* evaluator_getRecordNamespace(struct Evaluator* self);
 struct D_HashTable* evaluator_getSubscriberTable(struct Evaluator* self);
+enum ThreadStatus evaluator_getThreadStatus(struct Evaluator* self);
 struct Any* evaluator_lookup(struct Evaluator* self, struct E_Identifier* key);
 void evaluator_markChildren(struct Evaluator* self);
 struct Any* evaluator_popExpr(struct Evaluator* self);
@@ -34,7 +42,8 @@ void evaluator_pushExprEnv(struct Evaluator* self, struct Any* expr, struct Any*
 struct Any* evaluator_popObj(struct Evaluator* self);
 void evaluator_pushObj(struct Evaluator* self, struct Any* obj);
 void evaluator_reassignBinding(struct Evaluator* self, struct E_Identifier* ident, struct Any* value);
-void evaluator_run(struct Evaluator* self);
+//void evaluator_run(struct Evaluator* self);
+void evaluator_runSteps(struct Evaluator* self, int nSteps);
 void evaluator_saveEnv(struct Evaluator* self);
 void evaluator_setEnv(struct Evaluator* self, struct D_Triple* env);
 void evaluator_setJumpBuf(struct Evaluator* self, jmp_buf* jumpBuf);

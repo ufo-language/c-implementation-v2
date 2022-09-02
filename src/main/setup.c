@@ -4,7 +4,6 @@ void globals_permanentObjects(void);
 void globals_rootObjects(void);
 void parser_permanentObjects(void);
 
-void evaluator_rootObjects(void);
 void lexer_rootObjects(void);
 void ns_all_rootObjects(void);
 void parser_rootObjects(void);
@@ -25,7 +24,6 @@ void setup_rootObjects(void) {
     lexer_rootObjects();
     parser_rootObjects();
     ns_all_rootObjects();
-    evaluator_rootObjects();
     threadManager_rootObjects();
 }
 
