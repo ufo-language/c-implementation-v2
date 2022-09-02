@@ -26,7 +26,6 @@ struct Any* p_bracketClose(struct D_List** tokens);
 struct Any* p_bracketOpen(struct D_List** tokens);
 struct Any* p_comma(struct D_List** tokens);
 struct Any* p_integer(struct D_List** tokens);
-//struct Any* p_nil(struct D_List** tokens);
 struct Any* p_oneOf(struct D_List** tokens, ...);
 struct Any* p_real(struct D_List** tokens);
 struct Any* p_spotValue(struct D_List** tokens, struct D_Symbol* tokenType, struct Any* value);
