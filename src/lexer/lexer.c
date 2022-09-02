@@ -155,17 +155,21 @@ struct Any* lexer_tokenize(struct D_String* inputString) {
 // Returns a D_Queue on success, a D_Array on error
 static struct Any* tokenize_aux(struct D_StringStream* inputString) {
     enum StateId {
-        S_Initial,     // 0
-        S_Word,        // 1
-        S_Number,      // 2
-        S_Symbol,      // 3
-        S_String,      // 4
-        S_EscapedChar, // 5
-        S_Operator,    // 6
-        S_Plus,        // 7
-        S_Minus,       // 8
-        S_Dot,         // 9
-        S_Real         // 10
+        S_Initial,        // 0
+        S_Word,           // 1
+        S_Number,         // 2
+        S_Symbol,         // 3
+        S_String,         // 4
+        S_EscapedChar,    // 5
+        S_Operator,       // 6
+        S_Plus,           // 7
+        S_Minus,          // 8
+        S_Dot,            // 9
+        S_Real,           // 10
+        S_Comment,        // 11
+        S_LineComment,    // 12
+        S_BlockComment1,  // 13
+        S_BlockComment2   // 13
     };
     enum StateId state = S_Initial;
     struct D_Queue* tokens = queue_new();
@@ -197,6 +201,7 @@ static struct Any* tokenize_aux(struct D_StringStream* inputString) {
                 else if (chr == '"')                 { state = S_String; }
                 else if (contains(operChars, chr))   { accumulateChar = true; state = S_Operator; }
                 else if (contains(ignoreChars, chr)) { }
+                else if (chr == ';')                 { state = S_Comment; }
                 else if (chr == '\0')                { continueLoop = false; }
                 else {
                     tokenType = LTT_Special;
@@ -310,6 +315,53 @@ static struct Any* tokenize_aux(struct D_StringStream* inputString) {
                 }
                 break;
 
+            case S_Comment:  // 11
+                if (chr == '-') {
+                    state = S_BlockComment1;
+                }
+                else if (chr == '\n' || chr == '\0') {
+                    state = S_Initial;
+                }
+                else {
+                    state = S_LineComment;
+                }
+                break;
+
+            case S_LineComment:  // 12
+                if (chr == '\n' || chr == '\0') {
+                    state = S_Initial;
+                }
+                break;
+
+            case S_BlockComment1:  // 13
+                if (chr == '-') {
+                    state = S_BlockComment2;
+                }
+                else if (chr == '\0') {
+                    struct D_Binding* posBinding = binding_new((struct Any*)symbol_new("Pos"), (struct Any*)integer_new(pos));
+                    struct D_Binding* lineBinding = binding_new((struct Any*)symbol_new("Line"), (struct Any*)integer_new(line));
+                    struct D_Binding* colBinding = binding_new((struct Any*)symbol_new("Col"), (struct Any*)integer_new(col));
+                    struct D_Array* exn = array_newN(3,
+                                                     (struct Any*)symbol_new("Lexer"),
+                                                     (struct Any*)string_new("unterminated block comment"),
+                                                     (struct Any*)array_newN(3,
+                                                                             (struct Any*)posBinding,
+                                                                             (struct Any*)lineBinding,
+                                                                             (struct Any*)colBinding));
+                    return (struct Any*)exn;
+                }
+                break;
+
+            case S_BlockComment2:  // 14
+                printf("%s state=%d chr=%c %d\n", __func__, state, chr, chr);
+                if (chr == ';') {
+                    state = S_Initial;
+                }
+                else {
+                    state = S_BlockComment1;
+                }
+                break;
+
             default:
                 printf("%s: illegal state %d\n", __func__, state);
                 continueLoop = false;
@@ -323,8 +375,10 @@ static struct Any* tokenize_aux(struct D_StringStream* inputString) {
             state = S_Initial;
         }
     }
-    struct D_Array* token = makeToken(LTT_EOI, lexeme, pos, col, line);
-    queue_enq(tokens, (struct Any*)token);
+    if (queue_count(tokens) > 0) {
+        struct D_Array* token = makeToken(LTT_EOI, lexeme, pos, col, line);
+        queue_enq(tokens, (struct Any*)token);
+    }
     return (struct Any*)tokens;
 }
 

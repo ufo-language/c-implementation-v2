@@ -201,7 +201,11 @@ static bool repl_tokenize(struct REPL* self) {
         fprintf(stderr, "\n");
         return false;
     }
-    self->tokens = (struct D_List*)res;
+    struct D_List* tokens = (struct D_List*)res;
+    if (list_isEmpty(tokens)) {
+        return false;
+    }
+    self->tokens = tokens;
     return true;
 }
 
