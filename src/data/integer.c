@@ -85,7 +85,7 @@ size_t integer_sizeOf(struct D_Integer* self) {
     return sizeof(struct D_Integer);
 }
 
-size_t integer_structSize() {
+size_t integer_structSize(void) {
     return sizeof(struct D_Integer);
 }
 

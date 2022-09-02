@@ -127,6 +127,6 @@ size_t identifier_sizeOf(struct E_Identifier* self) {
     return sizeof(self);
 }
 
-size_t identifier_structSize() {
+size_t identifier_structSize(void) {
     return sizeof(struct E_Identifier);
 }
