@@ -8,6 +8,7 @@ void evaluator_rootObjects(void);
 void lexer_rootObjects(void);
 void ns_all_rootObjects(void);
 void parser_rootObjects(void);
+void threadManager_rootObjects(void);
 
 void lexer_initialize(void);
 
@@ -25,6 +26,7 @@ void setup_rootObjects(void) {
     parser_rootObjects();
     ns_all_rootObjects();
     evaluator_rootObjects();
+    threadManager_rootObjects();
 }
 
 // Called by gc_start after the permanent objects and root objects are
