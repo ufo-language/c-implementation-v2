@@ -7,6 +7,7 @@
 #include "data/any.h"
 #include "data/array.h"
 #include "data/hashtable.h"
+#include "data/integer.h"
 #include "data/list.h"
 #include "data/queue.h"
 #include "data/string.h"
@@ -87,7 +88,6 @@ void evaluator_clearException(struct Evaluator* self) {
     self->exception = (struct Any*)NIL;
 }
 
-#include "data/integer.h"
 void evaluator_exit(struct Evaluator* self, int exitCode) {
     evaluator_throwException(
         self,
