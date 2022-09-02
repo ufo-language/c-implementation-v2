@@ -262,11 +262,13 @@ void repl_run(struct REPL* self) {
             }
             if (!repl_tokenize(self)) {
                 // the repl_tokenize function displays the error message
+                self->tokens = EMPTY_LIST;
                 continue;
             }
         }
         if (!repl_parse(self)) {
             // the parser displays the error message
+            self->tokens = EMPTY_LIST;
             continue;
         }
         if (!repl_eval(self)) {
