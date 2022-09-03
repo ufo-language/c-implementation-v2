@@ -1,0 +1,19 @@
+#!/bin/sh
+
+CC=clang
+
+cd ..
+mkdir obj
+rm obj/*
+rm src/utils/stacktrace.c
+
+sources=$(find src -name '*.c')
+for f in $sources; do
+    srcfile=$(echo $f | cut -c 5-)
+    echo $srcfile
+    objfile1=$(echo $srcfile | tr '/' '.')
+    objfile2="$(echo $objfile1 | sed 's/.$//')o"
+    echo $objfile2
+    $CC -c -o obj/$objfile2 -Isrc src/$srcfile
+done
+$CC -o ufo obj/*.o
