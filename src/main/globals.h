@@ -33,4 +33,9 @@ extern struct D_Symbol*    SYM_OUTFILE;
 extern struct D_Symbol*    SYM_STRING;
 extern struct D_Symbol*    SYM_SYMBOL;
 
+// symbols for thread statuses
+extern struct D_Symbol*    SYM_RUNNING;
+extern struct D_Symbol*    SYM_BLOCKED;
+extern struct D_Symbol*    SYM_TERMINATED;
+
 #endif
