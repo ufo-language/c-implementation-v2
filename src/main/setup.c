@@ -1,9 +1,9 @@
 #include "main/setup.h"
 
 void globals_permanentObjects(void);
-void globals_rootObjects(void);
 void parser_permanentObjects(void);
 
+void globals_rootObjects(void);
 void lexer_rootObjects(void);
 void ns_all_rootObjects(void);
 void parser_rootObjects(void);
