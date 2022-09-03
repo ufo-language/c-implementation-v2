@@ -38,7 +38,6 @@ struct D_HashTable* ns_all_globalEnv(void) {
     return _globalEnv;
 }
 
-#include <stdio.h>
 void ns_all_rootObjects(void) {
     _globalEnv = hashTable_new();
     ns_any_defineAll(_globalEnv);
