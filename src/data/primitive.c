@@ -68,6 +68,10 @@ void primitive_argTypeException(enum TypeId expectedTypeId, enum TypeId foundTyp
 }
 
 void primitive_argTypeExceptionOneOf(int nTypes, enum TypeId paramTypes[], struct Any* arg, struct Evaluator* etor) {
+    (void)nTypes;
+    (void)paramTypes;
+    (void)arg;
+    (void)etor;
     fprintf(stderr, "%s is incomplete\n", __func__);
     // TODO
 }
@@ -130,6 +134,10 @@ enum TypeId primitive_checkArgsOneOf(int nTypes, enum TypeId paramTypes[], struc
     return T_NULL;
 }
 
+void primitive_apply(struct D_Primitive* self, struct D_List* args, struct Evaluator* etor) {
+    self->primFunc(etor, args);
+}
+
 void primitive_define(struct D_HashTable* namespace, char* name, PrimitiveFunction prim) {
     hashTable_put_unsafe(
         namespace,
@@ -156,10 +164,6 @@ struct D_Primitive* primitive_new(PrimitiveFunction primFunc, char* name, bool i
 
 void primitive_free(struct D_Primitive* self) {
     free(self);
-}
-
-void primitive_apply(struct D_Primitive* self, struct D_List* args, struct Evaluator* etor) {
-    self->primFunc(etor, args);
 }
 
 bool primitive_hashCode(struct D_Primitive* self, HashCode* hashCode) {
