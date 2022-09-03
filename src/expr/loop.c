@@ -59,14 +59,12 @@ static void _contin2(struct Evaluator* etor, struct Any* arg) {
     struct Any* body = array_get_unsafe(argAry, 1);
     struct D_Triple* binding = (struct D_Triple*)array_get_unsafe(argAry, 2);
     if (iterator_hasNext(iter)) {
+        evaluator_popObj(etor);
         struct Any* elem = iterator_next(iter);
         triple_setSecond(binding, elem);
         struct E_Continuation* contin = continuation_new(_contin2, "loop", (struct Any*)arg);
         evaluator_pushExpr(etor, (struct Any*)contin);
         evaluator_pushExpr(etor, body);
-    }
-    else {
-        evaluator_pushObj(etor, (struct Any*)NIL);
     }
 }
 
@@ -88,6 +86,7 @@ static void _contin1(struct Evaluator* etor, struct Any* arg) {
     struct D_Array* contin2arg = array_newN(3, iter, body, binding);
     struct E_Continuation* contin = continuation_new(_contin2, "loop", (struct Any*)contin2arg);
     evaluator_pushExpr(etor, (struct Any*)contin);
+    evaluator_pushObj(etor, (struct Any*)NIL);
 }
 
 void loop_eval(struct E_Loop* self, struct Evaluator* etor) {
