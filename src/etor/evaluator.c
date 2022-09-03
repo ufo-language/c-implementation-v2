@@ -22,6 +22,8 @@
 #include "methods/methods.h"
 #include "ns/all.h"
 
+struct D_Symbol* threadManager_statusSymbol(enum ThreadStatus status);
+
 struct Evaluator {
     struct Any obj;
     struct D_List* ostack;
@@ -33,10 +35,11 @@ struct Evaluator {
     struct D_List* savedEnvList;
     struct D_HashTable* subscriberTable;
     struct Any* blockingObject;
-    // NB: If you add a field to this struct, you must add it to the _mark function.
+    // NB: If you add an object field to this struct, you must add it to the _markChildren function below.
     enum ThreadStatus threadStatus;
     jmp_buf jumpBuf;
     bool showSteps;
+    int tid;
 };
 
 struct Methods* evaluator_methodSetup(void) {
@@ -57,6 +60,7 @@ struct Evaluator* evaluator_new(void) {
 }
 
 void evaluator_initialize(struct Evaluator* self) {
+    static int nextTid = 0;
     self->ostack = EMPTY_LIST;
     self->estack = EMPTY_TRIPLE;
     self->env = EMPTY_TRIPLE;
@@ -68,6 +72,7 @@ void evaluator_initialize(struct Evaluator* self) {
     self->blockingObject = (struct Any*)NIL;
     self->showSteps = false;
     self->threadStatus = TS_Running;
+    self->tid = nextTid++;
 }    
 
 void evaluator_free(struct Evaluator* self) {
@@ -133,6 +138,10 @@ enum ThreadStatus evaluator_getThreadStatus(struct Evaluator* self) {
     return self->threadStatus;
 }
 
+int evaluator_getTid(struct Evaluator* self) {
+    return self->tid;
+}
+
 void evaluator_handleException(struct Evaluator* self) {
     while (!triple_isEmpty(self->estack)) {
         struct Any* expr = evaluator_popExpr(self);
@@ -183,7 +192,7 @@ void evaluator_pushExprEnv(struct Evaluator* self, struct Any* expr, struct Any*
 }
 
 struct Any* evaluator_popExpr(struct Evaluator* self) {
-#if 0
+#if defined(PRODUCTION)
     if (self->estack == NULL) {
         fprintf(stderr, "ERROR: %s: expression stack empty\n", __func__);
         exit(1);
@@ -202,7 +211,7 @@ struct Any* evaluator_popExpr(struct Evaluator* self) {
 }
 
 void evaluator_pushObj(struct Evaluator* self, struct Any* obj) {
-#if 0
+#if defined(PRODUCTION)
     if (obj == NULL) {
         fprintf(stderr, "%s got null object\n", __func__);
         exit(1);
@@ -212,7 +221,7 @@ void evaluator_pushObj(struct Evaluator* self, struct Any* obj) {
 }
 
 struct Any* evaluator_popObj(struct Evaluator* self) {
-#if 1
+#if defined(PRODUCTION)
     if (list_isEmpty(self->ostack)) {
         fprintf(stderr, "ERROR: %s: object stack empty\n", __func__);
         exit(1);
@@ -236,34 +245,18 @@ void evaluator_reassignBinding(struct Evaluator* self, struct E_Identifier* iden
     triple_setSecond(binding, value);
 }
 
-/*
-void evaluator_run(struct Evaluator* self) {
-    if (setjmp(self->jumpBuf) > 0) {
-        evaluator_handleException(self);
-    }
-    while (self->estack != EMPTY_TRIPLE) {
-        gc_commit();
-        if (GC_NEEDED) {
-            gc_collect();
-        }
-        struct Any* expr = evaluator_popExpr(self);
-        if (self->showSteps) {
-            printf("%s expr = ", __func__);
-            any_show(expr, stdout);
-            printf(" :: %s\n", any_typeName(expr));
-        }
-        any_eval(expr, self);
-    }
-}
-*/
-
 void evaluator_runSteps(struct Evaluator* self, int nSteps) {
+    self->threadStatus = TS_Running;
     if (setjmp(self->jumpBuf) > 0) {
         evaluator_handleException(self);
     }
     while (nSteps--) {
+        //printf("%s nSteps = %d\n", __func__, nSteps);
         if (self->estack == EMPTY_TRIPLE) {
             self->threadStatus = TS_Terminated;
+            //printf("%s returning TS_Terminated = %d on thread %d\n", __func__, self->threadStatus, self->tid);
+            //printf("  etor = "); evaluator_show(self, stdout); printf("\n");
+            //getchar();
             break;
         }
         gc_commit();
@@ -307,8 +300,10 @@ void evaluator_setSubscriberTable(struct Evaluator* self, struct D_HashTable* su
     self->subscriberTable = subscriberTable;
 }
 void evaluator_show(struct Evaluator* self, FILE* fp) {
-    (void)self;
-    fputs("Evaluator{ostack=", fp);
+    printf("%s got here 1\n", __func__);
+    fprintf(fp, "Evaluator{tid=%d, status=", self->tid);
+    symbol_show(threadManager_statusSymbol(self->threadStatus), fp);
+    fprintf(fp, ", ostack=");
     any_show((struct Any*)self->ostack, fp);
     fputs(", estack=", fp);
     any_show((struct Any*)self->estack, fp);
