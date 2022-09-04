@@ -36,8 +36,6 @@ static void _join(struct Evaluator* etor, struct D_List* args) {
     struct Any** paramVars[] = {&etorObj};
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     struct Evaluator* thread = (struct Evaluator*)etorObj;
-    printf("%s calling thread ", __func__); any_show((struct Any*)etor, stdout); printf("\n");
-    printf("%s target thread ", __func__); any_show((struct Any*)thread, stdout); printf("\n");
     if (evaluator_getThreadStatus(thread) != TS_Terminated) {
         threadManager_blockThread(etor, (struct Any*)thread);
     }
