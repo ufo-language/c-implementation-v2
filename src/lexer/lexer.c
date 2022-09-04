@@ -356,7 +356,6 @@ static struct Any* tokenize_aux(struct D_StringStream* inputString) {
                 break;
 
             case S_BlockComment2:  // 14
-                printf("%s state=%d chr=%c %d\n", __func__, state, chr, chr);
                 if (chr == ';') {
                     state = S_Initial;
                 }
