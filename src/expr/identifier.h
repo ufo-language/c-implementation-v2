@@ -9,9 +9,8 @@
 struct Any;
 struct D_Set;
 struct D_Triple;
-struct Evaluator;
-struct Evaluator;
 struct E_Identifier;
+struct Evaluator;
 
 struct E_Identifier* identifier_new(char* name);
 struct E_Identifier* identifier_new_move(char* name, int count);
