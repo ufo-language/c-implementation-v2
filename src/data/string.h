@@ -7,6 +7,7 @@
 #include "main/typedefs.h"  // for HashCode
 
 struct D_Iterator;
+struct D_List;
 struct D_String;
 struct Evaluator;
 
@@ -30,10 +31,10 @@ bool string_isEqual(struct D_String* self, struct D_String* other);
 struct D_Iterator* string_iterator(struct D_String* self);
 struct D_String* string_join(struct D_String* self, struct D_String* other);
 void string_show(struct D_String* self, FILE* fd);
-struct D_List* string_split(struct D_String* self, char c);
-void string_unescapify(struct D_String* self, FILE* fd);
 size_t string_sizeOf(struct D_String* self);
+struct D_List* string_split(struct D_String* self, struct D_String* delim);
 bool string_startsWith(struct D_String* self, struct D_String* prefix);
 size_t string_structSize(void);
+void string_unescapify(struct D_String* self, FILE* fd);
 
 #endif
