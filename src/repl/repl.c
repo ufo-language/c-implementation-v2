@@ -164,7 +164,7 @@ static int repl_read(struct REPL* self) {
         self->inputString = stringBuffer_asString(self->inputStringBuffer);
         char* chars = string_getChars(self->inputString);
         if (':' == chars[0]) {
-            self->colonTokens = string_split(self->inputString, ' ');
+            self->colonTokens = string_split(self->inputString, string_new(" "));
             enum ReadAction readAction = colonCommand_run(self->colonTokens, self);
             switch (readAction) {
                 case KEEP_LOOPING:
