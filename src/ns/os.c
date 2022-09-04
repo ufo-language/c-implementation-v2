@@ -124,34 +124,20 @@ static void _sysinfo(struct Evaluator* etor, struct D_List* args) {
             (struct Any*)array_newN(2, (struct Any*)symbol_new("ERRNO"),
                                        (struct Any*)integer_new(errno)));
     }
-    int uptime = (int)si.uptime;       /* Seconds since boot */
-    int load1 = (int)si.loads[0];      /* 1, 5, and 15 minute load averages */
-    int load5 = (int)si.loads[1];      /* 1, 5, and 15 minute load averages */
-    int load15 = (int)si.loads[2];     /* 1, 5, and 15 minute load averages */
-    int totalRam = (int)si.totalram;   /* Total usable main memory size */
-    int freeRam = (int)si.freeram;     /* Available memory size */
-    int sharedRam = (int)si.sharedram; /* Amount of shared memory */
-    int bufferRam = (int)si.bufferram; /* Memory used by buffers */
-    int totalSwap = (int)si.totalswap; /* Total swap space size */
-    int freeSwap = (int)si.freeswap;   /* Swap space still available */
-    int procs = (int)si.procs;         /* Number of current processes */
-    int totalHigh = (int)si.totalhigh; /* Total high memory size */
-    int freeHigh = (int)si.freehigh;   /* Available high memory size */
-    int memUnit = (int)si.mem_unit;    /* Memory unit size in bytes */
     struct D_HashTable* siHash = hashTable_new();
-    hashTable_putSymInt(siHash, "Uptime", uptime);
-    hashTable_putSymInt(siHash, "Load1", load1);
-    hashTable_putSymInt(siHash, "Load5", load5);
-    hashTable_putSymInt(siHash, "Load15", load15);
-    hashTable_putSymInt(siHash, "TotalRam", totalRam);
-    hashTable_putSymInt(siHash, "FreeRam", freeRam);
-    hashTable_putSymInt(siHash, "SharedRam", sharedRam);
-    hashTable_putSymInt(siHash, "BufferRam", bufferRam);
-    hashTable_putSymInt(siHash, "TotalSwap", totalSwap);
-    hashTable_putSymInt(siHash, "FreeSwap", freeSwap);
-    hashTable_putSymInt(siHash, "Procs", procs);
-    hashTable_putSymInt(siHash, "TotalHigh", totalHigh);
-    hashTable_putSymInt(siHash, "FreeHigh", freeHigh);
-    hashTable_putSymInt(siHash, "MemUnit", memUnit);
+    hashTable_putSymInt(siHash, "Uptime", si.uptime);
+    hashTable_putSymInt(siHash, "Load1", si.loads[0]);
+    hashTable_putSymInt(siHash, "Load5", si.loads[1]);
+    hashTable_putSymInt(siHash, "Load15", si.loads[2]);
+    hashTable_putSymInt(siHash, "TotalRam", si.totalram);
+    hashTable_putSymInt(siHash, "FreeRam", si.freeram);
+    hashTable_putSymInt(siHash, "SharedRam", si.sharedram);
+    hashTable_putSymInt(siHash, "BufferRam", si.bufferram);
+    hashTable_putSymInt(siHash, "TotalSwap", si.totalswap);
+    hashTable_putSymInt(siHash, "FreeSwap", si.freeswap);
+    hashTable_putSymInt(siHash, "Procs", si.procs);
+    hashTable_putSymInt(siHash, "TotalHigh", si.totalhigh);
+    hashTable_putSymInt(siHash, "FreeHigh", si.freehigh);
+    hashTable_putSymInt(siHash, "MemUnit", si.mem_unit);
     evaluator_pushObj(etor, (struct Any*)siHash);
 }
