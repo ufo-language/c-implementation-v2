@@ -34,6 +34,7 @@ struct Methods* nondet_methodSetup();
 struct Methods* primitive_methodSetup();
 struct Methods* protocol_methodSetup();
 struct Methods* queue_methodSetup();
+struct Methods* quote_methodSetup();
 struct Methods* repl_methodSetup();
 struct Methods* real_methodSetup();
 struct Methods* record_methodSetup();
@@ -86,6 +87,7 @@ void methodTable_setupMethods(void) {
     METHOD_TABLE[T_Primitive] = primitive_methodSetup();
     METHOD_TABLE[T_Protocol] = protocol_methodSetup();
     METHOD_TABLE[T_Queue] = queue_methodSetup();
+    METHOD_TABLE[T_Quote] = quote_methodSetup();
     METHOD_TABLE[T_REPL] = repl_methodSetup();
     METHOD_TABLE[T_Real] = real_methodSetup();
     METHOD_TABLE[T_Record] = record_methodSetup();

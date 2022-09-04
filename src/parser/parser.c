@@ -27,18 +27,12 @@
 #include "expr/letrec.h"
 #include "expr/loop.h"
 #include "expr/nondet.h"
+#include "expr/quote.h"
 #include "expr/recorddef.h"
 #include "expr/recordspec.h"
 #include "expr/trycatch.h"
 #include "main/globals.h"
 #include "lexer/lexer.h"
-
-// NOTES
-// Write this in the simplest way possible.
-// Don't use memoization.
-// Memoization can be added later using global variables.
-// That's not reentrant, but how often will I actually need a reentrant parser?
-// I can just lock the parser using a mutex.
 
 typedef struct Any*          Obj;
 typedef struct D_Array*      Array;
@@ -119,6 +113,7 @@ static String DOLLAR;
 static String HASH_MARK;
 static String PAREN_CLOSE;
 static String PAREN_OPEN;
+static String SINGLE_QUOTE;
 static String TILDE;
 Symbol IGNORE;  // needed by json_parser.c
 
@@ -154,6 +149,7 @@ void parser_permanentObjects(void) {
     HASH_MARK = string_new("#");
     PAREN_CLOSE = string_new(")");
     PAREN_OPEN = string_new("(");
+    SINGLE_QUOTE = string_new("'");
     TILDE = string_new("~");
 
     ASYNC = string_new("async");
@@ -268,6 +264,18 @@ Obj p_parenClose_required(List* tokens) {
         return (Obj)IGNORE;
     }
     p_fail(tokens, "Expected ')'", NULL);
+    return  NULL;
+}
+
+Obj p_singleQuote(List* tokens) {
+    return p_special(tokens, SINGLE_QUOTE) ? (Obj)IGNORE : NULL;
+}
+
+Obj p_singleQuote_required(List* tokens) {
+    if (p_special(tokens, SINGLE_QUOTE)) {
+        return (Obj)IGNORE;
+    }
+    p_fail(tokens, "Expected single quote", NULL);
     return  NULL;
 }
 
@@ -854,7 +862,16 @@ Obj p_parenExpr(List* tokens) {
     if (parts == NULL) {
         return NULL;
     }
-    return (Obj)queue_deq_unsafe(parts);
+    return queue_deq_unsafe(parts);
+}
+
+Obj p_quote(List* tokens) {
+    struct D_Queue* parts = p_seq(tokens, p_singleQuote, p_any_required, p_singleQuote_required, 0);
+    if (parts == NULL) {
+        return NULL;
+    }
+    Obj expr = queue_deq_unsafe(parts);
+    return (Obj)quote_new(expr);
 }
 
 // for record definition
@@ -960,6 +977,7 @@ Obj p_any(List* tokens) {
         p_loop,
         p_if,
         p_do,
+        p_quote,
         p_async,
         p_cobegin,
         p_nondet,

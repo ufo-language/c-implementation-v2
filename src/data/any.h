@@ -40,6 +40,7 @@ enum TypeId {
     T_Primitive,
     T_Protocol,
     T_Queue,
+    T_Quote,
     T_REPL,
     T_Real,
     T_Record,

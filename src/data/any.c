@@ -44,6 +44,7 @@ char* TYPE_NAMES[] = {
     "Primitive",
     "Protocol",
     "Queue",
+    "Quote",
     "REPL",
     "Real",
     "Record",
