@@ -135,6 +135,9 @@ static void _sysinfo(struct Evaluator* etor, struct D_List* args) {
     int totalSwap = (int)si.totalswap; /* Total swap space size */
     int freeSwap = (int)si.freeswap;   /* Swap space still available */
     int procs = (int)si.procs;         /* Number of current processes */
+    int totalHigh = (int)si.totalhigh; /* Total high memory size */
+    int freeHigh = (int)si.freehigh;   /* Available high memory size */
+    int memUnit = (int)si.mem_unit;    /* Memory unit size in bytes */
     struct D_HashTable* siHash = hashTable_new();
     hashTable_putSymInt(siHash, "Uptime", uptime);
     hashTable_putSymInt(siHash, "Load1", load1);
@@ -147,5 +150,8 @@ static void _sysinfo(struct Evaluator* etor, struct D_List* args) {
     hashTable_putSymInt(siHash, "TotalSwap", totalSwap);
     hashTable_putSymInt(siHash, "FreeSwap", freeSwap);
     hashTable_putSymInt(siHash, "Procs", procs);
+    hashTable_putSymInt(siHash, "TotalHigh", totalHigh);
+    hashTable_putSymInt(siHash, "FreeHigh", freeHigh);
+    hashTable_putSymInt(siHash, "MemUnit", memUnit);
     evaluator_pushObj(etor, (struct Any*)siHash);
 }
