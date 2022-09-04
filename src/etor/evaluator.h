@@ -21,6 +21,7 @@ struct Evaluator* evaluator_new(void);
 void evaluator_initialize(struct Evaluator* self);
 void evaluator_free(struct Evaluator* self);
 
+void evaluator_addWaitingThread(struct Evaluator* self, struct Evaluator* thread);
 struct D_Triple* evaluator_bind(struct Evaluator* self, struct E_Identifier* key, struct Any* value);
 void evaluator_clearException(struct Evaluator* self);
 void evaluator_exit(struct Evaluator* self, int exitCode);
@@ -45,15 +46,18 @@ void evaluator_pushObj(struct Evaluator* self, struct Any* obj);
 void evaluator_reassignBinding(struct Evaluator* self, struct E_Identifier* ident, struct Any* value);
 void evaluator_runSteps(struct Evaluator* self, int nSteps);
 void evaluator_saveEnv(struct Evaluator* self);
+void evaluator_setBlockingObject(struct Evaluator* self, struct Any* blockingObject);
 void evaluator_setEnv(struct Evaluator* self, struct D_Triple* env);
 void evaluator_setJumpBuf(struct Evaluator* self, jmp_buf* jumpBuf);
 void evaluator_setShowSteps(struct Evaluator* self, bool showSteps);
 void evaluator_setSubscriberTable(struct Evaluator* self, struct D_HashTable* subscriberTable);
+void evaluator_setThreadStatus(struct Evaluator* self, enum ThreadStatus status);
 void evaluator_show(struct Evaluator* self, FILE* fp);
 size_t evaluator_sizeOf(struct Evaluator* self);
 size_t evaluator_structSize(void);
 void evaluator_throwException(struct Evaluator* self, struct D_Symbol* symbol, char* message, struct Any* obj);
 void evaluator_throwExceptionObj(struct Evaluator* self, struct Any* exceptionObj);
 struct Any* evaluator_topExpr(struct Evaluator* self);
+void evaluator_unblockWaitingThreads(struct Evaluator* self);
 
 #endif

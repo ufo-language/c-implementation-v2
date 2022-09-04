@@ -23,6 +23,7 @@
 #include "ns/all.h"
 
 struct D_Symbol* threadManager_statusSymbol(enum ThreadStatus status);
+void threadManager_terminateThread(struct Evaluator* thread);
 
 struct Evaluator {
     struct Any obj;
@@ -35,6 +36,7 @@ struct Evaluator {
     struct D_List* savedEnvList;
     struct D_HashTable* subscriberTable;
     struct Any* blockingObject;
+    struct D_Queue* waitingThreads;
     // NB: If you add an object field to this struct, you must add it to the _markChildren function below.
     enum ThreadStatus threadStatus;
     jmp_buf jumpBuf;
@@ -70,6 +72,7 @@ void evaluator_initialize(struct Evaluator* self) {
     self->savedEnvList = EMPTY_LIST;
     self->subscriberTable = NULL;
     self->blockingObject = (struct Any*)NIL;
+    self->waitingThreads = NULL;
     self->showSteps = false;
     self->threadStatus = TS_Running;
     self->tid = nextTid++;
@@ -77,6 +80,12 @@ void evaluator_initialize(struct Evaluator* self) {
 
 void evaluator_free(struct Evaluator* self) {
     free(self);
+}
+
+void evaluator_addWaitingThread(struct Evaluator* self, struct Evaluator* thread) {
+    if (self->waitingThreads == NULL) {
+        queue_enq(self->waitingThreads, (struct Any*)thread);
+    }
 }
 
 struct D_Triple* evaluator_bind(struct Evaluator* self, struct E_Identifier* key, struct Any* value) {
@@ -181,6 +190,9 @@ void evaluator_markChildren(struct Evaluator* self) {
         any_mark((struct Any*)self->subscriberTable);
     }
     any_mark((struct Any*)self->blockingObject);
+    if (self->waitingThreads != NULL) {
+        any_mark((struct Any*)self->waitingThreads);
+    }
 }
 
 void evaluator_pushExpr(struct Evaluator* self, struct Any* expr) {
@@ -251,17 +263,13 @@ void evaluator_runSteps(struct Evaluator* self, int nSteps) {
         evaluator_handleException(self);
     }
     while (nSteps--) {
-        //printf("%s nSteps = %d\n", __func__, nSteps);
-        if (self->estack == EMPTY_TRIPLE) {
-            self->threadStatus = TS_Terminated;
-            //printf("%s returning TS_Terminated = %d on thread %d\n", __func__, self->threadStatus, self->tid);
-            //printf("  etor = "); evaluator_show(self, stdout); printf("\n");
-            //getchar();
-            break;
-        }
         gc_commit();
         if (GC_NEEDED) {
             gc_collect();
+        }
+        if (self->estack == EMPTY_TRIPLE) {
+            threadManager_terminateThread(self);
+            return;
         }
         struct Any* expr = evaluator_popExpr(self);
         if (self->showSteps) {
@@ -284,6 +292,10 @@ void evaluator_saveEnv(struct Evaluator* self) {
     evaluator_pushExpr(self, savedEnv);
 }
 
+void evaluator_setBlockingObject(struct Evaluator* self, struct Any* blockingObject) {
+    self->blockingObject = blockingObject;
+}
+
 void evaluator_setEnv(struct Evaluator* self, struct D_Triple* env) {
     self->env = env;
 }
@@ -299,8 +311,12 @@ void evaluator_setShowSteps(struct Evaluator* self, bool showSteps) {
 void evaluator_setSubscriberTable(struct Evaluator* self, struct D_HashTable* subscriberTable) {
     self->subscriberTable = subscriberTable;
 }
+
+void evaluator_setThreadStatus(struct Evaluator* self, enum ThreadStatus status) {
+    self->threadStatus = status;
+}
+
 void evaluator_show(struct Evaluator* self, FILE* fp) {
-    printf("%s got here 1\n", __func__);
     fprintf(fp, "Evaluator{tid=%d, status=", self->tid);
     symbol_show(threadManager_statusSymbol(self->threadStatus), fp);
     fprintf(fp, ", ostack=");
@@ -331,4 +347,16 @@ void evaluator_throwExceptionObj(struct Evaluator* self, struct Any* exceptionOb
 struct Any* evaluator_topExpr(struct Evaluator* self) {
     struct Any* expr = triple_getFirst(self->estack);
     return expr;
+}
+
+void evaluator_unblockWaitingThreads(struct Evaluator* self) {
+    struct D_Queue* threadQ = self->waitingThreads;
+    if (threadQ == NULL) {
+        return;
+    }
+    for (int n=0; n<queue_count(threadQ); n++) {
+        struct Evaluator* thread = (struct Evaluator*)queue_deq_unsafe(threadQ);
+        evaluator_setThreadStatus(thread, TS_Running);
+        evaluator_setBlockingObject(thread, (struct Any*)NIL);
+    }
 }

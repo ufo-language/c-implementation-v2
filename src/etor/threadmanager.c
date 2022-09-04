@@ -1,3 +1,4 @@
+#include "data/any.h"
 #include "data/hashtable.h"
 #include "data/queue.h"
 #include "data/symbol.h"
@@ -10,15 +11,30 @@ struct D_Symbol* SYM_TERMINATED;
 
 static struct D_Queue* _running;
 static int _nRunning;
-static struct D_HashTable* _blocked;
 static int _nBlocked;
 static int _nSteps = 10;
 
 void threadManager_runNextThread(void);
 
-void threadManager_addThread(struct Evaluator* etor) {
-    queue_enq(_running, (struct Any*)etor);
+void threadManager_addThread(struct Evaluator* thread) {
+    queue_enq(_running, (struct Any*)thread);
     _nRunning++;
+}
+
+void threadManager_blockThread(struct Evaluator* thread, struct Any* blockingObject) {
+    evaluator_setThreadStatus(thread, TS_Blocked);
+    evaluator_setBlockingObject(thread, blockingObject);
+    if (T_Evaluator == any_typeId(blockingObject)) {
+        evaluator_addWaitingThread((struct Evaluator*)blockingObject, thread);
+    }
+    _nRunning--;
+    _nBlocked++;
+}
+
+void threadManager_unblockThread(struct Evaluator* thread) {
+    evaluator_setThreadStatus(thread, TS_Running);
+    threadManager_addThread(thread);
+    _nBlocked--;
 }
 
 void threadManager_runAll(void) {
@@ -28,29 +44,15 @@ void threadManager_runAll(void) {
 }
 
 void threadManager_runNextThread(void) {
-    struct Evaluator* etor = (struct Evaluator*)queue_deq_unsafe(_running);
-    evaluator_runSteps(etor, _nSteps);
-    enum ThreadStatus status = evaluator_getThreadStatus(etor);
-    switch (status) {
-        case TS_Running:
-            queue_enq(_running, (struct Any*)etor);
-            break;
-        case TS_Blocked: {
-                struct Any* blockingObject = evaluator_getBlockingObject(etor);
-                hashTable_put_unsafe(_blocked, blockingObject, (struct Any*)etor);
-            }
-            _nRunning--;
-            _nBlocked++;
-            break;
-        case TS_Terminated:
-            _nRunning--;
-            break;
+    struct Evaluator* thread = (struct Evaluator*)queue_deq_unsafe(_running);
+    evaluator_runSteps(thread, _nSteps);
+    if (TS_Running == evaluator_getThreadStatus(thread)) {
+        queue_enq(_running, (struct Any*)thread);
     }
 }
 
 void threadManager_rootObjects(void) {
     _running = queue_new();
-    _blocked = hashTable_new();
     SYM_RUNNING = symbol_new("Running");
     SYM_BLOCKED = symbol_new("Blocked");
     SYM_TERMINATED = symbol_new("Terminated");
@@ -70,4 +72,10 @@ struct D_Symbol* threadManager_statusSymbol(enum ThreadStatus status) {
             break;
     }
     return sym;
+}
+
+void threadManager_terminateThread(struct Evaluator* thread) {
+    evaluator_setThreadStatus(thread, TS_Terminated);
+    evaluator_unblockWaitingThreads(thread);
+    _nRunning--;
 }
