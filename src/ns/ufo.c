@@ -37,9 +37,12 @@ static void _args(struct Evaluator* etor, struct D_List* args) {
 
 static void _exitUfo(struct Evaluator* etor, struct D_List* args) {
     static enum TypeId paramTypes[] = {T_Integer};
-    struct Any* exitCodeObj;
+    struct Any* exitCodeObj = NULL;
     struct Any** paramVars[] = {&exitCodeObj};
-    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
+    primitive_checkArgs2(0, 1, paramTypes, args, paramVars, etor);
+    if (exitCodeObj == NULL) {
+        exitCodeObj = (struct Any*)integer_new(0);
+    }
     struct D_Integer* exitCodeInt = (struct D_Integer*)exitCodeObj;
     evaluator_exit(etor, integer_getValue(exitCodeInt));
 }
