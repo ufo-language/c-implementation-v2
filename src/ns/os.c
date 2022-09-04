@@ -1,17 +1,21 @@
 #include <dirent.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/sysinfo.h>
 
 #include "defines.h"
 #include "data/any.h"
 #include "data/array.h"
 #include "data/hashtable.h"
+#include "data/integer.h"
 #include "data/list.h"
 #include "data/primitive.h"
 #include "data/queue.h"
 #include "data/string.h"
+#include "data/symbol.h"
 #include "etor/evaluator.h"
 #include "expr/identifier.h"
 #include "main/globals.h"
@@ -22,6 +26,7 @@ static void _cwd(struct Evaluator* etor, struct D_List* args);
 static void _dir(struct Evaluator* etor, struct D_List* args);
 static void _env(struct Evaluator* etor, struct D_List* args);
 static void _platform(struct Evaluator* etor, struct D_List* args);
+static void _sysinfo(struct Evaluator* etor, struct D_List* args);
 
 void ns_os_defineAll(struct D_HashTable* env) {
     struct E_Identifier* nsName = identifier_new(NS_NAME);
@@ -31,6 +36,7 @@ void ns_os_defineAll(struct D_HashTable* env) {
     primitive_define(nsHash, "dir", _dir);
     primitive_define(nsHash, "env", _env);
     primitive_define(nsHash, "platform", _platform);
+    primitive_define(nsHash, "systemInfo", _sysinfo);
 }
 
 static void _cwd(struct Evaluator* etor, struct D_List* args) {
@@ -104,4 +110,42 @@ static void _platform(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(0, NULL, args, NULL, etor);
     struct D_String* platform = string_new(OS_PLATFORM);
     evaluator_pushObj(etor, (struct Any*)platform);
+}
+
+static void _sysinfo(struct Evaluator* etor, struct D_List* args) {
+    primitive_checkArgs(0, NULL, args, NULL, etor);
+    struct sysinfo si;
+    int res = sysinfo(&si);
+    if (res < 0) {
+        evaluator_throwException(
+            etor,
+            symbol_new("Sysinfo"),
+            "error retrieving system information",
+            (struct Any*)array_newN(2, (struct Any*)symbol_new("ERRNO"),
+                                       (struct Any*)integer_new(errno)));
+    }
+    int uptime = (int)si.uptime;       /* Seconds since boot */
+    int load1 = (int)si.loads[0];      /* 1, 5, and 15 minute load averages */
+    int load5 = (int)si.loads[1];      /* 1, 5, and 15 minute load averages */
+    int load15 = (int)si.loads[2];     /* 1, 5, and 15 minute load averages */
+    int totalRam = (int)si.totalram;   /* Total usable main memory size */
+    int freeRam = (int)si.freeram;     /* Available memory size */
+    int sharedRam = (int)si.sharedram; /* Amount of shared memory */
+    int bufferRam = (int)si.bufferram; /* Memory used by buffers */
+    int totalSwap = (int)si.totalswap; /* Total swap space size */
+    int freeSwap = (int)si.freeswap;   /* Swap space still available */
+    int procs = (int)si.procs;         /* Number of current processes */
+    struct D_HashTable* siHash = hashTable_new();
+    hashTable_putSymInt(siHash, "Uptime", uptime);
+    hashTable_putSymInt(siHash, "Load1", load1);
+    hashTable_putSymInt(siHash, "Load5", load5);
+    hashTable_putSymInt(siHash, "Load15", load15);
+    hashTable_putSymInt(siHash, "TotalRam", totalRam);
+    hashTable_putSymInt(siHash, "FreeRam", freeRam);
+    hashTable_putSymInt(siHash, "SharedRam", sharedRam);
+    hashTable_putSymInt(siHash, "BufferRam", bufferRam);
+    hashTable_putSymInt(siHash, "TotalSwap", totalSwap);
+    hashTable_putSymInt(siHash, "FreeSwap", freeSwap);
+    hashTable_putSymInt(siHash, "Procs", procs);
+    evaluator_pushObj(etor, (struct Any*)siHash);
 }
