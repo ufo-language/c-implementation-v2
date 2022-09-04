@@ -23,7 +23,9 @@ static struct Any* tokenize_aux(struct D_StringStream* inputString);
 static char* operChars = ".:+-*/=%";
 static char* ignoreChars = " \n\r\t";
 static char* reservedWords[] = {
+    "async",
     "catch",
+    "cobegin",
     "do",
     "else",
     "end",
@@ -34,6 +36,7 @@ static char* reservedWords[] = {
     "letrec",
     "loop",
     "macro",
+    "nondet",
     "record",
     "then",
     "try",
