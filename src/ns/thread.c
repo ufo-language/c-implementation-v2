@@ -80,11 +80,14 @@ static void _value(struct Evaluator* etor, struct D_List* args) {
     enum ThreadStatus status = evaluator_getThreadStatus(thread);
     struct Any* value = (struct Any*)NIL;
     switch (status) {
+        case TS_Dormant:
+            fprintf(stderr, "thread._value does not handle TS_Dormant case\n");
+            break;
         case TS_Running:
             fprintf(stderr, "thread._value does not handle TS_Running case\n");
             break;
         case TS_Blocked:
-            fprintf(stderr, "thread._value does not handle TS_Running case\n");
+            fprintf(stderr, "thread._value does not handle TS_Blocked case\n");
             break;
         case TS_Terminated: {
                 struct D_List* ostack = evaluator_getOStack(thread);
