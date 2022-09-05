@@ -222,7 +222,6 @@ static bool repl_parse(struct REPL* self) {
 
 static bool repl_eval(struct REPL* self) {
     evaluator_pushExpr(self->etor, self->expr);
-    //evaluator_run(self->etor);
     threadManager_addThread(self->etor);
     threadManager_runAll();
     struct Any* error = evaluator_getException(self->etor);
