@@ -25,6 +25,7 @@
 void threadManager_addThread(struct Evaluator* thread);
 struct D_Symbol* threadManager_statusSymbol(enum ThreadStatus status);
 void threadManager_terminateThread(struct Evaluator* thread);
+void threadManager_unblockThread(struct Evaluator* thread);
 
 struct Evaluator {
     struct Any obj;
@@ -75,7 +76,7 @@ void evaluator_initialize(struct Evaluator* self) {
     self->blockingObject = (struct Any*)NIL;
     self->waitingThreads = NULL;
     self->showSteps = false;
-    self->threadStatus = TS_Running;
+    self->threadStatus = TS_Dormant;
     self->tid = nextTid++;
 }    
 
@@ -168,6 +169,7 @@ void evaluator_handleException(struct Evaluator* self) {
     fputc('\n', stderr);
     struct D_Triple* env = self->env;
     evaluator_initialize(self);
+    self->threadStatus = TS_Running;
     self->env = env;
     evaluator_pushObj(self, (struct Any*)NIL);
 }
@@ -206,7 +208,7 @@ void evaluator_pushExprEnv(struct Evaluator* self, struct Any* expr, struct Any*
 }
 
 struct Any* evaluator_popExpr(struct Evaluator* self) {
-#if defined(PRODUCTION)
+#if defined(DEVELOPMENT)
     if (self->estack == NULL) {
         fprintf(stderr, "ERROR: %s: expression stack empty\n", __func__);
         exit(1);
@@ -225,7 +227,7 @@ struct Any* evaluator_popExpr(struct Evaluator* self) {
 }
 
 void evaluator_pushObj(struct Evaluator* self, struct Any* obj) {
-#if defined(PRODUCTION)
+#if defined(DEVELOPMENT)
     if (obj == NULL) {
         fprintf(stderr, "%s got null object\n", __func__);
         exit(1);
@@ -235,7 +237,7 @@ void evaluator_pushObj(struct Evaluator* self, struct Any* obj) {
 }
 
 struct Any* evaluator_popObj(struct Evaluator* self) {
-#if defined(PRODUCTION)
+#if defined(DEVELOPMENT)
     if (list_isEmpty(self->ostack)) {
         fprintf(stderr, "ERROR: %s: object stack empty\n", __func__);
         exit(1);
@@ -277,7 +279,7 @@ void evaluator_runSteps(struct Evaluator* self, int nSteps) {
             return;
         }
         struct Any* expr = evaluator_popExpr(self);
-        if (self->showSteps) {
+        if (self->showSteps) {  // TODO this is per-thread, I think it should be global instead
             printf("%s thread = %d, expr = ", __func__, self->tid);
             any_show(expr, stdout);
             printf(" :: %s\n", any_typeName(expr));
@@ -359,9 +361,7 @@ void evaluator_unblockWaitingThreads(struct Evaluator* self) {
     if (threadQ != NULL) {
         for (int n=0; n<queue_count(threadQ); n++) {
             struct Evaluator* thread = (struct Evaluator*)queue_deq_unsafe(threadQ);
-            evaluator_setThreadStatus(thread, TS_Running);
-            evaluator_setBlockingObject(thread, (struct Any*)NIL);
-            threadManager_addThread(thread);
+            threadManager_unblockThread(thread);
         }
     }
 }

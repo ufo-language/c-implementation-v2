@@ -4,21 +4,24 @@
 #include "data/symbol.h"
 #include "etor/evaluator.h"
 #include "etor/threadmanager.h"
+#include "main/globals.h"
 
+struct D_Symbol* SYM_DORMANT;
 struct D_Symbol* SYM_RUNNING;
 struct D_Symbol* SYM_BLOCKED;
 struct D_Symbol* SYM_TERMINATED;
 
 static struct D_Queue* _running;
-static int _nRunning;
-static int _nBlocked;
 static int _nSteps = 10;
 
 void threadManager_runNextThread(void);
 
+#include <assert.h>
 void threadManager_addThread(struct Evaluator* thread) {
-    queue_enq(_running, (struct Any*)thread);
-    _nRunning++;
+    if (TS_Running != evaluator_getThreadStatus(thread)) {
+        evaluator_setThreadStatus(thread, TS_Running);
+        queue_enq(_running, (struct Any*)thread);
+    }
 }
 
 void threadManager_blockThread(struct Evaluator* thread, struct Any* blockingObject) {
@@ -32,18 +35,15 @@ void threadManager_blockThread(struct Evaluator* thread, struct Any* blockingObj
     }
     evaluator_setThreadStatus(thread, TS_Blocked);
     evaluator_setBlockingObject(thread, blockingObject);
-    _nRunning--;
-    _nBlocked++;
 }
 
 void threadManager_unblockThread(struct Evaluator* thread) {
-    evaluator_setThreadStatus(thread, TS_Running);
+    evaluator_setBlockingObject(thread, (struct Any*)NIL);
     threadManager_addThread(thread);
-    _nBlocked--;
 }
 
 void threadManager_runAll(void) {
-    while (_nRunning > 0) {
+    while (queue_count(_running) > 0) {
         threadManager_runNextThread();
     }
 }
@@ -58,6 +58,7 @@ void threadManager_runNextThread(void) {
 
 void threadManager_rootObjects(void) {
     _running = queue_new();
+    SYM_DORMANT = symbol_new("Dormant");
     SYM_RUNNING = symbol_new("Running");
     SYM_BLOCKED = symbol_new("Blocked");
     SYM_TERMINATED = symbol_new("Terminated");
@@ -66,6 +67,9 @@ void threadManager_rootObjects(void) {
 struct D_Symbol* threadManager_statusSymbol(enum ThreadStatus status) {
     struct D_Symbol* sym = NULL;
     switch (status) {
+        case TS_Dormant:
+            sym = SYM_DORMANT;
+            break;
         case TS_Running:
             sym = SYM_RUNNING;
             break;
@@ -82,5 +86,4 @@ struct D_Symbol* threadManager_statusSymbol(enum ThreadStatus status) {
 void threadManager_terminateThread(struct Evaluator* thread) {
     evaluator_setThreadStatus(thread, TS_Terminated);
     evaluator_unblockWaitingThreads(thread);
-    _nRunning--;
 }

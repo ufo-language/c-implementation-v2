@@ -9,5 +9,6 @@ void threadManager_rootObjects(void);
 void threadManager_runAll(void);
 struct D_Symbol* threadManager_statusSymbol(enum ThreadStatus status);
 void threadManager_terminateThread(struct Evaluator* thread);
+void threadManager_unblockThread(struct Evaluator* thread);
 
 #endif

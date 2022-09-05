@@ -5,6 +5,7 @@
 #include "data/array.h"
 #include "data/integer.h"
 #include "etor/evaluator.h"
+#include "etor/threadmanager.h"
 #include "expr/continuation.h"
 #include "expr/nondet.h"
 #include "gc/gc.h"
@@ -40,34 +41,52 @@ void nondet_free(struct E_Nondet* self) {
     free(self);
 }
 
-static void _contin(struct Evaluator* etor, struct Any* arg) {
-    int nDrops = integer_getValue((struct D_Integer*)arg);
-    if (nDrops > 0) {
-        struct Any* res = evaluator_popObj(etor);
-        for (int n=0; n<nDrops; n++) {
-            evaluator_popObj(etor);
-        }
-        evaluator_pushObj(etor, res);
-    }
-}
-
 struct E_Nondet* nondet_deepCopy(struct E_Nondet* self) {
     return nondet_new(array_deepCopy(self->exprs));
 }
 
-void nondet_eval(struct E_Nondet* self, struct Evaluator* etor) {
-    int nExprs = array_count(self->exprs);
-    if (nExprs == 0) {
-        evaluator_pushObj(etor, (struct Any*)NIL);
-    }
-    else {
-        struct D_Integer* arg = integer_new(nExprs == 0 ? 0 : nExprs - 1);
-        struct E_Continuation* contin = continuation_new(_contin, "nondet", (struct Any*)arg);
-        evaluator_pushExprEnv(etor, (struct Any*)contin, (struct Any*)NIL);
-        for (int n=nExprs - 1; n>=0; n--) {
-            evaluator_pushExprEnv(etor, array_get_unsafe(self->exprs, n), (struct Any*)NIL);
+static void _contin(struct Evaluator* etor, struct Any* arg) {
+    struct D_Array* argAry = (struct D_Array*)arg;
+    int nThreads = array_count(argAry);
+    struct Any* value = NULL;
+    // find the first terminated thread
+    int n = 0;
+    for (; n<nThreads; n++) {
+        struct Evaluator* thread = (struct Evaluator*)array_get_unsafe(argAry, n);
+        if (TS_Terminated == evaluator_getThreadStatus(thread)) {
+            value = evaluator_popObj(thread);
+            break;
         }
     }
+    // terminate the remaining threads
+    for (; n<nThreads; n++) {
+        struct Evaluator* thread = (struct Evaluator*)array_get_unsafe(argAry, n);
+        if (TS_Terminated != evaluator_getTid(thread)) {
+            threadManager_terminateThread(thread);
+        }
+    }
+    evaluator_pushObj(etor, value);
+}
+
+void nondet_eval(struct E_Nondet* self, struct Evaluator* etor) {
+    struct D_Array* exprAry = self->exprs;
+    int nExprs = array_count(exprAry);
+    if (nExprs == 0) {
+        evaluator_pushObj(etor, (struct Any*)NIL);
+        return;
+    }
+    struct D_Array* threadAry = array_new(nExprs);
+    // spawn each thread
+    for (int n=0; n<nExprs; n++) {
+        struct Any* expr = array_get_unsafe(exprAry, n);
+        struct Evaluator* thread = evaluator_new();
+        evaluator_pushExpr(thread, (struct Any*)expr);
+        threadManager_addThread(thread);
+        array_set_unsafe(threadAry, n, (struct Any*)thread);
+        threadManager_blockThread(etor, (struct Any*)thread);
+    }
+    struct E_Continuation* contin = continuation_new(_contin, "nondet", (struct Any*)threadAry);
+    evaluator_pushExpr(etor, (struct Any*)contin);
 }
 
 void nondet_freeVars(struct E_Nondet* self, struct D_Set* freeVars, struct Evaluator* etor) {
