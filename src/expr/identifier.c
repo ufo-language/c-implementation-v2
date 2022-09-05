@@ -107,7 +107,7 @@ static unsigned int _hashCode(char* name, int strLen) {
     for (int n=0; n<strLen; n++) {
         hashCode = hashRotateLeft(hashCode) + name[n];
     }
-    return hashCode ^ HASH_PRIMES[T_Symbol];
+    return hashCode ^ HASH_PRIMES[T_Identifier];
 }
 
 bool identifier_hashCode(struct E_Identifier* self, HashCode* hashCode) {
