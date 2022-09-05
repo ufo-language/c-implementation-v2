@@ -22,11 +22,16 @@ void threadManager_addThread(struct Evaluator* thread) {
 }
 
 void threadManager_blockThread(struct Evaluator* thread, struct Any* blockingObject) {
-    evaluator_setThreadStatus(thread, TS_Blocked);
-    evaluator_setBlockingObject(thread, blockingObject);
     if (T_Evaluator == any_typeId(blockingObject)) {
+        struct Evaluator* blockingThread = (struct Evaluator*)blockingObject;
+        if (TS_Terminated == evaluator_getThreadStatus(blockingThread)) {
+            // blocking thread is already terminated
+            return;
+        }
         evaluator_addWaitingThread((struct Evaluator*)blockingObject, thread);
     }
+    evaluator_setThreadStatus(thread, TS_Blocked);
+    evaluator_setBlockingObject(thread, blockingObject);
     _nRunning--;
     _nBlocked++;
 }

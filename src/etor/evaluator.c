@@ -22,6 +22,7 @@
 #include "methods/methods.h"
 #include "ns/all.h"
 
+void threadManager_addThread(struct Evaluator* thread);
 struct D_Symbol* threadManager_statusSymbol(enum ThreadStatus status);
 void threadManager_terminateThread(struct Evaluator* thread);
 
@@ -84,8 +85,9 @@ void evaluator_free(struct Evaluator* self) {
 
 void evaluator_addWaitingThread(struct Evaluator* self, struct Evaluator* thread) {
     if (self->waitingThreads == NULL) {
-        queue_enq(self->waitingThreads, (struct Any*)thread);
+        self->waitingThreads = queue_new();
     }
+    queue_enq(self->waitingThreads, (struct Any*)thread);
 }
 
 struct D_Triple* evaluator_bind(struct Evaluator* self, struct E_Identifier* key, struct Any* value) {
@@ -267,13 +269,16 @@ void evaluator_runSteps(struct Evaluator* self, int nSteps) {
         if (GC_NEEDED) {
             gc_collect();
         }
+        if (self->threadStatus != TS_Running) {
+            return;
+        }
         if (self->estack == EMPTY_TRIPLE) {
             threadManager_terminateThread(self);
             return;
         }
         struct Any* expr = evaluator_popExpr(self);
         if (self->showSteps) {
-            printf("%s expr = ", __func__);
+            printf("%s thread = %d, expr = ", __func__, self->tid);
             any_show(expr, stdout);
             printf(" :: %s\n", any_typeName(expr));
         }
@@ -351,12 +356,12 @@ struct Any* evaluator_topExpr(struct Evaluator* self) {
 
 void evaluator_unblockWaitingThreads(struct Evaluator* self) {
     struct D_Queue* threadQ = self->waitingThreads;
-    if (threadQ == NULL) {
-        return;
-    }
-    for (int n=0; n<queue_count(threadQ); n++) {
-        struct Evaluator* thread = (struct Evaluator*)queue_deq_unsafe(threadQ);
-        evaluator_setThreadStatus(thread, TS_Running);
-        evaluator_setBlockingObject(thread, (struct Any*)NIL);
+    if (threadQ != NULL) {
+        for (int n=0; n<queue_count(threadQ); n++) {
+            struct Evaluator* thread = (struct Evaluator*)queue_deq_unsafe(threadQ);
+            evaluator_setThreadStatus(thread, TS_Running);
+            evaluator_setBlockingObject(thread, (struct Any*)NIL);
+            threadManager_addThread(thread);
+        }
     }
 }

@@ -5,6 +5,7 @@
 #include "data/array.h"
 #include "data/integer.h"
 #include "etor/evaluator.h"
+#include "etor/threadmanager.h"
 #include "expr/continuation.h"
 #include "expr/async.h"
 #include "gc/gc.h"
@@ -40,34 +41,22 @@ void async_free(struct E_Async* self) {
     free(self);
 }
 
-static void _contin(struct Evaluator* etor, struct Any* arg) {
-    int nDrops = integer_getValue((struct D_Integer*)arg);
-    if (nDrops > 0) {
-        struct Any* res = evaluator_popObj(etor);
-        for (int n=0; n<nDrops; n++) {
-            evaluator_popObj(etor);
-        }
-        evaluator_pushObj(etor, res);
-    }
-}
-
 struct E_Async* async_deepCopy(struct E_Async* self) {
     return async_new(array_deepCopy(self->exprs));
 }
 
 void async_eval(struct E_Async* self, struct Evaluator* etor) {
-    int nExprs = array_count(self->exprs);
-    if (nExprs == 0) {
-        evaluator_pushObj(etor, (struct Any*)NIL);
+    struct D_Array* exprAry = self->exprs;
+    int nExprs = array_count(exprAry);
+    struct D_Array* threadAry = array_new(nExprs);
+    for (int n=0; n<nExprs; n++) {
+        struct Any* expr = array_get_unsafe(exprAry, n);
+        struct Evaluator* thread = evaluator_new();
+        evaluator_pushExpr(thread, (struct Any*)expr);
+        threadManager_addThread(thread);
+        array_set_unsafe(threadAry, n, (struct Any*)thread);
     }
-    else {
-        struct D_Integer* arg = integer_new(nExprs == 0 ? 0 : nExprs - 1);
-        struct E_Continuation* contin = continuation_new(_contin, "async", (struct Any*)arg);
-        evaluator_pushExprEnv(etor, (struct Any*)contin, (struct Any*)NIL);
-        for (int n=nExprs - 1; n>=0; n--) {
-            evaluator_pushExprEnv(etor, array_get_unsafe(self->exprs, n), (struct Any*)NIL);
-        }
-    }
+    evaluator_pushExpr(etor, (struct Any*)threadAry);
 }
 
 void async_freeVars(struct E_Async* self, struct D_Set* freeVars, struct Evaluator* etor) {
