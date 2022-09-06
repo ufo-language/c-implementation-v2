@@ -35,7 +35,6 @@ struct Evaluator {
     struct D_HashTable* globalEnv;
     struct D_HashTable* recordNamespace;
     struct Any* exception;
-    struct D_List* savedEnvList;
     struct D_HashTable* subscriberTable;
     struct Any* blockingObject;
     struct D_Queue* waitingThreads;
@@ -71,7 +70,6 @@ void evaluator_initialize(struct Evaluator* self) {
     self->globalEnv = ns_all_globalEnv();
     self->recordNamespace = hashTable_new();
     self->exception = (struct Any*)NIL;
-    self->savedEnvList = EMPTY_LIST;
     self->subscriberTable = NULL;
     self->blockingObject = (struct Any*)NIL;
     self->waitingThreads = NULL;
@@ -189,7 +187,6 @@ void evaluator_markChildren(struct Evaluator* self) {
     any_mark((struct Any*)self->globalEnv);
     any_mark((struct Any*)self->recordNamespace);
     any_mark((struct Any*)self->exception);
-    any_mark((struct Any*)self->savedEnvList);
     if (self->subscriberTable != NULL) {
         any_mark((struct Any*)self->subscriberTable);
     }
