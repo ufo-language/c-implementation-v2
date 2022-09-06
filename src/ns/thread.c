@@ -1,5 +1,6 @@
 #include "data/any.h"
 #include "data/array.h"
+#include "data/boolean.h"
 #include "data/hashtable.h"
 #include "data/integer.h"
 #include "data/list.h"
@@ -13,6 +14,7 @@
 
 #define NS_NAME "thread"
 
+static void _isTerminated(struct Evaluator* etor, struct D_List* args);
 static void _join(struct Evaluator* etor, struct D_List* args);
 static void _self(struct Evaluator* etor, struct D_List* args);
 static void _spawn(struct Evaluator* etor, struct D_List* args);
@@ -23,11 +25,22 @@ void ns_thread_defineAll(struct D_HashTable* env) {
     struct E_Identifier* nsName = identifier_new(NS_NAME);
     struct D_HashTable* nsHash = hashTable_new();
     hashTable_put_unsafe(env, (struct Any*)nsName, (struct Any*)nsHash);
+    primitive_define(nsHash, "isTerminated", _isTerminated);
     primitive_define(nsHash, "join", _join);
     primitive_define(nsHash, "self", _self);
     primitive_define(nsHash, "spawn", _spawn);
     primitive_define(nsHash, "status", _status);
     primitive_define(nsHash, "value", _value);
+}
+
+static void _isTerminated(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_Evaluator};
+    struct Any* etorObj;
+    struct Any** paramVars[] = {&etorObj};
+    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
+    struct Evaluator* thread = (struct Evaluator*)etorObj;
+    enum ThreadStatus status = evaluator_getThreadStatus(thread);
+    evaluator_pushObj(etor, (struct Any*)boolean_from(TS_Terminated == status));
 }
 
 static void _join(struct Evaluator* etor, struct D_List* args) {
@@ -78,22 +91,11 @@ static void _value(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     struct Evaluator* thread = (struct Evaluator*)etorObj;
     enum ThreadStatus status = evaluator_getThreadStatus(thread);
-    struct Any* value = (struct Any*)NIL;
-    switch (status) {
-        case TS_Dormant:
-            fprintf(stderr, "thread._value does not handle TS_Dormant case\n");
-            break;
-        case TS_Running:
-            fprintf(stderr, "thread._value does not handle TS_Running case\n");
-            break;
-        case TS_Blocked:
-            fprintf(stderr, "thread._value does not handle TS_Blocked case\n");
-            break;
-        case TS_Terminated: {
-                struct D_List* ostack = evaluator_getOStack(thread);
-                value = list_getFirst(ostack);
-            }
-            break;
+    if (TS_Terminated == status) {
+        struct D_List* ostack = evaluator_getOStack(thread);
+        struct Any* value = list_getFirst(ostack);
+        evaluator_pushObj(etor, (struct Any*)value);
+        return;
     }
-    evaluator_pushObj(etor, (struct Any*)value);
+    evaluator_throwException(etor, symbol_new("Thread"), "thread is not terminated", (struct Any*)thread);
 }
