@@ -18,6 +18,9 @@
 static void _cpuTime(struct Evaluator* etor, struct D_List* args);
 static void _now(struct Evaluator* etor, struct D_List* args);
 
+extern char* tzname[];
+void tzset(void);
+
 void ns_time_defineAll(struct D_HashTable* env) {
     struct E_Identifier* nsName = identifier_new(NS_NAME);
     struct D_HashTable* nsHash = hashTable_new();
@@ -25,9 +28,6 @@ void ns_time_defineAll(struct D_HashTable* env) {
     primitive_define(nsHash, "cpuTime", _cpuTime);
     primitive_define(nsHash, "now", _now);
 }
-
-extern char** tzname;
-void tzset(void);
 
 static void _cpuTime(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(0, NULL, args, NULL, etor);
