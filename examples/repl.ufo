@@ -1,10 +1,12 @@
-fun logo_old() =
+;-
+fun logo() =
 do
     io:displn("  _ _ ___ ___")
     io:displn(" | | | __|   | UFO version 5-rc-1")
     io:displn(" | | | _|| | | http://github.com/ufo-language")
     io:displn(" |___|_| |___| type :? for help")
 end
+-;
 
 fun logo() =
 do
