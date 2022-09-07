@@ -12,7 +12,6 @@
 #define NS_NAME "any"
 
 static void _deepCopy(struct Evaluator* etor, struct D_List* args);
-static void _eval(struct Evaluator* etor, struct D_List* args);
 static void _freeVars(struct Evaluator* etor, struct D_List* args);
 static void _hashCode(struct Evaluator* etor, struct D_List* args);
 
@@ -32,14 +31,6 @@ static void _deepCopy(struct Evaluator* etor, struct D_List* args) {
     struct Any** paramVars[] = {&obj};
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     evaluator_pushObj(etor, any_deepCopy(obj));
-}
-
-static void _eval(struct Evaluator* etor, struct D_List* args) {
-    static enum TypeId paramTypes[] = {T_NULL};
-    struct Any* expr;
-    struct Any** paramVars[] = {&expr};
-    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
-    evaluator_pushExpr(etor, expr);
 }
 
 static void _freeVars(struct Evaluator* etor, struct D_List* args) {
