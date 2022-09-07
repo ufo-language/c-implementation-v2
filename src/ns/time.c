@@ -1,3 +1,4 @@
+#include <sys/time.h>
 #include <time.h>
 
 #include "data/any.h"
@@ -15,27 +16,28 @@
 
 #define NS_NAME "time"
 
-static void _cpuTime(struct Evaluator* etor, struct D_List* args);
+static void _cpu(struct Evaluator* etor, struct D_List* args);
+static void _current(struct Evaluator* etor, struct D_List* args);
 static void _now(struct Evaluator* etor, struct D_List* args);
-
-extern char* tzname[];
-void tzset(void);
+static void _string(struct Evaluator* etor, struct D_List* args);
 
 void ns_time_defineAll(struct D_HashTable* env) {
     struct E_Identifier* nsName = identifier_new(NS_NAME);
     struct D_HashTable* nsHash = hashTable_new();
     hashTable_put_unsafe(env, (struct Any*)nsName, (struct Any*)nsHash);
-    primitive_define(nsHash, "cpuTime", _cpuTime);
+    primitive_define(nsHash, "cpu", _cpu);
+    primitive_define(nsHash, "current", _current);
     primitive_define(nsHash, "now", _now);
+    primitive_define(nsHash, "string", _string);
 }
 
-static void _cpuTime(struct Evaluator* etor, struct D_List* args) {
+static void _cpu(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(0, NULL, args, NULL, etor);
     struct D_Real* timeReal = real_new((double)clock() / (double)CLOCKS_PER_SEC);
     evaluator_pushObj(etor, (struct Any*)timeReal);
 }
 
-static void _now(struct Evaluator* etor, struct D_List* args) {
+static void _current(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(0, NULL, args, NULL, etor);
     time_t t = time(NULL);
     struct tm *tmStruct = localtime(&t);
@@ -50,4 +52,19 @@ static void _now(struct Evaluator* etor, struct D_List* args) {
     hashTable_putSymInt(timeHash, "DayOfYear", tmStruct->tm_yday);
     hashTable_put_unsafe(timeHash, (struct Any*)symbol_new("IsDST"), (struct Any*)boolean_from(tmStruct->tm_isdst));
     evaluator_pushObj(etor, (struct Any*)timeHash);
+}
+
+static void _now(struct Evaluator* etor, struct D_List* args) {
+    primitive_checkArgs(0, NULL, args, NULL, etor);
+    struct timeval te; 
+    gettimeofday(&te, NULL);
+    struct D_List* pair = list_new((struct Any*)integer_new(te.tv_sec), (struct Any*)integer_new(te.tv_usec));
+    evaluator_pushObj(etor, (struct Any*)pair);
+}
+
+static void _string(struct Evaluator* etor, struct D_List* args) {
+    primitive_checkArgs(0, NULL, args, NULL, etor);
+    time_t t = time(NULL);
+    struct D_String* timeString = string_new(asctime(localtime(&t)));
+    evaluator_pushObj(etor, (struct Any*)timeString);
 }
