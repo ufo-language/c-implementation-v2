@@ -276,7 +276,7 @@ void evaluator_runSteps(struct Evaluator* self, int nSteps) {
             return;
         }
         struct Any* expr = evaluator_popExpr(self);
-        if (self->showSteps) {  // TODO this is per-thread, I think it should be global instead
+        if (self->showSteps) {  // TODO this is per-thread, it should be global instead
             printf("%s thread = %d, expr = ", __func__, self->tid);
             any_show(expr, stdout);
             printf(" :: %s\n", any_typeName(expr));
