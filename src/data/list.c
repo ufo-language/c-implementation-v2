@@ -59,27 +59,6 @@ struct D_List* list_new2(struct Any* first, struct Any* second) {
     return list_new(first, (struct Any*)list_new(second, (struct Any*)EMPTY_LIST));
 }
 
-// Callers must use NULL as the final element.
-struct D_List* list_from(struct Any* arg, ...) {
-    struct D_List* head = EMPTY_LIST;
-    struct D_List* tail = EMPTY_LIST;
-    va_list argList;
-    va_start(argList, arg);
-    while (arg != NULL) {
-        struct D_List* link = list_new(arg, (struct Any*)EMPTY_LIST);
-        if (list_isEmpty(head)) {
-            head = tail = link;
-        }
-        else {
-            tail->rest = (struct Any*)link;
-            tail = link;
-        }
-        arg = va_arg(argList, struct Any*);
-    }
-    va_end(argList);
-    return head;
-}
-
 void list_free(struct D_List* self) {
     free(self);
 }
