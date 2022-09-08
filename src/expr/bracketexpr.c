@@ -56,7 +56,8 @@ static void _evalContin(struct Evaluator* etor, struct Any* arg) {
     struct Any* indexObj = evaluator_popObj(etor);
     struct Any* lhs = evaluator_popObj(etor);
     enum TypeId lhsType = any_typeId(lhs);
-    struct D_List* args = list_from(lhs, indexObj, 0);
+    //struct D_List* args = list_from(lhs, indexObj, 0);
+    struct D_List* args = list_new2(lhs, indexObj);
     if (lhsType == T_Array) {
         ns_array_get(etor, args);
     }

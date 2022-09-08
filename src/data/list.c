@@ -55,6 +55,10 @@ struct D_List* list_new(struct Any* first, struct Any* rest) {
     return self;
 }
 
+struct D_List* list_new2(struct Any* first, struct Any* second) {
+    return list_new(first, (struct Any*)list_new(second, (struct Any*)EMPTY_LIST));
+}
+
 // Callers must use NULL as the final element.
 struct D_List* list_from(struct Any* arg, ...) {
     struct D_List* head = EMPTY_LIST;

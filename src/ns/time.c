@@ -79,9 +79,8 @@ static void _elapsed(struct Evaluator* etor, struct D_List* args) {
         secElapsed--;
         usecElapsed += 1e6;
     }
-    struct D_List* elapsedPair = list_from((struct Any*)integer_new(secElapsed),
-                                        (struct Any*)integer_new(usecElapsed),
-                                        NULL);
+    struct D_List* elapsedPair = list_new2((struct Any*)integer_new(secElapsed),
+                                           (struct Any*)integer_new(usecElapsed));
     evaluator_pushObj(etor, (struct Any*)elapsedPair);
 }
 
@@ -89,9 +88,8 @@ static void _now(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(0, NULL, args, NULL, etor);
     struct timeval te;
     gettimeofday(&te, NULL);
-    struct D_List* pair = list_from((struct Any*)integer_new(te.tv_sec),
-                                    (struct Any*)integer_new(te.tv_usec),
-                                    NULL);
+    struct D_List* pair = list_new2((struct Any*)integer_new(te.tv_sec),
+                                    (struct Any*)integer_new(te.tv_usec));
     evaluator_pushObj(etor, (struct Any*)pair);
 }
 
