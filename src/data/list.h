@@ -12,6 +12,7 @@ struct D_Triple;
 struct Evaluator;
 
 struct D_List* list_new(struct Any* first, struct Any* rest);
+// Callers must use NULL as the final element in list_from.
 struct D_List* list_from(struct Any* arg, ...);
 void list_free(struct D_List* self);
 
