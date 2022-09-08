@@ -41,7 +41,6 @@ static void _disp(struct Evaluator* etor, struct D_List* args) {
 static void _dispLn(struct Evaluator* etor, struct D_List* args) {
     _disp(etor, args);
     putchar('\n');
-    evaluator_pushObj(etor, (struct Any*)NIL);
 }
 
 static void _nl(struct Evaluator* etor, struct D_List* args) {
@@ -68,5 +67,4 @@ static void _show(struct Evaluator* etor, struct D_List* args) {
 static void _showLn(struct Evaluator* etor, struct D_List* args) {
     _show(etor, args);
     putchar('\n');
-    evaluator_pushObj(etor, (struct Any*)NIL);
 }

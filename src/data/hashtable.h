@@ -29,6 +29,7 @@ struct D_Array* hashTable_keyArray(struct D_HashTable* self);
 void hashTable_markChildren(struct D_HashTable* self);
 int hashTable_nBuckets(struct D_HashTable* self);
 void hashTable_put(struct D_HashTable* self, struct Any* key, struct Any* value, struct Evaluator* etor);
+void hashTable_putSymInt(struct D_HashTable* hash, char* symName, int n);
 void hashTable_put_unsafe(struct D_HashTable* self, struct Any* key, struct Any* value);
 bool hashTable_remove(struct D_HashTable* self, struct Any* key);
 void hashTable_show(struct D_HashTable* self, FILE* fp);

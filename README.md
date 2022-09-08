@@ -2,7 +2,7 @@
 
 This is a plain-vanilla C implementation of UFO. Currently it's written using the C11 standard.
 
-The target domain of UFO is highly concurrent, networked, and distributed computing. It's not quite there yet.
+The target domain of UFO is concurrent, networked, and distributed computing. It's not quite there yet.
 
 ## Building the UFO interpreter
 
@@ -31,11 +31,11 @@ Because what I find interesting is **not** what you can build using a bloated la
 
 Because C++ has become a Frankenstein's monster of a programming language and it really needs to die a horrible death. *With fire.*
 
-That, and I've done it already in C++. I've also done it in Java, Ada, Modula-3, Erlang, Scheme, and a few others.
+That, and I've done it already in C++. I've also done it in Java, Python, Ada, Modula-3, Erlang, Scheme, and a few others.
 
 ## Caveat programmator
 
-This version of UFO is not yet compliant with the docs, and probably also diverges a bit from it. I can't decide if I want to change the docs to fit the language, or change the language to fit the docs.
+This version of UFO is not yet compliant with the docs, and probably also diverges a bit from it. I can't decide if I want to change the docs to fit the language, or change the language to fit the docs. I guess they're both sort of converging as I fill out the language.
 
 ## Current status
 
@@ -53,6 +53,7 @@ There's a REPL that lets you enter many of the data structures and a few of the 
   * let/in (local scope)
   * abstraction & application (lexical scoping, recursion, tail call elimination (a.k.a. tail recursion))
   * exception throwing (exception catching not yet implemented)
+  * async/end, cobegin/end, nondet/end for concurrency
 * Data types:
   * integer, real, boolean, string
   * symbolic constant
@@ -64,8 +65,7 @@ There's a REPL that lets you enter many of the data structures and a few of the 
   * tuple (immutable array) (I might deprecate this type)
   * a few others
 * Namespaces for primitive functions
-* Plenty of undocumented features! (i.e., bugs)
-* Oh yeah, integers are unsigned. Signed integers are on the to-do list (it's a lexer issue).
+* Plenty of undocumented features! (i.e., some are bugs, some are real features)
 
 Also I'm thinking about combining the linked list & queue types into a doubly-linked list type. I can think of reasons to do it, and reasons not to do it. The fact that other languages do it that way doesn't automatically make it the right way to do it.
 
@@ -86,4 +86,4 @@ What's so useful about an immuatable array (or any immutable data type, for that
 
 ## The future of UFO
 
-There *is* no future for UFO. This is a toy language that I work on for fun. I don't kid myself into thinking that anyone anywhere would want to use UFO for any reason.
+I don't kid myself into thinking that there is any sort of future for UFO. This is a toy language that I work on for fun. I don't kid myself into thinking that anyone anywhere would want to use UFO for any reason.

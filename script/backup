@@ -3,7 +3,8 @@
 
 # This script creates a tgz backup of the whole project.
 
-COPY_TO=~/host/Dropbox/Backups/ufo-c
+#COPY_TO=~/host/Dropbox/Backups/ufo-c
+COPY_TO=~/host
 
 rm -f list-of-files
 find src -name '*.c'          >> list-of-files

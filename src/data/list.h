@@ -12,7 +12,7 @@ struct D_Triple;
 struct Evaluator;
 
 struct D_List* list_new(struct Any* first, struct Any* rest);
-struct D_List* list_from(struct Any* arg, ...);
+struct D_List* list_new2(struct Any* first, struct Any* second);
 void list_free(struct D_List* self);
 
 struct D_Array* list_asArray(struct D_List* self);

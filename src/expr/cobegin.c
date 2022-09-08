@@ -5,6 +5,7 @@
 #include "data/array.h"
 #include "data/integer.h"
 #include "etor/evaluator.h"
+#include "etor/threadmanager.h"
 #include "expr/continuation.h"
 #include "expr/cobegin.h"
 #include "gc/gc.h"
@@ -40,34 +41,56 @@ void cobegin_free(struct E_Cobegin* self) {
     free(self);
 }
 
-static void _contin(struct Evaluator* etor, struct Any* arg) {
-    int nDrops = integer_getValue((struct D_Integer*)arg);
-    if (nDrops > 0) {
-        struct Any* res = evaluator_popObj(etor);
-        for (int n=0; n<nDrops; n++) {
-            evaluator_popObj(etor);
-        }
-        evaluator_pushObj(etor, res);
-    }
-}
-
 struct E_Cobegin* cobegin_deepCopy(struct E_Cobegin* self) {
     return cobegin_new(array_deepCopy(self->exprs));
 }
 
-void cobegin_eval(struct E_Cobegin* self, struct Evaluator* etor) {
-    printf("%s is incomplete\n", __func__);
-    int nExprs = array_count(self->exprs);
-    if (nExprs == 0) {
-        evaluator_pushObj(etor, (struct Any*)NIL);
+static void _contin(struct Evaluator* etor, struct Any* arg) {
+    struct D_Array* argAry = (struct D_Array*)arg;
+    struct D_Integer* threadIndexInt = (struct D_Integer*)array_get_unsafe(argAry, 0);
+    int threadIndex = integer_getValue(threadIndexInt);
+    struct D_Array* threadAry = (struct D_Array*)array_get_unsafe(argAry, 1);
+    struct Evaluator* thread = (struct Evaluator*)array_get_unsafe(threadAry, threadIndex);
+    struct Any* threadValue = evaluator_popObj(thread);
+    struct D_Array* resultAry = (struct D_Array*)array_get_unsafe(argAry, 2);
+    array_set_unsafe(resultAry, threadIndex, threadValue);
+    if (threadIndex == 0) {
+        // finished waiting for all threads
+        evaluator_pushObj(etor, (struct Any*)resultAry);
     }
     else {
-        struct D_Integer* arg = integer_new(nExprs - 1);
-        struct E_Continuation* contin = continuation_new(_contin, "cobegin", (struct Any*)arg);
-        evaluator_pushExprEnv(etor, (struct Any*)contin, (struct Any*)NIL);
-        for (int n=nExprs - 1; n>=0; n--) {
-            evaluator_pushExprEnv(etor, array_get_unsafe(self->exprs, n), (struct Any*)NIL);
-        }
+        threadIndex--;
+        array_set_unsafe(argAry, 0, (struct Any*)integer_new(threadIndex));
+        struct E_Continuation* contin = continuation_new(_contin, "cobegin", (struct Any*)argAry);
+        evaluator_pushExpr(etor, (struct Any*)contin);
+        struct Evaluator* nextThread = (struct Evaluator*)array_get_unsafe(threadAry, threadIndex);
+        threadManager_blockThread(etor, (struct Any*)nextThread);
+    }
+}
+
+void cobegin_eval(struct E_Cobegin* self, struct Evaluator* etor) {
+    struct D_Array* exprAry = self->exprs;
+    int nExprs = array_count(exprAry);
+    struct D_Array* threadAry = array_new(nExprs);
+    // spawn each thread
+    struct Evaluator* thread = NULL;
+    for (int n=0; n<nExprs; n++) {
+        struct Any* expr = array_get_unsafe(exprAry, n);
+        thread = evaluator_new();
+        evaluator_pushExpr(thread, (struct Any*)expr);
+        threadManager_addThread(thread);
+        array_set_unsafe(threadAry, n, (struct Any*)thread);
+    }
+    if (thread != NULL) {
+        // join the last-spawned thread and get its value
+        // (the calculation is a little simpler if we work backward through the array of threads)
+        struct D_Array* argAry = array_newN(3, integer_new(nExprs - 1), threadAry, array_new(nExprs));
+        struct E_Continuation* contin = continuation_new(_contin, "cobegin", (struct Any*)argAry);
+        evaluator_pushExpr(etor, (struct Any*)contin);
+        threadManager_blockThread(etor, (struct Any*)thread);
+    }
+    else {
+        evaluator_pushObj(etor, (struct Any*)EMPTY_ARRAY);
     }
 }
 

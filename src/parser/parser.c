@@ -15,8 +15,10 @@
 #include "data/term.h"
 #include "expr/abstraction.h"
 #include "expr/apply.h"
+#include "expr/async.h"
 #include "expr/binop.h"
 #include "expr/bracketexpr.h"
+#include "expr/cobegin.h"
 #include "expr/do.h"
 #include "expr/identifier.h"
 #include "expr/if.h"
@@ -24,18 +26,13 @@
 #include "expr/letin.h"
 #include "expr/letrec.h"
 #include "expr/loop.h"
+#include "expr/nondet.h"
+#include "expr/quote.h"
 #include "expr/recorddef.h"
 #include "expr/recordspec.h"
 #include "expr/trycatch.h"
 #include "main/globals.h"
 #include "lexer/lexer.h"
-
-// NOTES
-// Write this in the simplest way possible.
-// Don't use memoization.
-// Memoization can be added later using global variables.
-// That's not reentrant, but how often will I actually need a reentrant parser?
-// I can just lock the parser using a mutex.
 
 typedef struct Any*          Obj;
 typedef struct D_Array*      Array;
@@ -116,10 +113,13 @@ static String DOLLAR;
 static String HASH_MARK;
 static String PAREN_CLOSE;
 static String PAREN_OPEN;
+static String SINGLE_QUOTE;
 static String TILDE;
 Symbol IGNORE;  // needed by json_parser.c
 
+static String ASYNC;
 static String CATCH;
+static String COBEGIN;
 static String DO;
 static String ELSE;
 static String END;
@@ -129,6 +129,7 @@ static String IN;
 static String LET;
 static String LETREC;
 static String LOOP;
+static String NONDET;
 static String RECORD;
 static String THEN;
 static String TRY;
@@ -148,9 +149,12 @@ void parser_permanentObjects(void) {
     HASH_MARK = string_new("#");
     PAREN_CLOSE = string_new(")");
     PAREN_OPEN = string_new("(");
+    SINGLE_QUOTE = string_new("'");
     TILDE = string_new("~");
 
+    ASYNC = string_new("async");
     CATCH = string_new("catch");
+    COBEGIN = string_new("cobegin");
     DO = string_new("do");
     ELSE = string_new("else");
     END = string_new("end");
@@ -160,6 +164,7 @@ void parser_permanentObjects(void) {
     LET = string_new("let");
     LETREC = string_new("letrec");
     LOOP = string_new("loop");
+    NONDET = string_new("nondet");
     RECORD = string_new("record");
     THEN = string_new("then");
     TRY = string_new("try");
@@ -259,6 +264,18 @@ Obj p_parenClose_required(List* tokens) {
         return (Obj)IGNORE;
     }
     p_fail(tokens, "Expected ')'", NULL);
+    return  NULL;
+}
+
+Obj p_singleQuote(List* tokens) {
+    return p_special(tokens, SINGLE_QUOTE) ? (Obj)IGNORE : NULL;
+}
+
+Obj p_singleQuote_required(List* tokens) {
+    if (p_special(tokens, SINGLE_QUOTE)) {
+        return (Obj)IGNORE;
+    }
+    p_fail(tokens, "Expected single quote", NULL);
     return  NULL;
 }
 
@@ -583,8 +600,16 @@ Obj p_term(List* tokens) {
 
 // reserved words ====================================================
 
+Obj p_ASYNC(List* tokens) {
+    return p_reserved(tokens, ASYNC);
+}
+
 Obj p_CATCH(List* tokens) {
     return p_reserved_required(tokens, CATCH);
+}
+
+Obj p_COBEGIN(List* tokens) {
+    return p_reserved(tokens, COBEGIN);
 }
 
 Obj p_DO(List* tokens) {
@@ -621,6 +646,10 @@ Obj p_LETREC(List* tokens) {
 
 Obj p_LOOP(List* tokens) {
     return p_reserved(tokens, LOOP);
+}
+
+Obj p_NONDET(List* tokens) {
+    return p_reserved(tokens, NONDET);
 }
 
 Obj p_RECORD(List* tokens) {
@@ -732,6 +761,24 @@ Obj p_abstraction(List* tokens) {
     return abstr;
 }
 
+Obj p_block(Parser reservedWord, Obj (*constructor)(struct D_Array*), List* tokens) {
+    struct D_Queue* exprs = (struct D_Queue*)p_seq(tokens, reservedWord, p_many, p_END, 0);
+    if (exprs == NULL) {
+        return NULL;
+    }
+    exprs = (struct D_Queue*)queue_deq_unsafe(exprs);
+    int count = queue_count(exprs);
+    Array ary = array_new(count);
+    for (int n=0; n<count; n++) {
+        array_set_unsafe(ary, n, queue_deq_unsafe(exprs));
+    }
+    return constructor(ary);
+}
+
+Obj p_async(List* tokens) {
+    return p_block(p_ASYNC, (struct Any* (*)(struct D_Array*))async_new, tokens);
+}
+
 Obj p_bracketExpr(List* tokens) {
     List savedTokens = *tokens;
     Obj lhs = p_identifier(tokens);
@@ -748,18 +795,12 @@ Obj p_bracketExpr(List* tokens) {
     return (Obj)bracketExpr_new(lhs, indexer);
 }
 
+Obj p_cobegin(List* tokens) {
+    return p_block(p_COBEGIN, (struct Any* (*)(struct D_Array*))cobegin_new, tokens);
+}
+
 Obj p_do(List* tokens) {
-    struct D_Queue* exprs = (struct D_Queue*)p_seq(tokens, p_DO, p_many, p_END, 0);
-    if (exprs == NULL) {
-        return NULL;
-    }
-    exprs = (struct D_Queue*)queue_deq_unsafe(exprs);
-    int count = queue_count(exprs);
-    Array ary = array_new(count);
-    for (int n=0; n<count; n++) {
-        array_set_unsafe(ary, n, queue_deq_unsafe(exprs));
-    }
-    return (Obj)do_new(ary);
+    return p_block(p_DO, (struct Any* (*)(struct D_Array*))do_new, tokens);
 }
 
 Obj p_if(List* tokens) {
@@ -812,12 +853,25 @@ Obj p_loop(List* tokens) {
     return (Obj)loop_new(iterExpr, body);
 }
 
+Obj p_nondet(List* tokens) {
+    return p_block(p_NONDET, (struct Any* (*)(struct D_Array*))nondet_new, tokens);
+}
+
 Obj p_parenExpr(List* tokens) {
     struct D_Queue* parts = p_seq(tokens, p_parenOpen, p_any_required, p_parenClose_required, 0);
     if (parts == NULL) {
         return NULL;
     }
-    return (Obj)queue_deq_unsafe(parts);
+    return queue_deq_unsafe(parts);
+}
+
+Obj p_quote(List* tokens) {
+    struct D_Queue* parts = p_seq(tokens, p_singleQuote, p_any_required, p_singleQuote_required, 0);
+    if (parts == NULL) {
+        return NULL;
+    }
+    Obj expr = queue_deq_unsafe(parts);
+    return (Obj)quote_new(expr);
 }
 
 // for record definition
@@ -923,6 +977,10 @@ Obj p_any(List* tokens) {
         p_loop,
         p_if,
         p_do,
+        p_quote,
+        p_async,
+        p_cobegin,
+        p_nondet,
         p_binding,
         p_integer,
         p_real,

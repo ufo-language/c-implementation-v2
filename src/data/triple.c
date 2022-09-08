@@ -18,8 +18,6 @@ struct D_Triple {
 
 extern struct D_Symbol* GLOBAL_ENV;
 
-//#include "main/globals.h"
-
 struct Methods* triple_methodSetup(void) {
     struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
     methodTable_setupDefaults(methods);

@@ -320,6 +320,10 @@ void hashTable_put(struct D_HashTable* self, struct Any* key, struct Any* value,
     }
 }
 
+void hashTable_putSymInt(struct D_HashTable* hash, char* symName, int n) {
+    hashTable_put_unsafe(hash, (struct Any*)symbol_new(symName), (struct Any*)integer_new(n));
+}
+
 void hashTable_put_unsafe(struct D_HashTable* self, struct Any* key, struct Any* value) {
     hashTable_put(self, key, value, NULL);
 }

@@ -7,6 +7,7 @@
 #include "data/any.h"
 #include "data/array.h"
 #include "data/hashtable.h"
+#include "data/integer.h"
 #include "data/list.h"
 #include "data/queue.h"
 #include "data/string.h"
@@ -21,8 +22,10 @@
 #include "methods/methods.h"
 #include "ns/all.h"
 
-static struct D_Queue* _runningEvaluators;
-static struct D_HashTable* _blockedEvaluators;
+void threadManager_addThread(struct Evaluator* thread);
+struct D_Symbol* threadManager_statusSymbol(enum ThreadStatus status);
+void threadManager_terminateThread(struct Evaluator* thread);
+void threadManager_unblockThread(struct Evaluator* thread);
 
 struct Evaluator {
     struct Any obj;
@@ -32,11 +35,14 @@ struct Evaluator {
     struct D_HashTable* globalEnv;
     struct D_HashTable* recordNamespace;
     struct Any* exception;
-    struct D_List* savedEnvList;
     struct D_HashTable* subscriberTable;
-    // NB: If you add a field to this struct, you must add it to the _mark function.
+    struct Any* blockingObject;
+    struct D_Queue* waitingThreads;
+    // NB: If you add an object field to this struct, you must add it to the _markChildren function below.
+    enum ThreadStatus threadStatus;
     jmp_buf jumpBuf;
     bool showSteps;
+    int tid;
 };
 
 struct Methods* evaluator_methodSetup(void) {
@@ -50,11 +56,6 @@ struct Methods* evaluator_methodSetup(void) {
     return methods;
 }
 
-void evaluator_rootObjects(void) {
-    _runningEvaluators = queue_new();
-    _blockedEvaluators = hashTable_new();
-}
-
 struct Evaluator* evaluator_new(void) {
     struct Evaluator* self = (struct Evaluator*)gc_alloc(T_Evaluator);
     evaluator_initialize(self);
@@ -62,19 +63,30 @@ struct Evaluator* evaluator_new(void) {
 }
 
 void evaluator_initialize(struct Evaluator* self) {
+    static int nextTid = 0;
     self->ostack = EMPTY_LIST;
     self->estack = EMPTY_TRIPLE;
     self->env = EMPTY_TRIPLE;
     self->globalEnv = ns_all_globalEnv();
     self->recordNamespace = hashTable_new();
     self->exception = (struct Any*)NIL;
-    self->savedEnvList = EMPTY_LIST;
     self->subscriberTable = NULL;
+    self->blockingObject = (struct Any*)NIL;
+    self->waitingThreads = NULL;
     self->showSteps = false;
+    self->threadStatus = TS_Dormant;
+    self->tid = nextTid++;
 }    
 
 void evaluator_free(struct Evaluator* self) {
     free(self);
+}
+
+void evaluator_addWaitingThread(struct Evaluator* self, struct Evaluator* thread) {
+    if (self->waitingThreads == NULL) {
+        self->waitingThreads = queue_new();
+    }
+    queue_enq(self->waitingThreads, (struct Any*)thread);
 }
 
 struct D_Triple* evaluator_bind(struct Evaluator* self, struct E_Identifier* key, struct Any* value) {
@@ -87,7 +99,6 @@ void evaluator_clearException(struct Evaluator* self) {
     self->exception = (struct Any*)NIL;
 }
 
-#include "data/integer.h"
 void evaluator_exit(struct Evaluator* self, int exitCode) {
     evaluator_throwException(
         self,
@@ -95,6 +106,10 @@ void evaluator_exit(struct Evaluator* self, int exitCode) {
         "evaluator_exit() is not finished",
         (struct Any*)integer_new(exitCode)
     );
+}
+
+struct Any* evaluator_getBlockingObject(struct Evaluator* self) {
+    return self->blockingObject;
 }
 
 struct D_Triple* evaluator_getEnv(struct Evaluator* self) {
@@ -129,6 +144,14 @@ struct D_HashTable* evaluator_getSubscriberTable(struct Evaluator* self) {
     return self->subscriberTable;
 }
 
+enum ThreadStatus evaluator_getThreadStatus(struct Evaluator* self) {
+    return self->threadStatus;
+}
+
+int evaluator_getTid(struct Evaluator* self) {
+    return self->tid;
+}
+
 void evaluator_handleException(struct Evaluator* self) {
     while (!triple_isEmpty(self->estack)) {
         struct Any* expr = evaluator_popExpr(self);
@@ -144,6 +167,7 @@ void evaluator_handleException(struct Evaluator* self) {
     fputc('\n', stderr);
     struct D_Triple* env = self->env;
     evaluator_initialize(self);
+    self->threadStatus = TS_Running;
     self->env = env;
     evaluator_pushObj(self, (struct Any*)NIL);
 }
@@ -163,9 +187,12 @@ void evaluator_markChildren(struct Evaluator* self) {
     any_mark((struct Any*)self->globalEnv);
     any_mark((struct Any*)self->recordNamespace);
     any_mark((struct Any*)self->exception);
-    any_mark((struct Any*)self->savedEnvList);
     if (self->subscriberTable != NULL) {
         any_mark((struct Any*)self->subscriberTable);
+    }
+    any_mark((struct Any*)self->blockingObject);
+    if (self->waitingThreads != NULL) {
+        any_mark((struct Any*)self->waitingThreads);
     }
 }
 
@@ -178,7 +205,7 @@ void evaluator_pushExprEnv(struct Evaluator* self, struct Any* expr, struct Any*
 }
 
 struct Any* evaluator_popExpr(struct Evaluator* self) {
-#if 0
+#if defined(DEVELOPMENT)
     if (self->estack == NULL) {
         fprintf(stderr, "ERROR: %s: expression stack empty\n", __func__);
         exit(1);
@@ -197,7 +224,7 @@ struct Any* evaluator_popExpr(struct Evaluator* self) {
 }
 
 void evaluator_pushObj(struct Evaluator* self, struct Any* obj) {
-#if 0
+#if defined(DEVELOPMENT)
     if (obj == NULL) {
         fprintf(stderr, "%s got null object\n", __func__);
         exit(1);
@@ -207,7 +234,7 @@ void evaluator_pushObj(struct Evaluator* self, struct Any* obj) {
 }
 
 struct Any* evaluator_popObj(struct Evaluator* self) {
-#if 1
+#if defined(DEVELOPMENT)
     if (list_isEmpty(self->ostack)) {
         fprintf(stderr, "ERROR: %s: object stack empty\n", __func__);
         exit(1);
@@ -231,18 +258,26 @@ void evaluator_reassignBinding(struct Evaluator* self, struct E_Identifier* iden
     triple_setSecond(binding, value);
 }
 
-void evaluator_run(struct Evaluator* self) {
+void evaluator_runSteps(struct Evaluator* self, int nSteps) {
+    self->threadStatus = TS_Running;
     if (setjmp(self->jumpBuf) > 0) {
         evaluator_handleException(self);
     }
-    while (self->estack != EMPTY_TRIPLE) {
+    while (nSteps--) {
         gc_commit();
         if (GC_NEEDED) {
             gc_collect();
         }
+        if (self->threadStatus != TS_Running) {
+            return;
+        }
+        if (self->estack == EMPTY_TRIPLE) {
+            threadManager_terminateThread(self);
+            return;
+        }
         struct Any* expr = evaluator_popExpr(self);
-        if (self->showSteps) {
-            printf("%s expr = ", __func__);
+        if (self->showSteps) {  // TODO this is per-thread, it should be global instead
+            printf("%s thread = %d, expr = ", __func__, self->tid);
             any_show(expr, stdout);
             printf(" :: %s\n", any_typeName(expr));
         }
@@ -261,6 +296,10 @@ void evaluator_saveEnv(struct Evaluator* self) {
     evaluator_pushExpr(self, savedEnv);
 }
 
+void evaluator_setBlockingObject(struct Evaluator* self, struct Any* blockingObject) {
+    self->blockingObject = blockingObject;
+}
+
 void evaluator_setEnv(struct Evaluator* self, struct D_Triple* env) {
     self->env = env;
 }
@@ -276,9 +315,15 @@ void evaluator_setShowSteps(struct Evaluator* self, bool showSteps) {
 void evaluator_setSubscriberTable(struct Evaluator* self, struct D_HashTable* subscriberTable) {
     self->subscriberTable = subscriberTable;
 }
+
+void evaluator_setThreadStatus(struct Evaluator* self, enum ThreadStatus status) {
+    self->threadStatus = status;
+}
+
 void evaluator_show(struct Evaluator* self, FILE* fp) {
-    (void)self;
-    fputs("Evaluator{ostack=", fp);
+    fprintf(fp, "Evaluator{tid=%d, status=", self->tid);
+    symbol_show(threadManager_statusSymbol(self->threadStatus), fp);
+    fprintf(fp, ", ostack=");
     any_show((struct Any*)self->ostack, fp);
     fputs(", estack=", fp);
     any_show((struct Any*)self->estack, fp);
@@ -306,4 +351,14 @@ void evaluator_throwExceptionObj(struct Evaluator* self, struct Any* exceptionOb
 struct Any* evaluator_topExpr(struct Evaluator* self) {
     struct Any* expr = triple_getFirst(self->estack);
     return expr;
+}
+
+void evaluator_unblockWaitingThreads(struct Evaluator* self) {
+    struct D_Queue* threadQ = self->waitingThreads;
+    if (threadQ != NULL) {
+        for (int n=0; n<queue_count(threadQ); n++) {
+            struct Evaluator* thread = (struct Evaluator*)queue_deq_unsafe(threadQ);
+            threadManager_unblockThread(thread);
+        }
+    }
 }

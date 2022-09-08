@@ -23,7 +23,6 @@ static void _reassign(struct Evaluator* etor, struct D_List* args);
 static void _sequence(struct Evaluator* etor, struct D_List* args);
 static void _slash(struct Evaluator* etor, struct D_List* args);
 static void _star(struct Evaluator* etor, struct D_List* args);
-static void _throw(struct Evaluator* etor, struct D_List* args);
 
 void globals_percent(struct Any* lhs, struct Any* rhs, struct Evaluator* etor);
 void globals_plus(struct Any* lhs, struct Any* rhs, struct Evaluator* etor);
@@ -53,7 +52,6 @@ void ns_globals_defineAll(struct D_HashTable* env) {
     _defFun(env, "%", _percent);
     _defFun(env, "..", _sequence);
     _defFun(env, "assert", _assert);
-    _defFun(env, "throw", _throw);
     // macros
     _defMacro(env, ":", _colon);
     _defMacro(env, ":=", _reassign);
@@ -175,12 +173,4 @@ static void _star(struct Evaluator* etor, struct D_List* args) {
     struct Any* lhs = list_getFirst(args);
     struct Any* rhs = list_getSecond(args);
     globals_star(lhs, rhs, etor);
-}
-
-static void _throw(struct Evaluator* etor, struct D_List* args) {
-    static enum TypeId paramTypes[] = {T_NULL};
-    struct Any* expr;
-    struct Any** paramVars[] = {&expr};
-    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
-    evaluator_throwExceptionObj(etor, expr);
 }

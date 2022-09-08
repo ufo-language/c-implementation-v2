@@ -16,6 +16,7 @@
 #include "main/typedefs.h"  // for HashCode
 #include "methods/methods.h"
 #include "utils/hash.h"
+#include "utils/strtok.h"
 
 struct D_String {
     struct Any obj;
@@ -201,37 +202,20 @@ void string_show(struct D_String* self, FILE* fd) {
     fputc('"', fd);
 }
 
-struct D_List* string_split(struct D_String* self, char c) {
-    struct D_Queue* queue = queue_new();
-    int count = self->count;
-    int startIndex = 0;
-    int endIndex = 0;
-    char* chars = self->chars;
-    while (endIndex <= count) {
-        if (c == chars[endIndex] || chars[endIndex] == 0) {
-            int len = endIndex - startIndex;
-            struct D_String* token;
-            if (len == 0) {
-                token = EMPTY_STRING;
-            }
-            else {
-                char* substring = (char*)malloc(len + 1);
-                strncpy(substring, &chars[startIndex], len);
-                substring[len] = 0;
-                token = string_new_move(substring, len);
-            }
-            queue_enq(queue, (struct Any*)token);
-            startIndex = ++endIndex;
-        }
-        else {
-            endIndex++;
-        }
-    }
-    return queue_asList(queue);
-}
-
 size_t string_sizeOf(struct D_String* self) {
     return sizeof(self) + sizeof(self->chars);
+}
+
+struct D_List* string_split(struct D_String* self, struct D_String* delim) {
+    char* str = string_getChars(self);
+    char* del = string_getChars(delim);
+    struct D_Queue* stringQ = queue_new();
+    char* rest = NULL;
+    char* token;
+    for (token = strtok_r(str, del, &rest); token != NULL; token = strtok_r(NULL, del, &rest)) {   
+        queue_enq(stringQ, (struct Any*)string_new(token));
+    }
+    return queue_asList(stringQ);
 }
 
 bool string_startsWith(struct D_String* self, struct D_String* prefix) {

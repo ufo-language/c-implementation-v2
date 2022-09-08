@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "data/any.h"
 #include "data/array.h"
 #include "data/boolean.h"
@@ -5,11 +7,13 @@
 #include "data/integer.h"
 #include "data/list.h"
 #include "data/primitive.h"
+#include "data/queue.h"
 #include "data/string.h"
 #include "data/stringbuffer.h"
 #include "etor/evaluator.h"
 #include "expr/identifier.h"
 #include "main/globals.h"
+#include "utils/strtok.h"
 
 #define NS_NAME "string"
 
@@ -18,6 +22,8 @@ static void _count(struct Evaluator* etor, struct D_List* args);
 static void _isEmpty(struct Evaluator* etor, struct D_List* args);
 static void _iterator(struct Evaluator* etor, struct D_List* args);
 static void _join(struct Evaluator* etor, struct D_List* args);
+static void _locate(struct Evaluator* etor, struct D_List* args);
+static void _split(struct Evaluator* etor, struct D_List* args);
 static void _startsWith(struct Evaluator* etor, struct D_List* args);
 
 void ns_string_defineAll(struct D_HashTable* env) {
@@ -29,6 +35,8 @@ void ns_string_defineAll(struct D_HashTable* env) {
     primitive_define(nsHash, "isEmpty", _isEmpty);
     primitive_define(nsHash, "iterator", _iterator);
     primitive_define(nsHash, "join", _join);
+    primitive_define(nsHash, "locate", _locate);
+    primitive_define(nsHash, "split", _split);
     primitive_define(nsHash, "startsWith", _startsWith);
 }
 
@@ -85,6 +93,44 @@ static void _join(struct Evaluator* etor, struct D_List* args) {
         args = (struct D_List*)list_getRestAsList(args);
     }
     evaluator_pushObj(etor, (struct Any*)stringBuffer_asString(sb));
+}
+
+static void _locate(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_String, T_String, T_Integer};
+    struct Any* stringObj;
+    struct Any* tokenObj;
+    struct Any* indexObj = NULL;
+    struct Any** paramVars[] = {&stringObj, &tokenObj, &indexObj};
+    primitive_checkArgs2(2, 3, paramTypes, args, paramVars, etor);
+    struct D_String* string = (struct D_String*)stringObj;
+    struct D_String* token = (struct D_String*)tokenObj;
+    int index = 0;
+    if (indexObj) {
+        index = integer_getValue((struct D_Integer*)indexObj);
+    }
+    (void)index; // TODO use this
+    char* str = string_getChars(string);
+    char* tok = string_getChars(token);
+    char* res = strstr(str, tok);
+    if (res) {
+        int diff = res - str;
+        evaluator_pushObj(etor, (struct Any*)integer_new(diff));
+    }
+    else {
+        evaluator_pushObj(etor, (struct Any*)NIL);
+    }
+}
+
+static void _split(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_String, T_String};
+    struct Any* stringObj;
+    struct Any* delimObj;
+    struct Any** paramVars[] = {&stringObj, &delimObj};
+    primitive_checkArgs(2, paramTypes, args, paramVars, etor);
+    struct D_String* string = (struct D_String*)stringObj;
+    struct D_String* delim = (struct D_String*)delimObj;
+    struct D_List* tokens = string_split(string, delim);
+    evaluator_pushObj(etor, (struct Any*)tokens);
 }
 
 static void _startsWith(struct Evaluator* etor, struct D_List* args) {

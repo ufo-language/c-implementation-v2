@@ -12,6 +12,7 @@
 #include "data/stringbuffer.h"
 #include "data/symbol.h"
 #include "etor/evaluator.h"
+#include "etor/threadmanager.h"
 #include "gc/gc.h"
 #include "lexer/lexer.h"
 #include "main/globals.h"
@@ -163,7 +164,7 @@ static int repl_read(struct REPL* self) {
         self->inputString = stringBuffer_asString(self->inputStringBuffer);
         char* chars = string_getChars(self->inputString);
         if (':' == chars[0]) {
-            self->colonTokens = string_split(self->inputString, ' ');
+            self->colonTokens = string_split(self->inputString, string_new(" "));
             enum ReadAction readAction = colonCommand_run(self->colonTokens, self);
             switch (readAction) {
                 case KEEP_LOOPING:
@@ -221,7 +222,8 @@ static bool repl_parse(struct REPL* self) {
 
 static bool repl_eval(struct REPL* self) {
     evaluator_pushExpr(self->etor, self->expr);
-    evaluator_run(self->etor);
+    threadManager_addThread(self->etor);
+    threadManager_runAll();
     struct Any* error = evaluator_getException(self->etor);
     if (error != (struct Any*)NIL) {
         self->error = error;
