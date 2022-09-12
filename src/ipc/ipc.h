@@ -3,6 +3,10 @@
 
 #include <sys/types.h>
 
+// these are initialized in main.c
+extern int PARENT_TO_CHILD[2];
+extern int CHILD_TO_PARENT[2];
+
 char ipc_readChar(int fd);
 int ipc_readInt(int fd);
 long ipc_readLong(int fd);

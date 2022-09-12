@@ -4,10 +4,12 @@
 #include <sys/wait.h>
 
 #include "data/stringbufferstruct.h"
+#include "data/string.h"
 #include "data/stringbuffer.h"
 #include "ipc/ipc.h"
 
 static void _handleDisplayString(int readFromUfo);
+static void _handleReadLine(int writeToUfo);
 static void _handleUfoCommand(int readFromUfo, int writeToUfo);
 
 static bool _continue;
@@ -19,6 +21,10 @@ void resourceServer(pid_t ufoPid, int readFromUfo, int writeToUfo) {
         switch (msgType) {
             case 'D':
                 _handleDisplayString(readFromUfo);
+                break;
+            case 'R':
+                printf("%s got R\n", __func__);
+                _handleReadLine(writeToUfo);
                 break;
             case 'U':
                 _handleUfoCommand(readFromUfo, writeToUfo);
@@ -36,22 +42,26 @@ static void _handleDisplayString(int readFromUfo) {
     }
 }
 
-static void _handleReadString(int writeToUfo) {
-    static struct D_StringBuffer sb;
+static void _handleReadLine(int writeToUfo) {
+    static struct D_StringBuffer* sb;
+    printf("%s called\n", __func__);
     while (true) {
-        // read text from the user
-        (void)writeToUfo;
-    }
-    int nChars = stringBuffer_count(&sb);
-    char c;
-    for (int n=0; n<nChars; n++) {
-        if (stringBuffer_readChar(&sb, &c)) {
-            // -> send to UFO
+        int chr = fgetc(stdin);
+        printf("  got char %d\n", chr);
+        if (chr == -1) {
+            break;
         }
-        else {
-            // string buffer is empty, but the counted for loop ensures that we never get here
+        if (chr == '\n') {
+            break;
         }
+        stringBuffer_writeChar(sb, chr);
     }
+    int nChars = stringBuffer_count(sb);
+    printf("%s got %d chars\n", __func__, nChars);
+    struct D_String* string = stringBuffer_asString(sb);
+    char* chars = string_getChars(string);
+    printf("%s got string '%s'\n", __func__, chars);
+    ipc_writeString(writeToUfo, nChars, chars);
 }
 
 static void _handleUfoCommand(int readFromUfo, int writeToUfo) {

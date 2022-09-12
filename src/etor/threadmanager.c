@@ -46,6 +46,7 @@ void threadManager_runAll(void) {
     while (queue_count(_running) > 0) {
         threadManager_runNextThread();
     }
+    //printf("%s finished running all threads\n", __func__);
 }
 
 void threadManager_runNextThread(void) {

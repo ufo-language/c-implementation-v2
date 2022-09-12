@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "data/any.h"
 #include "data/hashtable.h"
 #include "data/list.h"
@@ -7,6 +9,7 @@
 #include "etor/evaluator.h"
 #include "expr/identifier.h"
 #include "io/readline.h"
+#include "ipc/ipc.h"
 #include "main/globals.h"
 
 #define NS_NAME "io"
@@ -51,9 +54,22 @@ static void _nl(struct Evaluator* etor, struct D_List* args) {
 
 static void _readLine(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(0, NULL, args, NULL, etor);
+#if 0  // original
     struct D_StringBuffer* sb = stringBuffer_new();
     io_readLine(sb);
     evaluator_pushObj(etor, (struct Any*)stringBuffer_asString(sb));
+#else
+    printf("%s writing 'R' to parent\n", __func__);
+    ipc_writeChar(CHILD_TO_PARENT[0], 'R');
+    printf("%s waiting for number of chars read by parent\n", __func__);
+    int nChars = ipc_readInt(CHILD_TO_PARENT[0]);
+    printf("%s got %d\n", __func__, nChars);
+    char* chars = (char*)malloc(nChars + 1);
+    ipc_readString(CHILD_TO_PARENT[0], nChars, chars);
+    chars[nChars] = '\0';
+    struct D_String* string = string_new_move(chars, nChars);
+    evaluator_pushObj(etor, (struct Any*)string);
+#endif
 }
 
 static void _show(struct Evaluator* etor, struct D_List* args) {

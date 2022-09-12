@@ -17,8 +17,8 @@
 int ARGC = 0;
 char** ARGV = NULL;
 
-int PARENT_TO_CHILD[2];
-int CHILD_TO_PARENT[2];
+extern int PARENT_TO_CHILD[2];
+extern int CHILD_TO_PARENT[2];
 
 void any_sanityCheck(void);
 void methodTable_setupMethods(void);
@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
     ARGC = argc;
     ARGV = argv;
     if (pipe(PARENT_TO_CHILD) == -1 || pipe(CHILD_TO_PARENT) == -1) {
-        fprintf(stderr, "Unable to open parent/child pipe\n");
+        fprintf(stderr, "Unable to open parent/child pipes\n");
         exit(1);
     }
     srand(time(0));
@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
         any_sanityCheck();
         methodTable_setupMethods();
         gc_start();
-        ufo_start();
+        ufo_start();  // this starts the REPL
         ufo_stop();
         gc_stop();
         methodTable_deallocateAll();
