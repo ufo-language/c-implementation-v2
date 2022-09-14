@@ -47,7 +47,7 @@ void lock_acquire(struct D_Lock* self, struct Evaluator* etor) {
         self->lockedBy = etor;
     }
     else {
-        printf("%s blocking thread ", __func__); any_show((struct Any*)etor, stdout); printf("\n");
+        printf("%s blocking thread %d\n", __func__, evaluator_getTid(etor));
         threadManager_blockThread(etor, (struct Any*)self);
         queue_enq(self->waitingThreads, (struct Any*)etor);
     }
@@ -69,6 +69,7 @@ void lock_release(struct D_Lock* self) {
     if (!queue_isEmpty(self->waitingThreads)) {
         struct Evaluator* nextThread = (struct Evaluator*)queue_deq_unsafe(self->waitingThreads);
         threadManager_unblockThread(nextThread);
+        printf("%s unblocking evaluator %d\n", __func__, evaluator_getTid(nextThread));
         lock_acquire(self, nextThread);
     }
 }

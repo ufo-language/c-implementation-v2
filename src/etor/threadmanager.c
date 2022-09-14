@@ -35,7 +35,7 @@ void threadManager_blockThread(struct Evaluator* thread, struct Any* blockingObj
     }
     evaluator_setThreadStatus(thread, TS_Blocked);
     evaluator_setBlockingObject(thread, blockingObject);
-    printf("%s blocked thread ", __func__); any_show((struct Any*)thread, stdout); printf(" on "); any_show((struct Any*)blockingObject, stdout); printf("\n");
+    printf("%s blocked thread %d on ", __func__, evaluator_getTid(thread)); any_show((struct Any*)blockingObject, stdout); printf("\n");
 }
 
 void threadManager_unblockThread(struct Evaluator* thread) {
