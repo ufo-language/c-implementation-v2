@@ -1,5 +1,5 @@
-#include <sys/time.h>
-#include <time.h>
+#include <sys/time.h>  // for struct timeval
+#include <time.h>  // for CLOCKS_PER_SEC
 
 #include "data/any.h"
 #include "data/boolean.h"
@@ -12,6 +12,7 @@
 #include "data/symbol.h"
 #include "etor/evaluator.h"
 #include "expr/identifier.h"
+#include "io/sleep.h"
 #include "main/globals.h"
 
 #define NS_NAME "time"
@@ -20,6 +21,7 @@ static void _cpu(struct Evaluator* etor, struct D_List* args);
 static void _current(struct Evaluator* etor, struct D_List* args);
 static void _elapsed(struct Evaluator* etor, struct D_List* args);
 static void _now(struct Evaluator* etor, struct D_List* args);
+static void _sleep(struct Evaluator* etor, struct D_List* args);
 static void _string(struct Evaluator* etor, struct D_List* args);
 
 void ns_time_defineAll(struct D_HashTable* env) {
@@ -30,6 +32,7 @@ void ns_time_defineAll(struct D_HashTable* env) {
     primitive_define(nsHash, "current", _current);
     primitive_define(nsHash, "elapsed", _elapsed);
     primitive_define(nsHash, "now", _now);
+    primitive_define(nsHash, "sleep", _sleep);
     primitive_define(nsHash, "string", _string);
 }
 
@@ -91,6 +94,16 @@ static void _now(struct Evaluator* etor, struct D_List* args) {
     struct D_List* pair = list_new2((struct Any*)integer_new(te.tv_sec),
                                     (struct Any*)integer_new(te.tv_usec));
     evaluator_pushObj(etor, (struct Any*)pair);
+}
+
+static void _sleep(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_Integer, T_Real};
+    struct Any* delayObj = NULL;
+    enum TypeId typeId = primitive_checkArgsOneOf(2, paramTypes, args, &delayObj, etor);
+    if (typeId == T_Integer) {
+        delayObj = (struct Any*)real_new(integer_getValue((struct D_Integer*)delayObj));
+    }
+    io_sleep_nonBlocking(etor, (struct D_Real*)delayObj);
 }
 
 static void _string(struct Evaluator* etor, struct D_List* args) {
