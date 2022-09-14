@@ -12,12 +12,6 @@ void methodTable_setupMethods(void);
 void methodTable_deallocateAll(void);
 
 int main(int argc, char* argv[]) {
-#if defined(linux)
-    char* name = "ufo_evaluator";
-    if (prctl(PR_SET_NAME, name, NULL, NULL, NULL) < 0) {
-        perror("prctl()");
-    }
-#endif
     ARGC = argc;
     ARGV = argv;
     srand(time(0));
