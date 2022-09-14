@@ -5,6 +5,8 @@
 # cross compiler can be installed via the Debian/Ubuntu package
 # “gcc-arm-linux-gnueabihf”.
 
+# See also https://plasma.ninja/blog/devices/remarkable/2017/12/18/reMarkable-exporation.html
+
 # Run this script. It creates an executable file 'ufo' in the project top level directory.
 # From within Vagrant Linux: cp ufo ~/host
 # From the host: scp ufo root@192.168.102.204:/home/root
