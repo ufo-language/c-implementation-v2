@@ -64,7 +64,7 @@ int binding_compare(struct D_Binding* self, struct D_Binding* other, struct Eval
     return res;
 }
 
-void binding_contin(struct Evaluator* etor, struct Any* arg) {
+static void _contin(struct Evaluator* etor, struct Any* arg) {
     (void)arg;
     struct Any* value = evaluator_popObj(etor);
     struct Any* key = evaluator_popObj(etor);
@@ -77,7 +77,7 @@ struct D_Binding* binding_deepCopy(struct D_Binding* self) {
 }
 
 void binding_eval(struct D_Binding* self, struct Evaluator* etor) {
-    evaluator_pushExpr(etor, (struct Any*)continuation_new(binding_contin, "binding", (struct Any*)NIL));
+    evaluator_pushExpr(etor, (struct Any*)continuation_new(_contin, "binding", (struct Any*)NIL));
     evaluator_pushExpr(etor, self->value);
     evaluator_pushExpr(etor, self->key);
 }

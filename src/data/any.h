@@ -33,6 +33,7 @@ enum TypeId {
     T_Let,
     T_LetIn,
     T_LetRec,
+    T_Lock,
     T_Loop,
     T_List,
     T_Nil,

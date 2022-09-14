@@ -37,6 +37,7 @@ char* TYPE_NAMES[] = {
     "Let",
     "LetIn",
     "LetRec",
+    "Lock",
     "Loop",
     "List",
     "Nil",
