@@ -73,10 +73,12 @@ void cobegin_eval(struct E_Cobegin* self, struct Evaluator* etor) {
     int nExprs = array_count(exprAry);
     struct D_Array* threadAry = array_new(nExprs);
     // spawn each thread
+    struct D_Triple* currentEnv = evaluator_getEnv(etor);
     struct Evaluator* thread = NULL;
     for (int n=0; n<nExprs; n++) {
         struct Any* expr = array_get_unsafe(exprAry, n);
         thread = evaluator_new();
+        evaluator_setEnv(thread, currentEnv);
         evaluator_pushExpr(thread, (struct Any*)expr);
         threadManager_addThread(thread);
         array_set_unsafe(threadAry, n, (struct Any*)thread);
