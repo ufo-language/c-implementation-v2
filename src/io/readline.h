@@ -2,7 +2,8 @@
 #define READLINE_H
 
 struct D_StringBuffer;
+struct Evaluator;
 
-void io_readLine(struct D_StringBuffer* sb);
+void io_readLine_nonBlocking(struct Evaluator* etor, struct D_StringBuffer* sb);
 
 #endif

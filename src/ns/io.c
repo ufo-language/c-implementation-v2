@@ -54,8 +54,9 @@ static void _nl(struct Evaluator* etor, struct D_List* args) {
 static void _readLine(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(0, NULL, args, NULL, etor);
     struct D_StringBuffer* sb = stringBuffer_new();
-    io_readLine(sb);
-    evaluator_pushObj(etor, (struct Any*)stringBuffer_asString(sb));
+    //io_readLine(sb);
+    io_readLine_nonBlocking(etor, sb);
+    //evaluator_pushObj(etor, (struct Any*)stringBuffer_asString(sb));
 }
 
 static void _show(struct Evaluator* etor, struct D_List* args) {
