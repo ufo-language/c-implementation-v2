@@ -1,4 +1,0 @@
-let l = lock:new()
-fun f1() = do lock:acquire(l) loop 5 io:disp(X) lock:release(l) end
-fun f2() = do lock:acquire(l) loop 5 io:disp(X) lock:release(l) end
-cobegin f1() f2() end

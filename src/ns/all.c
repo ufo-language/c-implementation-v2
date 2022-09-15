@@ -18,6 +18,7 @@ void ns_lexer_defineAll(struct D_HashTable* env);
 void ns_list_defineAll(struct D_HashTable* env);
 void ns_lock_defineAll(struct D_HashTable* env);
 void ns_math_defineAll(struct D_HashTable* env);
+void ns_msgq_defineAll(struct D_HashTable* env);
 void ns_ns_defineAll(struct D_HashTable* env);
 void ns_os_defineAll(struct D_HashTable* env);
 void ns_parser_defineAll(struct D_HashTable* env);
@@ -61,6 +62,7 @@ void ns_all_rootObjects(void) {
     ns_list_defineAll(_globalEnv);
     ns_lock_defineAll(_globalEnv);
     ns_math_defineAll(_globalEnv);
+    ns_msgq_defineAll(_globalEnv);
     ns_ns_defineAll(_globalEnv);
     ns_os_defineAll(_globalEnv);
     ns_parser_defineAll(_globalEnv);

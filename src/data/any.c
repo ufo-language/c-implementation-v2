@@ -40,6 +40,7 @@ char* TYPE_NAMES[] = {
     "Lock",
     "Loop",
     "List",
+    "MsgQ",
     "Nil",
     "Nondet",
     "Primitive",

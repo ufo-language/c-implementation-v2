@@ -30,6 +30,7 @@ struct Methods* letRec_methodSetup();
 struct Methods* list_methodSetup();
 struct Methods* lock_methodSetup();
 struct Methods* loop_methodSetup();
+struct Methods* msgq_methodSetup();
 struct Methods* nil_methodSetup();
 struct Methods* nondet_methodSetup();
 struct Methods* primitive_methodSetup();
@@ -84,6 +85,7 @@ void methodTable_setupMethods(void) {
     METHOD_TABLE[T_Lock] = lock_methodSetup();
     METHOD_TABLE[T_Loop] = loop_methodSetup();
     METHOD_TABLE[T_List] = list_methodSetup();
+    METHOD_TABLE[T_MsgQ] = msgq_methodSetup();
     METHOD_TABLE[T_Nil] = nil_methodSetup();
     METHOD_TABLE[T_Nondet] = nondet_methodSetup();
     METHOD_TABLE[T_Primitive] = primitive_methodSetup();

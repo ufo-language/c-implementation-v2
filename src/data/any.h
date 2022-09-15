@@ -36,6 +36,7 @@ enum TypeId {
     T_Lock,
     T_Loop,
     T_List,
+    T_MsgQ,
     T_Nil,
     T_Nondet,
     T_Primitive,
