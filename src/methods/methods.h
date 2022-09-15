@@ -10,7 +10,6 @@
 
 struct D_Iterator;
 struct D_Set;
-struct D_Stream;
 struct D_Triple;
 struct Evaluator;
 

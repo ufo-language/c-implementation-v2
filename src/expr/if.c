@@ -7,7 +7,7 @@
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
 #include "expr/if.h"
-#include "gc/gc.h"
+#include "memory/gc.h"
 #include "methods/methods.h"
 
 struct E_If {

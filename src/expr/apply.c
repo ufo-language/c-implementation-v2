@@ -9,8 +9,8 @@
 #include "etor/evaluator.h"
 #include "expr/apply.h"
 #include "expr/continuation.h"
-#include "gc/gc.h"
 #include "main/globals.h"
+#include "memory/gc.h"
 #include "methods/methods.h"
 
 struct E_Apply {

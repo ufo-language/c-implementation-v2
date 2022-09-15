@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# Your reMarkable is an ARM A9 architecture. For this reason, it is
+# sufficient to compile a program with arm-linux-gnueabihf-gcc. This
+# cross compiler can be installed via the Debian/Ubuntu package
+# “gcc-arm-linux-gnueabihf”.
+
+# See also https://plasma.ninja/blog/devices/remarkable/2017/12/18/reMarkable-exporation.html
+
+# Run this script. It creates an executable file 'ufo' in the project top level directory.
+# From within Vagrant Linux: cp ufo ~/host
+# From the host: scp ufo root@192.168.102.204:/home/root
+
+CC=arm-linux-gnueabihf-gcc
+
+cd ..
+mkdir obj
+rm obj/*
+rm src/utils/stacktrace.c
+
+sources=$(find src -name '*.c')
+for f in $sources; do
+    srcfile=$(echo $f | cut -c 5-)
+    echo $srcfile
+    objfile1=$(echo $srcfile | tr '/' '.')
+        objfile2="$(echo $objfile1 | sed 's/.$//')o"
+    echo $objfile2
+    $CC -static -c -o obj/$objfile2 -Isrc src/$srcfile
+done
+$CC -static -o ufo obj/*.o

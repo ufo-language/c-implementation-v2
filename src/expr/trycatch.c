@@ -7,8 +7,8 @@
 #include "expr/abstraction.h"
 #include "expr/exnhandler.h"
 #include "expr/trycatch.h"
-#include "gc/gc.h"
 #include "main/globals.h"
+#include "memory/gc.h"
 #include "methods/methods.h"
 
 struct E_TryCatch {

@@ -8,8 +8,8 @@
 #include "etor/threadmanager.h"
 #include "expr/continuation.h"
 #include "expr/nondet.h"
-#include "gc/gc.h"
 #include "main/globals.h"
+#include "memory/gc.h"
 #include "methods/methods.h"
 
 struct E_Nondet {
@@ -77,9 +77,11 @@ void nondet_eval(struct E_Nondet* self, struct Evaluator* etor) {
     }
     struct D_Array* threadAry = array_new(nExprs);
     // spawn each thread
+    struct D_Triple* currentEnv = evaluator_getEnv(etor);
     for (int n=0; n<nExprs; n++) {
         struct Any* expr = array_get_unsafe(exprAry, n);
         struct Evaluator* thread = evaluator_new();
+        evaluator_setEnv(thread, currentEnv);
         evaluator_pushExpr(thread, (struct Any*)expr);
         threadManager_addThread(thread);
         array_set_unsafe(threadAry, n, (struct Any*)thread);

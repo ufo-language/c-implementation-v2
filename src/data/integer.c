@@ -7,8 +7,8 @@
 #include "data/list.h"
 #include "data/stream.h"
 #include "data/sequence.h"
-#include "gc/gc.h"
 #include "main/typedefs.h"  // for HashCode
+#include "memory/gc.h"
 #include "methods/methods.h"
 #include "utils/hash.h"
 

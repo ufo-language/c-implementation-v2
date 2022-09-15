@@ -30,6 +30,7 @@ struct D_Iterator* queue_iterator(struct D_Queue* self);
 void queue_markChildren(struct D_Queue* self);
 struct D_Triple* queue_match(struct D_Queue* self, struct Any* other, struct D_Triple* bindings);
 struct Any* queue_peek(struct D_Queue* self);
+struct Any* queue_peek_unsafe(struct D_Queue* self);
 void queue_show(struct D_Queue* self, FILE* fp);
 size_t queue_sizeOf(struct D_Queue* self);
 size_t queue_structSize(void);

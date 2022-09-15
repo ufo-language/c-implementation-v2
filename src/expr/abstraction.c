@@ -7,7 +7,7 @@
 #include "data/set.h"
 #include "etor/evaluator.h"
 #include "expr/abstraction.h"
-#include "gc/gc.h"
+#include "memory/gc.h"
 #include "methods/methods.h"
 
 struct E_Abstraction {

@@ -10,8 +10,8 @@
 #include "data/set.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
-#include "gc/gc.h"
 #include "main/globals.h"
+#include "memory/gc.h"
 #include "methods/methods.h"
 
 struct D_Set {

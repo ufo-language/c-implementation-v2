@@ -17,8 +17,8 @@
 #include "expr/exnhandler.h"
 #include "expr/identifier.h"
 #include "expr/savedenv.h"
-#include "gc/gc.h"
 #include "main/globals.h"
+#include "memory/gc.h"
 #include "methods/methods.h"
 #include "ns/all.h"
 

@@ -16,7 +16,6 @@ static int _nSteps = 10;
 
 void threadManager_runNextThread(void);
 
-#include <assert.h>
 void threadManager_addThread(struct Evaluator* thread) {
     if (TS_Running != evaluator_getThreadStatus(thread)) {
         evaluator_setThreadStatus(thread, TS_Running);
@@ -37,23 +36,15 @@ void threadManager_blockThread(struct Evaluator* thread, struct Any* blockingObj
     evaluator_setBlockingObject(thread, blockingObject);
 }
 
-void threadManager_unblockThread(struct Evaluator* thread) {
-    evaluator_setBlockingObject(thread, (struct Any*)NIL);
-    threadManager_addThread(thread);
+int threadManager_count(void) {
+    return queue_count(_running);
 }
 
 void threadManager_runAll(void) {
     while (queue_count(_running) > 0) {
         threadManager_runNextThread();
     }
-}
-
-void threadManager_runNextThread(void) {
-    struct Evaluator* thread = (struct Evaluator*)queue_deq_unsafe(_running);
-    evaluator_runSteps(thread, _nSteps);
-    if (TS_Running == evaluator_getThreadStatus(thread)) {
-        queue_enq(_running, (struct Any*)thread);
-    }
+    //printf("%s finished running all threads\n", __func__);
 }
 
 void threadManager_rootObjects(void) {
@@ -62,6 +53,16 @@ void threadManager_rootObjects(void) {
     SYM_RUNNING = symbol_new("Running");
     SYM_BLOCKED = symbol_new("Blocked");
     SYM_TERMINATED = symbol_new("Terminated");
+}
+
+void threadManager_runNextThread(void) {
+    // leave the thread attached to the queue while it's running
+    struct Evaluator* thread = (struct Evaluator*)queue_peek_unsafe(_running);
+    evaluator_runSteps(thread, _nSteps);
+    (void)queue_deq_unsafe(_running);
+    if (TS_Running == evaluator_getThreadStatus(thread)) {
+        queue_enq(_running, (struct Any*)thread);
+    }
 }
 
 struct D_Symbol* threadManager_statusSymbol(enum ThreadStatus status) {
@@ -86,4 +87,9 @@ struct D_Symbol* threadManager_statusSymbol(enum ThreadStatus status) {
 void threadManager_terminateThread(struct Evaluator* thread) {
     evaluator_setThreadStatus(thread, TS_Terminated);
     evaluator_unblockWaitingThreads(thread);
+}
+
+void threadManager_unblockThread(struct Evaluator* thread) {
+    evaluator_setBlockingObject(thread, (struct Any*)NIL);
+    threadManager_addThread(thread);
 }

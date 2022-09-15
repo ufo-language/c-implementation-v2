@@ -4,7 +4,7 @@
 #include "data/address.h"
 #include "data/address.h"
 #include "data/any.h"
-#include "gc/gc.h"
+#include "memory/gc.h"
 #include "utils/hash.h"
 #include "main/typedefs.h"  // for HashCode
 #include "methods/methods.h"

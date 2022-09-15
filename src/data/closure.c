@@ -7,8 +7,8 @@
 #include "data/list.h"
 #include "etor/evaluator.h"
 #include "expr/abstraction.h"
+#include "memory/gc.h"
 #include "methods/methods.h"
-#include "gc/gc.h"
 
 struct D_Closure {
     struct Any obj;

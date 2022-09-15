@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #include "data/any.h"
-#include "gc/gc.h"
+#include "memory/gc.h"
 #include "main/setup.h"
 
 // The _permanentObjects pointer is an optimization. Sweeping stops
@@ -359,7 +359,6 @@ void gc_sweep(void) {
             if (obj == _committed) {
                 _committed = next;
             }
-            //printf("%s freeing obj @ %p, type %s\n ", __func__, (void*)obj, any_typeName(obj));
             any_free(obj);
         }
         obj = next;

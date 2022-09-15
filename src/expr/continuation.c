@@ -4,8 +4,8 @@
 #include "expr/continuation.h"
 #include "data/any.h"
 #include "etor/evaluator.h"
-#include "gc/gc.h"
 #include "main/globals.h"
+#include "memory/gc.h"
 #include "methods/methods.h"
 
 struct E_Continuation {
@@ -18,7 +18,6 @@ struct E_Continuation {
 struct Methods* continuation_methodSetup(void) {
     struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
     methodTable_setupDefaults(methods);
-    //methods->m_deepCopy = (struct Any* (*)(struct Any*))continuation_deepCopy;
     methods->m_eval = (void (*)(struct Any*, struct Evaluator*))continuation_eval;
     methods->m_free = (void (*)(struct Any*))continuation_free;
     methods->m_markChildren = (void (*)(struct Any* self))continuation_markChildren;

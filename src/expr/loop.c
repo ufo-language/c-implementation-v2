@@ -12,14 +12,13 @@
 #include "expr/continuation.h"
 #include "expr/identifier.h"
 #include "expr/loop.h"
-#include "gc/gc.h"
 #include "main/globals.h"
+#include "memory/gc.h"
 #include "methods/methods.h"
 
 struct E_Loop {
     struct Any obj;
     struct Any* iterExpr;
-    struct Any* iterator;
     struct Any* body;
 };
 
@@ -40,7 +39,6 @@ struct Methods* loop_methodSetup(void) {
 struct E_Loop* loop_new(struct Any* iterExpr, struct Any* body) {
     struct E_Loop* self = (struct E_Loop*)gc_alloc(T_Loop);
     self->iterExpr = iterExpr;
-    self->iterator = (struct Any*)NIL;
     self->body = body;
     return self;
 }
@@ -111,7 +109,6 @@ void loop_freeVars(struct E_Loop* self, struct D_Set* freeVars, struct Evaluator
 
 void loop_markChildren(struct E_Loop* self) {
     any_mark((struct Any*)self->iterExpr);
-    any_mark((struct Any*)self->iterator);
     any_mark((struct Any*)self->body);
 }
 

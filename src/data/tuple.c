@@ -6,7 +6,7 @@
 #include "data/any.h"
 #include "data/tuple.h"
 #include "etor/evaluator.h"
-#include "gc/gc.h"
+#include "memory/gc.h"
 #include "main/globals.h"
 #include "main/typedefs.h"
 #include "methods/methods.h"

@@ -5,7 +5,7 @@
 #include "data/any.h"
 #include "data/hashtable.h"
 #include "data/symbol.h"
-#include "gc/gc.h"
+#include "memory/gc.h"
 #include "data/triple.h"
 #include "methods/methods.h"
 

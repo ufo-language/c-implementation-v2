@@ -8,8 +8,8 @@
 #include "etor/threadmanager.h"
 #include "expr/continuation.h"
 #include "expr/async.h"
-#include "gc/gc.h"
 #include "main/globals.h"
+#include "memory/gc.h"
 #include "methods/methods.h"
 
 struct E_Async {
@@ -49,9 +49,11 @@ void async_eval(struct E_Async* self, struct Evaluator* etor) {
     struct D_Array* exprAry = self->exprs;
     int nExprs = array_count(exprAry);
     struct D_Array* threadAry = array_new(nExprs);
+    struct D_Triple* currentEnv = evaluator_getEnv(etor);
     for (int n=0; n<nExprs; n++) {
         struct Any* expr = array_get_unsafe(exprAry, n);
         struct Evaluator* thread = evaluator_new();
+        evaluator_setEnv(thread, currentEnv);
         evaluator_pushExpr(thread, (struct Any*)expr);
         threadManager_addThread(thread);
         array_set_unsafe(threadAry, n, (struct Any*)thread);

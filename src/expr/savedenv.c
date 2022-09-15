@@ -4,9 +4,10 @@
 #include "expr/savedenv.h"
 #include "data/any.h"
 #include "etor/evaluator.h"
-#include "gc/gc.h"
+#include "memory/gc.h"
 #include "methods/methods.h"
 
+// This is not a user expression.
 // This is an expression that gets pushed onto the expression stack
 // before an application is evaluated (and one or two other
 // places). After the application is finished, this expression is

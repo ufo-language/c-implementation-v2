@@ -9,8 +9,8 @@
 #include "data/symbol.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
-#include "gc/gc.h"
 #include "main/globals.h"
+#include "memory/gc.h"
 #include "methods/methods.h"
 
 struct D_Queue {
@@ -174,6 +174,10 @@ struct Any* queue_peek(struct D_Queue* self) {
     if (list_isEmpty(self->head)) {
         return NULL;
     }
+    return list_getFirst(self->head);
+}
+
+struct Any* queue_peek_unsafe(struct D_Queue* self) {
     return list_getFirst(self->head);
 }
 

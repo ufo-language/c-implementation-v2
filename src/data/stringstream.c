@@ -6,7 +6,7 @@
 #include "data/any.h"
 #include "data/integer.h"
 #include "data/stringstream.h"
-#include "gc/gc.h"
+#include "memory/gc.h"
 #include "methods/methods.h"
 
 struct D_StringStream {

@@ -1,5 +1,5 @@
-#include <sys/time.h>
-#include <time.h>
+#include <sys/time.h>  // for struct timeval
+#include <time.h>  // for CLOCKS_PER_SEC
 
 #include "data/any.h"
 #include "data/boolean.h"

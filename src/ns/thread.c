@@ -5,18 +5,22 @@
 #include "data/integer.h"
 #include "data/list.h"
 #include "data/primitive.h"
+#include "data/real.h"
 #include "data/symbol.h"
 #include "etor/evaluator.h"
 #include "etor/threadmanager.h"
 #include "expr/apply.h"
 #include "expr/identifier.h"
+#include "io/sleep.h"
 #include "main/globals.h"
 
 #define NS_NAME "thread"
 
+static void _count(struct Evaluator* etor, struct D_List* args);
 static void _isTerminated(struct Evaluator* etor, struct D_List* args);
 static void _join(struct Evaluator* etor, struct D_List* args);
 static void _self(struct Evaluator* etor, struct D_List* args);
+static void _sleep(struct Evaluator* etor, struct D_List* args);
 static void _spawn(struct Evaluator* etor, struct D_List* args);
 static void _status(struct Evaluator* etor, struct D_List* args);
 static void _value(struct Evaluator* etor, struct D_List* args);
@@ -25,12 +29,20 @@ void ns_thread_defineAll(struct D_HashTable* env) {
     struct E_Identifier* nsName = identifier_new(NS_NAME);
     struct D_HashTable* nsHash = hashTable_new();
     hashTable_put_unsafe(env, (struct Any*)nsName, (struct Any*)nsHash);
+    primitive_define(nsHash, "count", _count);
     primitive_define(nsHash, "isTerminated", _isTerminated);
     primitive_define(nsHash, "join", _join);
     primitive_define(nsHash, "self", _self);
+    primitive_define(nsHash, "sleep", _sleep);
     primitive_define(nsHash, "spawn", _spawn);
     primitive_define(nsHash, "status", _status);
     primitive_define(nsHash, "value", _value);
+}
+
+static void _count(struct Evaluator* etor, struct D_List* args) {
+    primitive_checkArgs(0, NULL, args, NULL, etor);
+    struct D_Integer* count = integer_new(threadManager_count());
+    evaluator_pushObj(etor, (struct Any*)count);
 }
 
 static void _isTerminated(struct Evaluator* etor, struct D_List* args) {
@@ -58,6 +70,16 @@ static void _join(struct Evaluator* etor, struct D_List* args) {
 static void _self(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(0, NULL, args, NULL, etor);
     evaluator_pushObj(etor, (struct Any*)etor);
+}
+
+static void _sleep(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_Integer, T_Real};
+    struct Any* delayObj = NULL;
+    enum TypeId typeId = primitive_checkArgsOneOf(2, paramTypes, args, &delayObj, etor);
+    if (typeId == T_Integer) {
+        delayObj = (struct Any*)real_new(integer_getValue((struct D_Integer*)delayObj));
+    }
+    io_sleep_nonBlocking(etor, (struct D_Real*)delayObj);
 }
 
 static void _spawn(struct Evaluator* etor, struct D_List* args) {

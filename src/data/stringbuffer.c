@@ -7,7 +7,7 @@
 #include "data/string.h"
 #include "data/stringbuffer.h"
 #include "data/stringbufferstruct.h"
-#include "gc/gc.h"
+#include "memory/gc.h"
 #include "methods/methods.h"
 
 static struct D_StringBuffer* _initialize(struct D_StringBuffer* self);

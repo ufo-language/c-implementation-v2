@@ -13,8 +13,8 @@
 #include "data/symbol.h"
 #include "etor/evaluator.h"
 #include "expr/identifier.h"
-#include "gc/gc.h"
 #include "main/typedefs.h"  // for HashCode
+#include "memory/gc.h"
 #include "methods/methods.h"
 #include "utils/hash.h"
 
