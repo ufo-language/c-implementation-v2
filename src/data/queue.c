@@ -177,6 +177,10 @@ struct Any* queue_peek(struct D_Queue* self) {
     return list_getFirst(self->head);
 }
 
+struct Any* queue_peek_unsafe(struct D_Queue* self) {
+    return list_getFirst(self->head);
+}
+
 void queue_show(struct D_Queue* self, FILE* fp) {
     list_showWith(self->head, "~[", ", ", "]", fp);
 }
