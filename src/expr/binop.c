@@ -48,7 +48,7 @@ void binOp_free(struct E_BinOp* self) {
     free(self);
 }
 
-void apply_contin(struct Evaluator* etor, struct Any* arg);
+void apply_contin(struct E_Continuation* contin, struct Evaluator* etor);
 
 struct E_BinOp* binOp_deepCopy(struct E_BinOp* self) {
     return binOp_new(any_deepCopy(self->lhs), self->oper, any_deepCopy(self->rhs));

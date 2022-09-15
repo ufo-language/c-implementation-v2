@@ -40,7 +40,8 @@ void do_free(struct E_Do* self) {
     free(self);
 }
 
-static void _contin(struct Evaluator* etor, struct Any* arg) {
+static void _contin(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     int nDrops = integer_getValue((struct D_Integer*)arg);
     if (nDrops > 0) {
         struct Any* res = evaluator_popObj(etor);

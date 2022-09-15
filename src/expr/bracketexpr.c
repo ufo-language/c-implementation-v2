@@ -51,8 +51,8 @@ void ns_list_get(struct Evaluator* etor, struct D_List* args);
 void ns_set_has(struct Evaluator* etor, struct D_List* args);
 void ns_string_get(struct Evaluator* etor, struct D_List* args);
 
-static void _evalContin(struct Evaluator* etor, struct Any* arg) {
-    (void)arg;
+static void _evalContin(struct E_Continuation* contin, struct Evaluator* etor) {
+    (void)contin;
     struct Any* indexObj = evaluator_popObj(etor);
     struct Any* lhs = evaluator_popObj(etor);
     enum TypeId lhsType = any_typeId(lhs);

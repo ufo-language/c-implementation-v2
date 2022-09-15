@@ -46,13 +46,11 @@ static enum ReadResult _doRead(struct D_StringBuffer* sb, int sentinel, bool app
     }
 }
 
-static void _readLine_contin(struct Evaluator* etor, struct Any* arg) {
-    struct D_StringBuffer* sb = (struct D_StringBuffer*)arg;
+static void _readLine_contin(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct D_StringBuffer* sb = (struct D_StringBuffer*)continuation_getArg(contin);
     switch (_doRead(sb, '\n', false)) {
-        case RR_Blocked: {
-                struct E_Continuation* contin = continuation_new(_readLine_contin, "readLine", (struct Any*)sb);
-                evaluator_pushExpr(etor, (struct Any*)contin);
-            }
+        case RR_Blocked:
+            evaluator_pushExpr(etor, (struct Any*)contin);
             break;
         case RR_EOF:
         case RR_Sentinel:
@@ -62,5 +60,6 @@ static void _readLine_contin(struct Evaluator* etor, struct Any* arg) {
 }
 
 void io_readLine_nonBlocking(struct Evaluator* etor, struct D_StringBuffer* sb) {
-    _readLine_contin(etor, (struct Any*)sb);
+    struct E_Continuation* contin = continuation_new(_readLine_contin, "readLine", (struct Any*)sb);
+    _readLine_contin(contin, etor);
 }

@@ -157,7 +157,8 @@ int hashTable_count(struct D_HashTable* self) {
     return self->count;
 }
 
-void hashTable_contin(struct Evaluator* etor, struct Any* arg) {
+static void _contin(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     int count = integer_getValue((struct D_Integer*)arg);
     struct D_HashTable* hash = hashTable_new();
     for (int n=0; n<count; n++) {
@@ -181,7 +182,7 @@ struct D_HashTable* hashTable_deepCopy(struct D_HashTable* self) {
        
 void hashTable_eval(struct D_HashTable* self, struct Evaluator* etor) {
     struct D_Integer* hashCount = integer_new(self->count);
-    evaluator_pushExpr(etor, (struct Any*)continuation_new(hashTable_contin, "hashTable", (struct Any*)hashCount));
+    evaluator_pushExpr(etor, (struct Any*)continuation_new(_contin, "hashTable", (struct Any*)hashCount));
     for (int n=0; n<self->nBuckets; n++) {
         struct BucketLink* link = self->buckets[n];
         while (link) {

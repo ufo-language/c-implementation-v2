@@ -44,7 +44,8 @@ void let_free(struct E_Let* self) {
     free(self);
 }
 
-static void _contin(struct Evaluator* etor, struct Any* arg) {
+static void _contin(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     struct E_Let* let = (struct E_Let*)arg;
     struct D_Triple* env = evaluator_getEnv(etor);
     struct D_List* bindings = let->bindings;

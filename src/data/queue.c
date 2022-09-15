@@ -117,7 +117,8 @@ void queue_enq(struct D_Queue* self, struct Any* elem) {
     self->count++;    
 }
 
-static void _contin(struct Evaluator* etor, struct Any* arg) {
+static void _contin(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     int count = integer_getValue((struct D_Integer*)arg);
     struct D_Queue* queue = queue_new();
     for (int n=0; n<count; n++) {

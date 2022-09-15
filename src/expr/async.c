@@ -6,7 +6,6 @@
 #include "data/integer.h"
 #include "etor/evaluator.h"
 #include "etor/threadmanager.h"
-#include "expr/continuation.h"
 #include "expr/async.h"
 #include "main/globals.h"
 #include "memory/gc.h"
