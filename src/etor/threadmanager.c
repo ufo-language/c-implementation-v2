@@ -56,8 +56,10 @@ void threadManager_rootObjects(void) {
 }
 
 void threadManager_runNextThread(void) {
-    struct Evaluator* thread = (struct Evaluator*)queue_deq_unsafe(_running);
+    // leave the thread attached to the queue while it's running
+    struct Evaluator* thread = (struct Evaluator*)queue_peek_unsafe(_running);
     evaluator_runSteps(thread, _nSteps);
+    (void)queue_deq_unsafe(_running);
     if (TS_Running == evaluator_getThreadStatus(thread)) {
         queue_enq(_running, (struct Any*)thread);
     }
