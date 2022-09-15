@@ -1,0 +1,2 @@
+fun f() = thread:sleep(1)
+loop 2 thread:spawn(f)
