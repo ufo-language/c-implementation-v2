@@ -8,6 +8,7 @@ void ns_event_defineAll(struct D_HashTable* env);
 void ns_exn_defineAll(struct D_HashTable* env);
 void ns_ffi_defineAll(struct D_HashTable* env);
 void ns_file_defineAll(struct D_HashTable* env);
+void ns_gc_defineAll(struct D_HashTable* env);
 void ns_globals_defineAll(struct D_HashTable* env);
 void ns_hash_defineAll(struct D_HashTable* env);
 void ns_integer_defineAll(struct D_HashTable* env);
@@ -52,6 +53,7 @@ void ns_all_rootObjects(void) {
     ns_exn_defineAll(_globalEnv);
     ns_ffi_defineAll(_globalEnv);
     ns_file_defineAll(_globalEnv);
+    ns_gc_defineAll(_globalEnv);
     ns_globals_defineAll(_globalEnv);
     ns_hash_defineAll(_globalEnv);
     ns_integer_defineAll(_globalEnv);
