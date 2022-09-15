@@ -2,15 +2,15 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "repl/coloncommand.h"
 #include "data/any.h"
 #include "data/file.h"
 #include "data/list.h"
 #include "data/string.h"
 #include "data/stringbuffer.h"
 #include "etor/evaluator.h"
-#include "gc/gc.h"
 #include "main/globals.h"
+#include "memory/gc.h"
+#include "repl/coloncommand.h"
 #include "repl/repl.h"
 #include "utils/utils.h"
 

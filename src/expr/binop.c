@@ -9,8 +9,8 @@
 #include "expr/binop.h"
 #include "expr/continuation.h"
 #include "expr/identifier.h"
-#include "gc/gc.h"
 #include "main/globals.h"
+#include "memory/gc.h"
 #include "methods/methods.h"
 
 struct E_BinOp {

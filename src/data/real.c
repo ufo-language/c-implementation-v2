@@ -3,7 +3,7 @@
 
 #include "data/any.h"
 #include "data/real.h"
-#include "gc/gc.h"
+#include "memory/gc.h"
 #include "methods/methods.h"
 
 struct D_Real {

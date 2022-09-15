@@ -4,7 +4,6 @@
 #include "data/any.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
-#include "gc/gc.h"
 #include "main/globals.h"
 
 struct D_Set;

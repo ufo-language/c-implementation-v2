@@ -10,8 +10,8 @@
 #include "data/stringbuffer.h"
 #include "data/symbol.h"
 #include "etor/evaluator.h"
-#include "gc/gc.h"
 #include "main/globals.h"
+#include "memory/gc.h"
 #include "methods/methods.h"
 
 struct D_Stream {

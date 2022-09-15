@@ -15,8 +15,8 @@
 #include "expr/continuation.h"
 #include "expr/identifier.h"
 #include "expr/recorddef.h"
-#include "gc/gc.h"
 #include "main/globals.h"
+#include "memory/gc.h"
 #include "methods/methods.h"
 
 struct D_Record {
@@ -29,7 +29,6 @@ struct Methods* record_methodSetup(void) {
     struct Methods* methods = (struct Methods*)malloc(sizeof(struct Methods));
     methodTable_setupDefaults(methods);
     methods->m_deepCopy = (struct Any* (*)(struct Any*))record_deepCopy;
-    //methods->m_eval = (void (*)(struct Any*, struct Evaluator*))record_eval;
     methods->m_free = (void (*)(struct Any*))record_free;
     methods->m_freeVars = (void (*)(struct Any*, struct D_Set*, struct Evaluator*))record_freeVars;
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))record_isEqual;

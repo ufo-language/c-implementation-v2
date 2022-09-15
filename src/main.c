@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "gc/gc.h"
+#include "memory/gc.h"
 #include "main/ufo.h"
 
 int ARGC = 0;

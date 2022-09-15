@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#include "../data/any.h"
+#include "data/any.h"
 
 struct Any* gc_alloc(enum TypeId typeId);
 void gc_collect(void);

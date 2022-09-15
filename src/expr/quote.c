@@ -9,7 +9,7 @@
 #include "data/triple.h"
 #include "etor/evaluator.h"
 #include "expr/quote.h"
-#include "gc/gc.h"
+#include "memory/gc.h"
 #include "methods/methods.h"
 
 struct E_Quote {

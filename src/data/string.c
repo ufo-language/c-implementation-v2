@@ -11,9 +11,9 @@
 #include "data/string.h"
 #include "data/symbol.h"
 #include "etor/evaluator.h"
-#include "gc/gc.h"
 #include "main/globals.h"
 #include "main/typedefs.h"  // for HashCode
+#include "memory/gc.h"
 #include "methods/methods.h"
 #include "utils/hash.h"
 #include "utils/strtok.h"

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #include "data/any.h"
-#include "gc/gc.h"
+#include "memory/gc.h"
 #include "main/setup.h"
 
 // The _permanentObjects pointer is an optimization. Sweeping stops

@@ -1,8 +1,8 @@
 #include <signal.h>
 
 #include "data/any.h"
-#include "gc/gc.h"
 #include "main/ufo.h"
+#include "memory/gc.h"
 #include "repl/repl.h"
 
 #define CAPTURE_SIGINT 0
