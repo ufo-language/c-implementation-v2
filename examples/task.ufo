@@ -1,0 +1,2 @@
+fun f(x) = loop 10 io:show(x)
+let t1 = thread:spawn(f, [A]), t2 = thread:spawn(f, [B])

@@ -1,0 +1,5 @@
+let n = 10
+let l = lock:new()
+fun f1() = do lock:acquire(l) loop n io:disp(X) lock:release(l) end
+fun f2() = do lock:acquire(l) loop n io:disp(Y) lock:release(l) end
+cobegin f1() f2() end

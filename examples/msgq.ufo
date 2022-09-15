@@ -1,0 +1,5 @@
+let n = 10
+let q = msgq:new()
+fun f1() = do loop n io:show(X) msgq:enq(q, n) end
+fun f2() = io:displn("f2 got message ", msgq:wait(q))
+cobegin f1() f2() end
