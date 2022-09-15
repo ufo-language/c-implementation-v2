@@ -8,10 +8,10 @@ HEADER_DIR='src'
 SOURCE_DIR='src'
 OBJ_DIR='obj'
 C_VERSION='c11'
-#COMPILE_OPTS=f"-g -ggdb -Wall -Wextra -Wswitch-enum -pedantic -std={C_VERSION} -fsanitize=address"
-COMPILE_OPTS=f"-Os -Wall -Wextra -Wswitch-enum -pedantic -std={C_VERSION}"
-#LINK_OPTS="-fsanitize=address -ldl"
-LINK_OPTS="-ldl"
+C_OPT_DEBUG="-O0 -g -ggdb"
+C_OPT_SIZE="-Os -ffunction-sections -fdata-sections"
+COMPILE_OPTS=f"{C_OPT_DEBUG} -Wall -Wextra -Wswitch-enum -pedantic -std={C_VERSION}"
+LINK_OPTS="-ldl -flto"
 #=====================================================================
 
 import os
