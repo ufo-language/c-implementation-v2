@@ -40,11 +40,19 @@ void continuation_free(struct E_Continuation* self) {
 }
 
 void continuation_eval(struct E_Continuation* self, struct Evaluator* etor) {
-    self->continFunc(etor, self->arg);
+    self->continFunc(self, etor);
+}
+
+struct Any* continuation_getArg(struct E_Continuation* self) {
+    return self->arg;
 }
 
 void continuation_markChildren(struct E_Continuation* self) {
     any_mark(self->arg);
+}
+
+void continuation_setArg(struct E_Continuation* self, struct Any* arg) {
+    self->arg = arg;
 }
 
 void continuation_show(struct E_Continuation* self, FILE* fp) {

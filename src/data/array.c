@@ -137,7 +137,8 @@ int array_count(struct D_Array* self) {
     return self->count;
 }
 
-void array_contin(struct Evaluator* etor, struct Any* arg) {
+static void _contin(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     int count = integer_getValue((struct D_Integer*)arg);
     struct D_Array* ary = array_new(count);
     for (int n=count; n>0; n--) {
@@ -164,7 +165,7 @@ void array_delete(struct D_Array* self, int index) {
 
 void array_eval(struct D_Array* self, struct Evaluator* etor) {
     struct D_Integer* arrayCount = integer_new(self->count);
-    struct E_Continuation* contin = continuation_new(array_contin, "array", (struct Any*)arrayCount);
+    struct E_Continuation* contin = continuation_new(_contin, "array", (struct Any*)arrayCount);
     evaluator_pushExpr(etor, (struct Any*)contin);
     for (int n=self->count; n>0; n--) {
         evaluator_pushExpr(etor, self->elems[n-1]);
@@ -324,7 +325,8 @@ struct E_Apply* array_map_apply(struct D_Array* self, int n, struct Any* abstr) 
 }
 
 // handles the continuation for the map function
-void array_map_contin(struct Evaluator* etor, struct Any* arg) {
+static void _map_contin(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     struct D_Array* args = (struct D_Array*)arg;
     struct D_Array* self = (struct D_Array*)args->elems[0];
     struct D_Integer* indexInt = (struct D_Integer*)args->elems[1];
@@ -338,7 +340,7 @@ void array_map_contin(struct Evaluator* etor, struct Any* arg) {
     }
     else {
         args->elems[1] = (struct Any*)integer_new(index);
-        struct E_Continuation* contin = continuation_new(array_map_contin, "array_map", (struct Any*)args);
+        struct E_Continuation* contin = continuation_new(_map_contin, "array_map", (struct Any*)args);
         evaluator_pushExpr(etor, (struct Any*)contin);
         struct E_Apply* app = array_map_apply(self, index, abstr);
         evaluator_pushExpr(etor, (struct Any*)app);
@@ -349,7 +351,7 @@ void array_map(struct D_Array* self, struct Any* abstr, struct Evaluator* etor) 
     struct D_Integer* nInt = integer_new(0);
     struct D_Array* newArray = array_new(self->count);
     struct D_Array* args = array_newN(4, (struct Any*)self, (struct Any*)nInt, (struct Any*)newArray, abstr);
-    struct E_Continuation* contin = continuation_new(array_map_contin, "array_map", (struct Any*)args);
+    struct E_Continuation* contin = continuation_new(_map_contin, "array_map", (struct Any*)args);
     evaluator_pushExpr(etor, (struct Any*)contin);
     struct E_Apply* app = array_map_apply(self, 0, abstr);
     evaluator_pushExpr(etor, (struct Any*)app);

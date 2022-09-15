@@ -7,7 +7,8 @@
 #include "expr/bracketexpr.h"
 #include "expr/continuation.h"
 
-static void _reassignBracketExpr(struct Evaluator* etor, struct Any* arg) {
+static void _reassignBracketExpr(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     struct Any* rhs = arg;
     struct Any* indexObj = evaluator_popObj(etor);
     struct Any* lhs = evaluator_popObj(etor);

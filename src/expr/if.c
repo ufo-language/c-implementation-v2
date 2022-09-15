@@ -43,7 +43,8 @@ void if_free(struct E_If* self) {
     free(self);
 }
 
-static void _contin(struct Evaluator* etor, struct Any* arg) {
+static void _contin(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     struct Any* conseq = list_getFirst((struct D_List*)arg);
     struct Any* alt = list_getRest((struct D_List*)arg);
     struct Any* condVal = evaluator_popObj(etor);;

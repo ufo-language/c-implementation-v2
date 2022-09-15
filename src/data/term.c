@@ -59,7 +59,8 @@ int term_count(struct D_Term* self) {
     return array_count(self->elems);
 }
 
-static void _contin(struct Evaluator* etor, struct Any* arg) {
+static void _contin(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     struct D_Array* elems = (struct D_Array*)evaluator_popObj(etor);
     struct D_Term* term = term_new((struct D_Symbol*)arg, elems);
     evaluator_pushObj(etor, (struct Any*)term);

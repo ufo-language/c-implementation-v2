@@ -117,8 +117,8 @@ int list_count(struct D_List* self) {
     return count;
 }
 
-static void list_contin(struct Evaluator* etor, struct Any* arg) {
-    (void)arg;
+static void _contin(struct E_Continuation* contin, struct Evaluator* etor) {
+    (void)contin;
     struct Any* rest = evaluator_popObj(etor);
     struct Any* first = evaluator_popObj(etor);
     struct D_List* list = list_new(first, rest);
@@ -137,7 +137,7 @@ void list_eval(struct D_List* self, struct Evaluator* etor) {
         evaluator_pushObj(etor, (struct Any*)self);
     }
     else {
-        evaluator_pushExpr(etor, (struct Any*)continuation_new(list_contin, "list", (struct Any*)NIL));
+        evaluator_pushExpr(etor, (struct Any*)continuation_new(_contin, "list", (struct Any*)NIL));
         evaluator_pushExpr(etor, self->rest);
         evaluator_pushExpr(etor, self->first);
     }

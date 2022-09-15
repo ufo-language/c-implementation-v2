@@ -32,7 +32,6 @@ struct Methods* set_methodSetup(void) {
     methods->m_isEqual = (bool (*)(struct Any*, struct Any*))set_isEqual;
     methods->m_iterator = (struct D_Iterator* (*)(struct Any*))set_iterator;
     methods->m_markChildren = (void (*)(struct Any* self))set_markChildren;
-    //methods->m_match = (struct D_Triple* (*)(struct Any*, struct Any*, struct D_Triple*))set_match;
     methods->m_show = (void (*)(struct Any*, FILE*))set_show;
     methods->m_sizeOf = (size_t (*)(struct Any*))set_sizeOf;
     methods->m_structSize = set_structSize;
@@ -68,7 +67,8 @@ bool set_boolValue(struct D_Set* self) {
     return hashTable_count(self->hash) > 0;
 }
 
-void set_contin(struct Evaluator* etor, struct Any* arg) {
+static void _contin(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     int count = integer_getValue((struct D_Integer*)arg);
     struct D_Set* set = set_new();
     for (int n=count-1; n>=0; n--) {
@@ -89,7 +89,7 @@ struct D_Set* set_deepCopy(struct D_Set* self) {
 void set_eval(struct D_Set* self, struct Evaluator* etor) {
     struct D_Array* elemAry = set_toArray(self);
     int count = array_count(elemAry);
-    evaluator_pushExpr(etor, (struct Any*)continuation_new(set_contin, "set", (struct Any*)integer_new(count)));
+    evaluator_pushExpr(etor, (struct Any*)continuation_new(_contin, "set", (struct Any*)integer_new(count)));
     for (int n=0; n<count; n++) {
         evaluator_pushExpr(etor, array_get_unsafe(elemAry, n));
     }
