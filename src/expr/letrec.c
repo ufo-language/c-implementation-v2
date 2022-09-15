@@ -47,7 +47,8 @@ void letRec_free(struct E_LetRec* self) {
     free(self);
 }
 
-static void _contin(struct Evaluator* etor, struct Any* arg) {
+static void _contin(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     struct D_Queue* bindingListQueue = (struct D_Queue*)arg;
     while (!queue_isEmpty(bindingListQueue)) {
         struct D_Triple* binding = (struct D_Triple*)queue_deq(bindingListQueue, etor);

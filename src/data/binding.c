@@ -64,8 +64,8 @@ int binding_compare(struct D_Binding* self, struct D_Binding* other, struct Eval
     return res;
 }
 
-static void _contin(struct Evaluator* etor, struct Any* arg) {
-    (void)arg;
+static void _contin(struct E_Continuation* contin, struct Evaluator* etor) {
+    (void)contin;
     struct Any* value = evaluator_popObj(etor);
     struct Any* key = evaluator_popObj(etor);
     struct D_Binding* binding = binding_new(key, value);

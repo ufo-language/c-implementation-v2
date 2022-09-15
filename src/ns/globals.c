@@ -83,7 +83,8 @@ static void _assert(struct Evaluator* etor, struct D_List* args) {
     }
 }
 
-static void _colon_contin(struct Evaluator* etor, struct Any* arg) {
+static void _colon_contin(struct E_Continuation* contin , struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     struct Any* obj = evaluator_popObj(etor);
     if (any_isA(obj, T_HashTable)) {
         struct D_HashTable* hash = (struct D_HashTable*)obj;
@@ -145,7 +146,8 @@ static void _quote(struct Evaluator* etor, struct D_List* args) {
     evaluator_pushObj(etor, expr);
 }
 
-static void _reassignContin(struct Evaluator* etor, struct Any* arg) {
+static void _reassignContin(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     struct Any* rhs = evaluator_popObj(etor);
     globals_reassign(arg, rhs, etor);
 }

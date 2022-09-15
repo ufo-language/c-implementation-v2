@@ -45,7 +45,8 @@ struct E_Nondet* nondet_deepCopy(struct E_Nondet* self) {
     return nondet_new(array_deepCopy(self->exprs));
 }
 
-static void _contin(struct Evaluator* etor, struct Any* arg) {
+static void _contin(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     struct D_Array* argAry = (struct D_Array*)arg;
     int nThreads = array_count(argAry);
     struct Any* value = NULL;

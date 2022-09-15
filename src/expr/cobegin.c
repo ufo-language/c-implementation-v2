@@ -45,7 +45,8 @@ struct E_Cobegin* cobegin_deepCopy(struct E_Cobegin* self) {
     return cobegin_new(array_deepCopy(self->exprs));
 }
 
-static void _contin(struct Evaluator* etor, struct Any* arg) {
+static void _contin(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     struct D_Array* argAry = (struct D_Array*)arg;
     struct D_Integer* threadIndexInt = (struct D_Integer*)array_get_unsafe(argAry, 0);
     int threadIndex = integer_getValue(threadIndexInt);

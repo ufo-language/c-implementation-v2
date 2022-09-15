@@ -51,7 +51,8 @@ void recordSpec_free(struct E_RecordSpec* self) {
     free(self);
 }
 
-static void _contin(struct Evaluator* etor, struct Any* arg) {
+static void _contin(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     struct E_RecordDefinition* recordDef = (struct E_RecordDefinition*)arg;
     struct D_Array* values = (struct D_Array*)evaluator_popObj(etor);
     struct D_Record* record = record_new(recordDef, values);

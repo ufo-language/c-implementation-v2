@@ -51,7 +51,8 @@ struct E_Loop* loop_deepCopy(struct E_Loop* self) {
     return loop_new(any_deepCopy(self->iterExpr), any_deepCopy(self->body));
 }
 
-static void _contin2(struct Evaluator* etor, struct Any* arg) {
+static void _contin2(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     struct D_Array* argAry = (struct D_Array*)arg;
     struct D_Iterator* iter = (struct D_Iterator*)array_get_unsafe(argAry, 0);
     struct Any* body = array_get_unsafe(argAry, 1);
@@ -66,7 +67,8 @@ static void _contin2(struct Evaluator* etor, struct Any* arg) {
     }
 }
 
-static void _contin1(struct Evaluator* etor, struct Any* arg) {
+static void _contin1(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     struct D_Array* argAry = (struct D_Array*)arg;
     struct Any* identObj = array_get_unsafe(argAry, 0);
     struct D_Triple* binding = EMPTY_TRIPLE;
@@ -82,8 +84,8 @@ static void _contin1(struct Evaluator* etor, struct Any* arg) {
     // create the iterator from the iterator expression
     struct D_Iterator* iter = any_iterator(iterExpr);
     struct D_Array* contin2arg = array_newN(3, iter, body, binding);
-    struct E_Continuation* contin = continuation_new(_contin2, "loop", (struct Any*)contin2arg);
-    evaluator_pushExpr(etor, (struct Any*)contin);
+    struct E_Continuation* contin2 = continuation_new(_contin2, "loop", (struct Any*)contin2arg);
+    evaluator_pushExpr(etor, (struct Any*)contin2);
     evaluator_pushObj(etor, (struct Any*)NIL);
 }
 

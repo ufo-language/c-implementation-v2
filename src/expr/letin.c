@@ -51,7 +51,8 @@ struct E_LetIn* letIn_deepCopy(struct E_LetIn* self) {
     return letIn_new(list_deepCopy(self->bindings), self->nBindings, any_deepCopy(self->expr));
 }
 
-static void _contin(struct Evaluator* etor, struct Any* arg) {
+static void _contin(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     struct E_LetIn* letIn = (struct E_LetIn*)arg;
     struct D_Triple* env = evaluator_getEnv(etor);
     struct D_List* bindings = letIn->bindings;

@@ -44,20 +44,23 @@ void apply_free(struct E_Apply* self) {
     free(self);
 }
 
-static void _closureArgs_contin(struct Evaluator* etor, struct Any* arg) {
+static void _closureArgs_contin(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     struct D_Closure* closure = (struct D_Closure*)arg;
     struct D_List* args = (struct D_List*)evaluator_popObj(etor);
     closure_apply(closure, args, etor);
 }
 
-static void _primitiveArgs_contin(struct Evaluator* etor, struct Any* arg) {
+static void _primitiveArgs_contin(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     struct D_Primitive* prim = (struct D_Primitive*)arg;
     struct D_List* args = (struct D_List*)evaluator_popObj(etor);
     primitive_apply(prim, args, etor);
 }
 
 // also used by binOp_eval
-void apply_contin(struct Evaluator* etor, struct Any* arg) {
+void apply_contin(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     struct D_List* args = (struct D_List*)arg;
     struct Any* abstr = evaluator_popObj(etor);
     enum TypeId abstrType = any_typeId(abstr);

@@ -14,18 +14,6 @@
 
 #define NS_NAME "list"
 
-/*
-Object list_accept(Thread* thd, Object args);
-Object list_drop(Thread* thd, Object args);
-Object list_keys(Thread* thd, Object args);
-Object list_map(Thread* thd, Object args);
-Object list_reject(Thread* thd, Object args);
-Object list_reverse(Thread* thd, Object args);
-Object list_setFirst(Thread* thd, Object args);
-Object list_setRest(Thread* thd, Object args);
-Object list_take(Thread* thd, Object args);
-*/
-
 static void _asArray(struct Evaluator* etor, struct D_List* args);
 static void _count(struct Evaluator* etor, struct D_List* args);
 static void _first(struct Evaluator* etor, struct D_List* args);
@@ -124,7 +112,8 @@ static void _iterator(struct Evaluator* etor, struct D_List* args) {
 }
 
 // TODO move this into data/list.c (see data/array.c for example)
-static void _mapContin(struct Evaluator* etor, struct Any* arg) {
+static void _mapContin(struct E_Continuation* contin, struct Evaluator* etor) {
+    struct Any* arg = continuation_getArg(contin);
     struct Any* value = evaluator_popObj(etor);
     struct D_Array* argAry = (struct D_Array*)arg;
     struct D_List* elems = (struct D_List*)array_get_unsafe(argAry, 0);
@@ -138,7 +127,8 @@ static void _mapContin(struct Evaluator* etor, struct Any* arg) {
     struct Any* restObj = list_getRest(elems);
     struct Any* abstr = array_get_unsafe(argAry, 2);
     struct D_Array* ary = array_newN(3, restObj, resQ, abstr);
-    struct E_Continuation* contin = continuation_new(_mapContin, "list_map", (struct Any*)ary);
+    //struct E_Continuation* contin = continuation_new(_mapContin, "list_map", (struct Any*)ary);
+    continuation_setArg(contin, (struct Any*)ary);
     evaluator_pushExpr(etor, (struct Any*)contin);
     struct E_Apply* app = apply_new(abstr, list_new(nextElem, (struct Any*)EMPTY_LIST));
     evaluator_pushExpr(etor, (struct Any*)app);
