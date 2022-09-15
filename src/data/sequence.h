@@ -23,6 +23,7 @@ int sequence_getTo(struct D_Sequence* self);
 bool sequence_hashCode(struct D_Sequence* self, HashCode* hashCode);
 bool sequence_isEqual(struct D_Sequence* self, struct D_Sequence* other);
 struct D_Iterator* sequence_iterator(struct D_Sequence* self);
+void sequence_operatorPercent(struct D_Sequence* self, struct Any* rhs, struct Evaluator* etor);
 void sequence_show(struct D_Sequence* self, FILE* fp);
 size_t sequence_sizeOf(struct D_Sequence* self);
 size_t sequence_structSize(void);

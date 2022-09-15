@@ -5,8 +5,10 @@
 #include "data/integer.h"
 #include "data/iterator.h"
 #include "data/list.h"
+#include "data/real.h"
 #include "data/stream.h"
 #include "data/sequence.h"
+#include "etor/evaluator.h"
 #include "main/typedefs.h"  // for HashCode
 #include "memory/gc.h"
 #include "methods/methods.h"
@@ -16,6 +18,8 @@ struct D_Integer {
     struct Any obj;
     int value;
 };
+
+void globals_operandException(char* operand, struct Any* lhs, struct Any* rhs, struct Evaluator* etor);
 
 bool integer_iteratorHasNext(struct D_Iterator* iterator);
 struct Any* integer_iteratorNext(struct D_Iterator* iterator);
@@ -74,6 +78,56 @@ bool integer_isEqual(struct D_Integer* self, struct D_Integer* other) {
 struct D_Iterator* integer_iterator(struct D_Integer* self) {
     struct D_Sequence* seq = sequence_new(0, self->value - 1, 1);
     return sequence_iterator(seq);
+}
+
+static void _operatorCheckArgs(struct D_Integer* self, struct Any* rhs, struct Evaluator* etor, char* opStr, int (*iop)(int, int), double (*dop)(double, double)) {
+    enum TypeId rhsType = any_typeId(rhs);
+    struct Any* value;
+    if (rhsType == T_Integer) {
+        int ilhs = self->value;
+        int irhs = ((struct D_Integer*)rhs)->value;
+        value = (struct Any*)integer_new(iop(ilhs, irhs));
+    }
+    else if (rhsType == T_Real) {
+        double dlhs = (double)self->value;
+        double drhs = real_getValue((struct D_Real*)rhs);
+        value = (struct Any*)real_new(dop(dlhs, drhs));
+    }
+    else {
+        globals_operandException(opStr, (struct Any*)self, rhs, etor);
+    }
+    evaluator_pushObj(etor, value);
+}
+
+static int _iMinus(int x, int y) { return x - y; }
+static double _dMinus(double x, double y) { return x - y; }
+static int _iPercent(int x, int y) { return x - y; }
+static double _dPercent(double x, double y) { return x - y; }
+static int _iPlus(int x, int y) { return x + y; }
+static double _dPlus(double x, double y) { return x + y; }
+static int _iSlash(int x, int y) { return x / y; }
+static double _dSlash(double x, double y) { return x / y; }
+static int _iStar(int x, int y) { return x * y; }
+static double _dStar(double x, double y) { return x * y; }
+
+void integer_operatorMinus(struct D_Integer* self, struct Any* rhs, struct Evaluator* etor) {
+    _operatorCheckArgs(self, rhs, etor, "-", _iMinus, _dMinus);
+}
+
+void integer_operatorPercent(struct D_Integer* self, struct Any* rhs, struct Evaluator* etor) {
+    _operatorCheckArgs(self, rhs, etor, "%", _iPercent, _dPercent);
+}
+
+void integer_operatorPlus(struct D_Integer* self, struct Any* rhs, struct Evaluator* etor) {
+    _operatorCheckArgs(self, rhs, etor, "+", _iPlus, _dPlus);
+}
+
+void integer_operatorSlash(struct D_Integer* self, struct Any* rhs, struct Evaluator* etor) {
+    _operatorCheckArgs(self, rhs, etor, "/", _iSlash, _dSlash);
+}
+
+void integer_operatorStar(struct D_Integer* self, struct Any* rhs, struct Evaluator* etor) {
+    _operatorCheckArgs(self, rhs, etor, "*", _iStar, _dStar);
 }
 
 void integer_show(struct D_Integer* self, FILE* fp) {

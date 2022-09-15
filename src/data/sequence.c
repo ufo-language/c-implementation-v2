@@ -23,6 +23,8 @@ struct D_Sequence {
     int by;
 };
 
+void globals_operandException(char* operand, struct Any* lhs, struct Any* rhs, struct Evaluator* etor);
+
 bool sequence_iteratorHasNext(struct D_Iterator* iterator);
 struct Any* sequence_iteratorNext(struct D_Iterator* iterator);
 
@@ -156,6 +158,24 @@ struct Any* sequence_iteratorNext(struct D_Iterator* iterator) {
         array_set_unsafe(state, 0, (struct Any*)NIL);
     }
     return nObj;
+}
+
+static void _operatorCheckArgs(struct D_Sequence* self, struct Any* rhs, struct Evaluator* etor, char* opStr) {
+    enum TypeId rhsType = any_typeId(rhs);
+    if (rhsType == T_Integer) {
+        int from = sequence_getFrom(self);
+        int to = sequence_getTo(self);
+        int by = integer_getValue((struct D_Integer*)rhs);
+        struct D_Sequence* newSeq = sequence_new(from, to, by);
+        evaluator_pushObj(etor, (struct Any*)newSeq);
+    }
+    else {
+        globals_operandException(opStr, (struct Any*)self, rhs, etor);
+    }
+}
+
+void sequence_operatorPercent(struct D_Sequence* self, struct Any* rhs, struct Evaluator* etor) {
+    _operatorCheckArgs(self, rhs, etor, "%");
 }
 
 void sequence_show(struct D_Sequence* self, FILE* fp) {

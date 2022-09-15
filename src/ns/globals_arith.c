@@ -1,113 +1,94 @@
 #include "data/any.h"
 #include "data/array.h"
 #include "data/integer.h"
+#include "data/real.h"
 #include "data/sequence.h"
 #include "data/string.h"
 #include "data/symbol.h"
 #include "etor/evaluator.h"
+#include "expr/binop.h"
+#include "expr/identifier.h"
+
+void globals_operandException(char* operand, struct Any* lhs, struct Any* rhs, struct Evaluator* etor) {
+    struct E_Identifier* dcolon = identifier_new("::");
+    struct D_Symbol* lhsType = any_typeSymbol(lhs);
+    struct D_Symbol* rhsType = any_typeSymbol(lhs);
+    struct D_Array* args = array_newN(3,
+                                      identifier_new(operand),
+                                      binOp_new((struct Any*)lhs, dcolon, (struct Any*)lhsType),
+                                      binOp_new((struct Any*)rhs, dcolon, (struct Any*)rhsType));
+    evaluator_throwException(
+        etor,
+        symbol_new("Operator"),
+        "argument types not supported",
+        (struct Any*)args
+    );
+}
 
 void globals_minus(struct Any* lhs, struct Any* rhs, struct Evaluator* etor) {
     enum TypeId typeIdLhs = any_typeId(lhs);
-    enum TypeId typeIdRhs = any_typeId(rhs);
-    if (typeIdLhs == T_Integer && typeIdRhs == T_Integer) {
-        int lhsInt = integer_getValue((struct D_Integer*)lhs);
-        int rhsInt = integer_getValue((struct D_Integer*)rhs);
-        struct D_Integer* modulus = integer_new(lhsInt - rhsInt);
-        evaluator_pushObj(etor, (struct Any*)modulus);
-        return;
+    if (typeIdLhs == T_Integer) {
+        integer_operatorMinus((struct D_Integer*)lhs, rhs, etor);
     }
-    evaluator_throwException(
-        etor,
-        symbol_new("Minus"),
-        "argument types not supported",
-        (struct Any*)array_newN(2, lhs, rhs)
-    );
+    else if (typeIdLhs == T_Real) {
+        real_operatorMinus((struct D_Real*)lhs, rhs, etor);
+    }
+    else {
+        globals_operandException("+", lhs, rhs, etor);
+    }
 }
 
 void globals_percent(struct Any* lhs, struct Any* rhs, struct Evaluator* etor) {
     enum TypeId typeIdLhs = any_typeId(lhs);
-    enum TypeId typeIdRhs = any_typeId(rhs);
-    if (typeIdLhs == T_Integer && typeIdRhs == T_Integer) {
-        int lhsInt = integer_getValue((struct D_Integer*)lhs);
-        int rhsInt = integer_getValue((struct D_Integer*)rhs);
-        struct D_Integer* modulus = integer_new(lhsInt % rhsInt);
-        evaluator_pushObj(etor, (struct Any*)modulus);
-        return;
+    if (typeIdLhs == T_Integer) {
+        integer_operatorPercent((struct D_Integer*)lhs, rhs, etor);
     }
-    if (typeIdLhs == T_Sequence && typeIdRhs == T_Integer) {
-        struct D_Sequence* seq = (struct D_Sequence*)lhs;
-        int from = sequence_getFrom(seq);
-        int to = sequence_getTo(seq);
-        int by = integer_getValue((struct D_Integer*)rhs);
-        struct D_Sequence* newSeq = sequence_new(from, to, by);
-        evaluator_pushObj(etor, (struct Any*)newSeq);
-        return;
+    else if (typeIdLhs == T_Real) {
+        real_operatorPercent((struct D_Real*)lhs, rhs, etor);
     }
-    evaluator_throwException(
-        etor,
-        symbol_new("Percent"),
-        "argument types not supported",
-        (struct Any*)array_newN(2, lhs, rhs)
-    );
+    else if (typeIdLhs == T_Sequence) {
+        sequence_operatorPercent((struct D_Sequence*)lhs, rhs, etor);
+    }
+    else {
+        globals_operandException("+", lhs, rhs, etor);
+    }
 }
 
 void globals_plus(struct Any* lhs, struct Any* rhs, struct Evaluator* etor) {
     enum TypeId typeIdLhs = any_typeId(lhs);
-    enum TypeId typeIdRhs = any_typeId(rhs);
-    if (typeIdLhs == T_Integer && typeIdRhs == T_Integer) {
-        int lhsInt = integer_getValue((struct D_Integer*)lhs);
-        int rhsInt = integer_getValue((struct D_Integer*)rhs);
-        struct D_Integer* modulus = integer_new(lhsInt + rhsInt);
-        evaluator_pushObj(etor, (struct Any*)modulus);
-        return;
+    if (typeIdLhs == T_Integer) {
+        integer_operatorPlus((struct D_Integer*)lhs, rhs, etor);
     }
-    if (typeIdLhs == T_String && typeIdRhs == T_String) {
-        struct D_String* string1 = (struct D_String*)lhs;
-        struct D_String* string2 = (struct D_String*)rhs;
-        struct D_String* newString = string_join(string1, string2);
-        evaluator_pushObj(etor, (struct Any*)newString);
-        return;
+    else if (typeIdLhs == T_Real) {
+        real_operatorPlus((struct D_Real*)lhs, rhs, etor);
     }
-    evaluator_throwException(
-        etor,
-        symbol_new("Plus"),
-        "argument types not supported",
-        (struct Any*)array_newN(2, lhs, rhs)
-    );
+    else {
+        globals_operandException("+", lhs, rhs, etor);
+    }
 }
 
 void globals_slash(struct Any* lhs, struct Any* rhs, struct Evaluator* etor) {
     enum TypeId typeIdLhs = any_typeId(lhs);
-    enum TypeId typeIdRhs = any_typeId(rhs);
-    if (typeIdLhs == T_Integer && typeIdRhs == T_Integer) {
-        int lhsInt = integer_getValue((struct D_Integer*)lhs);
-        int rhsInt = integer_getValue((struct D_Integer*)rhs);
-        struct D_Integer* modulus = integer_new(lhsInt / rhsInt);
-        evaluator_pushObj(etor, (struct Any*)modulus);
-        return;
+    if (typeIdLhs == T_Integer) {
+        integer_operatorSlash((struct D_Integer*)lhs, rhs, etor);
     }
-    evaluator_throwException(
-        etor,
-        symbol_new("Slash"),
-        "argument types not supported",
-        (struct Any*)array_newN(2, lhs, rhs)
-    );
+    else if (typeIdLhs == T_Real) {
+        real_operatorSlash((struct D_Real*)lhs, rhs, etor);
+    }
+    else {
+        globals_operandException("+", lhs, rhs, etor);
+    }
 }
 
 void globals_star(struct Any* lhs, struct Any* rhs, struct Evaluator* etor) {
     enum TypeId typeIdLhs = any_typeId(lhs);
-    enum TypeId typeIdRhs = any_typeId(rhs);
-    if (typeIdLhs == T_Integer && typeIdRhs == T_Integer) {
-        int lhsInt = integer_getValue((struct D_Integer*)lhs);
-        int rhsInt = integer_getValue((struct D_Integer*)rhs);
-        struct D_Integer* modulus = integer_new(lhsInt * rhsInt);
-        evaluator_pushObj(etor, (struct Any*)modulus);
-        return;
+    if (typeIdLhs == T_Integer) {
+        integer_operatorStar((struct D_Integer*)lhs, rhs, etor);
     }
-    evaluator_throwException(
-        etor,
-        symbol_new("Star"),
-        "argument types not supported",
-        (struct Any*)array_newN(2, lhs, rhs)
-    );
+    else if (typeIdLhs == T_Real) {
+        real_operatorStar((struct D_Real*)lhs, rhs, etor);
+    }
+    else {
+        globals_operandException("+", lhs, rhs, etor);
+    }
 }
