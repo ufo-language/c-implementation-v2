@@ -359,7 +359,6 @@ void gc_sweep(void) {
             if (obj == _committed) {
                 _committed = next;
             }
-            //printf("%s freeing obj @ %p, type %s\n ", __func__, (void*)obj, any_typeName(obj));
             any_free(obj);
         }
         obj = next;
