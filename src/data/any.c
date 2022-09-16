@@ -61,6 +61,8 @@ char* TYPE_NAMES[] = {
     "StringStream",
     "Symbol",
     "Term",
+    "TCPClient",
+    "TCPServer",
     "Triple",
     "TryCatch",
     "Tuple",

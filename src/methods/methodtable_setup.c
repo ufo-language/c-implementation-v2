@@ -50,6 +50,8 @@ struct Methods* string_methodSetup();
 struct Methods* stringBuffer_methodSetup();
 struct Methods* stringStream_methodSetup();
 struct Methods* symbol_methodSetup();
+struct Methods* tcpClient_methodSetup();
+struct Methods* tcpServer_methodSetup();
 struct Methods* term_methodSetup();
 struct Methods* triple_methodSetup();
 struct Methods* tryCatch_methodSetup();
@@ -105,6 +107,8 @@ void methodTable_setupMethods(void) {
     METHOD_TABLE[T_StringBuffer] = stringBuffer_methodSetup();
     METHOD_TABLE[T_StringStream] = stringStream_methodSetup();
     METHOD_TABLE[T_Symbol] = symbol_methodSetup();
+    METHOD_TABLE[T_TCPClient] = tcpClient_methodSetup();
+    METHOD_TABLE[T_TCPServer] = tcpServer_methodSetup();
     METHOD_TABLE[T_Term] = term_methodSetup();
     METHOD_TABLE[T_Triple] = triple_methodSetup();
     METHOD_TABLE[T_TryCatch] = tryCatch_methodSetup();

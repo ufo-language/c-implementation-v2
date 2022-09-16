@@ -57,6 +57,8 @@ enum TypeId {
     T_StringStream,
     T_Symbol,
     T_Term,
+    T_TCPClient,
+    T_TCPServer,
     T_Triple,
     T_TryCatch,
     T_Tuple,

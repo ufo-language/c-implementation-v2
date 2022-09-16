@@ -239,9 +239,11 @@ static void repl_printError(struct REPL* self) {
     evaluator_clearException(self->etor);
     self->error = (struct Any*)NIL;
 }
-
+#include <assert.h>
 static bool repl_printValue(struct REPL* self) {
+    //printf("%s etor = ", __func__); any_show((struct Any*)self->etor, stdout); printf("\n");
     self->value = evaluator_popObj(self->etor);
+    assert(self->value != NULL);
     if (self->value != (struct Any*)NIL) {
         any_show(self->value, stdout);
         printf(" :: %s\n", any_typeName(self->value));

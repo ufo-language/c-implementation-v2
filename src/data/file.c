@@ -73,7 +73,7 @@ void file_close(struct D_File* self, struct Evaluator* etor) {
             " unable to close file",
             (struct Any*)self->fileName
         );
-   }
+    }
     else {
         self->fp = NULL;
     }

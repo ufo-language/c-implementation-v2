@@ -9,6 +9,7 @@
 struct D_File;
 struct D_String;
 struct D_StringBuffer;
+struct Evaluator;
 
 struct D_File* file_new(struct D_String* fileName);
 struct D_File* file_fromFilePointer(struct D_String* fileName, FILE* fp);
