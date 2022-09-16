@@ -268,9 +268,6 @@ void evaluator_runSteps(struct Evaluator* self, int nSteps) {
         if (GC_NEEDED) {
             gc_collect();
         }
-        if (self->threadStatus != TS_Running) {
-            return;
-        }
         if (self->estack == EMPTY_TRIPLE) {
             threadManager_terminateThread(self);
             return;
@@ -282,6 +279,12 @@ void evaluator_runSteps(struct Evaluator* self, int nSteps) {
             printf(" :: %s\n", any_typeName(expr));
         }
         any_eval(expr, self);
+        if (self->threadStatus != TS_Running) {
+            if (self->threadStatus == TS_Yield) {
+                self->threadStatus = TS_Running;
+            }
+            return;
+        }
     }
 }
 

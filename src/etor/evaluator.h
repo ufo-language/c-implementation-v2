@@ -8,6 +8,7 @@
 enum ThreadStatus {
     TS_Dormant,
     TS_Running,
+    TS_Yield,
     TS_Blocked,
     TS_Terminated
 };

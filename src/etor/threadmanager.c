@@ -8,6 +8,7 @@
 
 struct D_Symbol* SYM_DORMANT;
 struct D_Symbol* SYM_RUNNING;
+struct D_Symbol* SYM_YIELD;
 struct D_Symbol* SYM_BLOCKED;
 struct D_Symbol* SYM_TERMINATED;
 
@@ -51,6 +52,7 @@ void threadManager_rootObjects(void) {
     _running = queue_new();
     SYM_DORMANT = symbol_new("Dormant");
     SYM_RUNNING = symbol_new("Running");
+    SYM_YIELD = symbol_new("Yield");
     SYM_BLOCKED = symbol_new("Blocked");
     SYM_TERMINATED = symbol_new("Terminated");
 }
@@ -60,8 +62,17 @@ void threadManager_runNextThread(void) {
     struct Evaluator* thread = (struct Evaluator*)queue_peek_unsafe(_running);
     evaluator_runSteps(thread, _nSteps);
     (void)queue_deq_unsafe(_running);
-    if (TS_Running == evaluator_getThreadStatus(thread)) {
-        queue_enq(_running, (struct Any*)thread);
+    // determine what to do with the thread after its timeslice
+    switch (evaluator_getThreadStatus(thread)) {
+        case TS_Running:
+        case TS_Yield:
+            queue_enq(_running, (struct Any*)thread);
+            break;
+        case TS_Dormant:
+        case TS_Blocked:
+        case TS_Terminated:
+        default:
+            break;
     }
 }
 
@@ -73,6 +84,9 @@ struct D_Symbol* threadManager_statusSymbol(enum ThreadStatus status) {
             break;
         case TS_Running:
             sym = SYM_RUNNING;
+            break;
+        case TS_Yield:
+            sym = SYM_YIELD;
             break;
         case TS_Blocked:
             sym = SYM_BLOCKED;
