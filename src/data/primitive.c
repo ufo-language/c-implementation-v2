@@ -73,7 +73,7 @@ void primitive_argTypeExceptionOneOf(int nTypes, enum TypeId paramTypes[], struc
     (void)arg;
     (void)etor;
     fprintf(stderr, "%s is incomplete\n", __func__);
-    // TODO
+    // TODO complete this
 }
 
 void primitive_checkArgs(int nParams, enum TypeId paramTypes[], struct D_List* argList, struct Any** paramVars[], struct Evaluator* etor) {
@@ -81,6 +81,7 @@ void primitive_checkArgs(int nParams, enum TypeId paramTypes[], struct D_List* a
     for (int n=0; n<nParams; n++) {
         if (list_isEmpty(argList)) {
             primitive_argCountException(nParams, savedArgList, etor);
+            // TODO return an application
         }
         struct Any* arg = list_getFirst(argList);
         argList = (struct D_List*)list_getRest(argList);
