@@ -12,7 +12,7 @@
 void globals_operandException(char* operand, struct Any* lhs, struct Any* rhs, struct Evaluator* etor) {
     struct E_Identifier* dcolon = identifier_new("::");
     struct D_Symbol* lhsType = any_typeSymbol(lhs);
-    struct D_Symbol* rhsType = any_typeSymbol(lhs);
+    struct D_Symbol* rhsType = any_typeSymbol(rhs);
     struct D_Array* args = array_newN(3,
                                       identifier_new(operand),
                                       binOp_new((struct Any*)lhs, dcolon, (struct Any*)lhsType),
