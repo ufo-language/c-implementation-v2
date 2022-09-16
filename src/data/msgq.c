@@ -42,6 +42,10 @@ void msgq_initialize(struct D_MsgQ* self) {
     self->waitingThreads = queue_new();
 }
 
+int msgq_count(struct D_MsgQ* self) {
+    return queue_count(self->messages);
+}
+
 void msgq_enq(struct D_MsgQ* self, struct Any* message) {
     queue_enq(self->messages, message);
     _trigger(self);
