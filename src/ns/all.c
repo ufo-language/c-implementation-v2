@@ -32,7 +32,7 @@ void ns_set_defineAll(struct D_HashTable* env);
 void ns_stream_defineAll(struct D_HashTable* env);
 void ns_string_defineAll(struct D_HashTable* env);
 void ns_symbol_defineAll(struct D_HashTable* env);
-void ns_thread_defineAll(struct D_HashTable* env);
+void ns_task_defineAll(struct D_HashTable* env);
 void ns_time_defineAll(struct D_HashTable* env);
 void ns_type_defineAll(struct D_HashTable* env);
 void ns_ufo_defineAll(struct D_HashTable* env);
@@ -77,7 +77,7 @@ void ns_all_rootObjects(void) {
     ns_stream_defineAll(_globalEnv);
     ns_string_defineAll(_globalEnv);
     ns_symbol_defineAll(_globalEnv);
-    ns_thread_defineAll(_globalEnv);
+    ns_task_defineAll(_globalEnv);
     ns_time_defineAll(_globalEnv);
     ns_type_defineAll(_globalEnv);
     ns_ufo_defineAll(_globalEnv);

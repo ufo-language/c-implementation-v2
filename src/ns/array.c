@@ -11,6 +11,7 @@
 #include "etor/evaluator.h"
 #include "expr/identifier.h"
 #include "main/globals.h"
+#include "methods/typenamespace.h"
 
 #define NS_NAME "array"
 
@@ -33,6 +34,7 @@ static void _shuffle(struct Evaluator* etor, struct D_List* args);
 void ns_array_defineAll(struct D_HashTable* env) {
     struct E_Identifier* nsName = identifier_new(NS_NAME);
     struct D_HashTable* nsHash = hashTable_new();
+    TYPE_NAMESPACE[T_Array] = nsHash;
     hashTable_put_unsafe(env, (struct Any*)nsName, (struct Any*)nsHash);
     primitive_define(nsHash, "asQueue", _asQueue);
     primitive_define(nsHash, "contains", _contains);

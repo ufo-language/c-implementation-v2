@@ -11,8 +11,10 @@
 #include "expr/continuation.h"
 #include "expr/identifier.h"
 #include "main/globals.h"
+#include "methods/typenamespace.h"
 
 static void _assert(struct Evaluator* etor, struct D_List* args);
+static void _dot(struct Evaluator* etor, struct D_List* args);
 static void _colon(struct Evaluator* etor, struct D_List* args);
 static void _equalTo(struct Evaluator* etor, struct D_List* args);
 static void _minus(struct Evaluator* etor, struct D_List* args);
@@ -53,6 +55,7 @@ void ns_globals_defineAll(struct D_HashTable* env) {
     _defFun(env, "..", _sequence);
     _defFun(env, "assert", _assert);
     // macros
+    _defMacro(env, ".", _dot);
     _defMacro(env, ":", _colon);
     _defMacro(env, ":=", _reassign);
     _defMacro(env, "quote", _quote);
@@ -83,7 +86,7 @@ static void _assert(struct Evaluator* etor, struct D_List* args) {
     }
 }
 
-static void _colon_contin(struct E_Continuation* contin , struct Evaluator* etor) {
+static void _colonContin(struct E_Continuation* contin , struct Evaluator* etor) {
     struct Any* arg = continuation_getArg(contin);
     struct Any* obj = evaluator_popObj(etor);
     if (any_isA(obj, T_HashTable)) {
@@ -107,11 +110,33 @@ static void _colon_contin(struct E_Continuation* contin , struct Evaluator* etor
 }
 
 static void _colon(struct Evaluator* etor, struct D_List* args) {
-    struct Any* first = list_getFirst(args);
-    struct Any* second = list_getSecond(args);
-    struct E_Continuation* contin = continuation_new(_colon_contin, "colon", second);
+    struct Any* lhs = list_getFirst(args);
+    struct Any* rhs = list_getSecond(args);
+    struct E_Continuation* contin = continuation_new(_colonContin, "colon", rhs);
     evaluator_pushExpr(etor, (struct Any*)contin);
-    evaluator_pushExpr(etor, first);
+    evaluator_pushExpr(etor, lhs);
+}
+
+static void _dotContin(struct E_Continuation* contin, struct Evaluator* etor) {
+    // TODO finish
+    printf("%s contin = ", __func__); any_show((struct Any*)contin, stdout); printf("\n");
+    struct Any* rhs = continuation_getArg(contin);
+    struct Any* lhs = evaluator_popObj(etor);
+    enum TypeId lhsType = any_typeId(lhs);
+    printf("%s lhs type ", __func__); any_show((struct Any*)any_typeSymbol(lhs), stdout); printf("\n");
+
+    struct D_HashTable* typeNamespace = TYPE_NAMESPACE[lhsType];
+    struct Any* value = hashTable_get_throw(typeNamespace, rhs, etor);
+
+    evaluator_pushExpr(etor, (struct Any*)value);
+}
+
+static void _dot(struct Evaluator* etor, struct D_List* args) {
+    struct Any* lhs = list_getFirst(args);
+    struct Any* rhs = list_getSecond(args);
+    struct E_Continuation* contin = continuation_new(_dotContin, "colon", rhs);
+    evaluator_pushExpr(etor, (struct Any*)contin);
+    evaluator_pushExpr(etor, lhs);
 }
 
 static void _equalTo(struct Evaluator* etor, struct D_List* args) {

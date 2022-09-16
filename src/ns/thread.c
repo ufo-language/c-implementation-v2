@@ -14,7 +14,7 @@
 #include "io/sleep.h"
 #include "main/globals.h"
 
-#define NS_NAME "thread"
+#define NS_NAME "task"
 
 static void _count(struct Evaluator* etor, struct D_List* args);
 static void _isTerminated(struct Evaluator* etor, struct D_List* args);
@@ -25,7 +25,7 @@ static void _spawn(struct Evaluator* etor, struct D_List* args);
 static void _status(struct Evaluator* etor, struct D_List* args);
 static void _value(struct Evaluator* etor, struct D_List* args);
 
-void ns_thread_defineAll(struct D_HashTable* env) {
+void ns_task_defineAll(struct D_HashTable* env) {
     struct E_Identifier* nsName = identifier_new(NS_NAME);
     struct D_HashTable* nsHash = hashTable_new();
     hashTable_put_unsafe(env, (struct Any*)nsName, (struct Any*)nsHash);
@@ -50,8 +50,8 @@ static void _isTerminated(struct Evaluator* etor, struct D_List* args) {
     struct Any* etorObj;
     struct Any** paramVars[] = {&etorObj};
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
-    struct Evaluator* thread = (struct Evaluator*)etorObj;
-    enum ThreadStatus status = evaluator_getThreadStatus(thread);
+    struct Evaluator* task = (struct Evaluator*)etorObj;
+    enum ThreadStatus status = evaluator_getThreadStatus(task);
     evaluator_pushObj(etor, (struct Any*)boolean_from(TS_Terminated == status));
 }
 
@@ -60,9 +60,9 @@ static void _join(struct Evaluator* etor, struct D_List* args) {
     struct Any* etorObj;
     struct Any** paramVars[] = {&etorObj};
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
-    struct Evaluator* thread = (struct Evaluator*)etorObj;
-    if (evaluator_getThreadStatus(thread) != TS_Terminated) {
-        threadManager_blockThread(etor, (struct Any*)thread);
+    struct Evaluator* task = (struct Evaluator*)etorObj;
+    if (evaluator_getThreadStatus(task) != TS_Terminated) {
+        threadManager_blockThread(etor, (struct Any*)task);
     }
     evaluator_pushObj(etor, (struct Any*)NIL);
 }
@@ -100,8 +100,8 @@ static void _status(struct Evaluator* etor, struct D_List* args) {
     struct Any* etorObj;
     struct Any** paramVars[] = {&etorObj};
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
-    struct Evaluator* thread = (struct Evaluator*)etorObj;
-    enum ThreadStatus status = evaluator_getThreadStatus(thread);
+    struct Evaluator* task = (struct Evaluator*)etorObj;
+    enum ThreadStatus status = evaluator_getThreadStatus(task);
     struct D_Symbol* statusSymbol = threadManager_statusSymbol(status);
     evaluator_pushObj(etor, (struct Any*)statusSymbol);
 }
@@ -111,13 +111,13 @@ static void _value(struct Evaluator* etor, struct D_List* args) {
     struct Any* etorObj;
     struct Any** paramVars[] = {&etorObj};
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
-    struct Evaluator* thread = (struct Evaluator*)etorObj;
-    enum ThreadStatus status = evaluator_getThreadStatus(thread);
+    struct Evaluator* task = (struct Evaluator*)etorObj;
+    enum ThreadStatus status = evaluator_getThreadStatus(task);
     if (TS_Terminated == status) {
-        struct D_List* ostack = evaluator_getOStack(thread);
+        struct D_List* ostack = evaluator_getOStack(task);
         struct Any* value = list_getFirst(ostack);
         evaluator_pushObj(etor, (struct Any*)value);
         return;
     }
-    evaluator_throwException(etor, symbol_new("Thread"), "thread is not terminated", (struct Any*)thread);
+    evaluator_throwException(etor, symbol_new("Task"), "task is not terminated", (struct Any*)task);
 }
