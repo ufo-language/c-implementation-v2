@@ -103,12 +103,16 @@ extern volatile sig_atomic_t SIGNAL_STATUS;
 static int repl_readFile(struct REPL* self) {
     char* fileName = string_getChars(self->loadFileName);
     struct D_File* file = file_new_charStringName(fileName);
-    if (file_open_aux(file)) {
+    int errno = file_open(file);
+    if (errno == 0) {
         file_readAll_stringBuffer(file, self->inputStringBuffer, self->etor);
         file_close(file, self->etor);
         return stringBuffer_count(self->inputStringBuffer);
     }
-    return -1;
+    else {
+        fprintf(stderr, "%s: %s\n", fileName, strerror(errno));
+    }
+    return 0;
 }
 
 // Returns the number of characters read, or -1 on EOF (^D)
@@ -180,12 +184,6 @@ static int repl_read(struct REPL* self) {
                 case READ_FILE:
                     stringBuffer_clear(self->inputStringBuffer);
                     nChars = repl_readFile(self);
-                    if (nChars == -1) {
-                        fprintf(stderr, "File not found: ");
-                        any_show((struct Any*)self->loadFileName, stderr);
-                        fputc('\n', stderr);
-                        nChars = 0;
-                    }
                     break;
             }
             self->inputString = stringBuffer_asString(self->inputStringBuffer);
@@ -265,7 +263,7 @@ void repl_run(struct REPL* self) {
                 break;
             }
             if (nChars == 0) {
-                // user pressed Enter without typing anything
+                // user pressed Enter without typing anything, or no file read
                 continue;
             }
             if (!repl_tokenize(self)) {
