@@ -1,4 +1,5 @@
 #include <limits.h>
+#include <string.h>
 
 #include "data/any.h"
 #include "data/array.h"
@@ -59,7 +60,13 @@ static void _open(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     struct D_String* fileNameString = (struct D_String*)fileName;
     struct D_File* file = file_new(fileNameString);
-    file_open(file, etor);
+    int errno = file_open(file);
+    if (errno != 0) {
+        struct D_Symbol* sym = symbol_new("File");
+        struct D_String* errorReason = string_new(strerror(errno));
+        struct D_Array* args = array_newN(2, fileName, errorReason);
+        evaluator_throwException(etor, sym, "error opening file", (struct Any*)args);
+    }
     evaluator_pushObj(etor, (struct Any*)file);
 }
 

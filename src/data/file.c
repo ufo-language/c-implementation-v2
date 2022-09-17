@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -87,25 +88,23 @@ void file_markChildren(struct D_File* self) {
     any_mark((struct Any*)self->fileName);
 }
 
-void file_open(struct D_File* self, struct Evaluator* etor) {
+int file_open(struct D_File* self) {
     char* fileName = string_getChars(self->fileName);
     FILE* fp = fopen(fileName, "r");
     if (fp == NULL) {
-        evaluator_throwException(
-            etor,
-            any_typeSymbol((struct Any*)self),
-            "unable to open file",
-            (struct Any*)self->fileName
-        );
+        return errno;
     }
     self->fp = fp;
+    return 0;
 }
 
+/*
 bool file_open_aux(struct D_File* self) {
     char* fileName = string_getChars(self->fileName);
     self->fp = fopen(fileName, "r");
     return self->fp != NULL;
 }
+*/
 
 bool file_readChar(struct D_File* self, char* c) {
     int c1 = fgetc(self->fp);
