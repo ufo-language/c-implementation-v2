@@ -25,6 +25,7 @@
 static void _cwd(struct Evaluator* etor, struct D_List* args);
 static void _dir(struct Evaluator* etor, struct D_List* args);
 static void _env(struct Evaluator* etor, struct D_List* args);
+static void _errorString(struct Evaluator* etor, struct D_List* args);
 static void _platform(struct Evaluator* etor, struct D_List* args);
 static void _sysinfo(struct Evaluator* etor, struct D_List* args);
 
@@ -34,6 +35,7 @@ void ns_os_defineAll(struct D_HashTable* env) {
     hashTable_put_unsafe(env, (struct Any*)nsName, (struct Any*)nsHash);
     primitive_define(nsHash, "cwd", _cwd);
     primitive_define(nsHash, "dir", _dir);
+    primitive_define(nsHash, "errorString", _errorString);
     primitive_define(nsHash, "env", _env);
     primitive_define(nsHash, "platform", _platform);
     primitive_define(nsHash, "systemInfo", _sysinfo);
@@ -104,6 +106,17 @@ static void _env(struct Evaluator* etor, struct D_List* args) {
         }
         evaluator_pushObj(etor, value);
     }
+}
+
+static void _errorString(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_Integer};
+    struct Any* errorNumObj = NULL;
+    struct Any** paramVars[] = {&errorNumObj};
+    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
+    struct D_Integer* errorNum = (struct D_Integer*)errorNumObj;
+    char* errorChars = strerror(integer_getValue(errorNum));
+    struct D_String* errorString = string_new(errorChars);
+    evaluator_pushObj(etor, (struct Any*)errorString);
 }
 
 static void _platform(struct Evaluator* etor, struct D_List* args) {
