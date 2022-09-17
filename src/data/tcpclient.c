@@ -1,4 +1,14 @@
+#include <errno.h>
+#include <stdbool.h>
+#include <unistd.h>  // for write()
+
+#include <arpa/inet.h>  // for inet_addr(), htons()
+#include <netinet/in.h>  // for struct sockaddr_in
+#include <sys/socket.h>  // for socket(), connect()
+
 #include "data/any.h"
+#include "data/boolean.h"
+#include "data/string.h"
 #include "data/tcpclient.h"
 #include "etor/evaluator.h"
 #include "main/globals.h"
@@ -7,7 +17,11 @@
 
 struct D_TCPClient {
     struct Any obj;
+    struct D_String* remoteAddressString;
+    struct sockaddr_in remoteAddress;
     int port;
+    int sockfd;
+    bool isOpen;
 };
 
 struct Methods* tcpClient_methodSetup(void) {
@@ -20,15 +34,18 @@ struct Methods* tcpClient_methodSetup(void) {
     methods->m_sizeOf = (size_t (*)(struct Any*))tcpClient_sizeOf;
     //methods->m_streamReadChar = (bool (*)(struct Any*, char*))tcpClient_readChar;
     methods->m_structSize = tcpClient_structSize;
-    //methods->m_streamWriteChar = (bool (*)(struct Any* self, char c))tcpClient_writeChar;
+    methods->m_streamWriteChar = (bool (*)(struct Any* self, char c))tcpClient_writeChar;
     return methods;
 }
 
-struct D_TCPClient* tcpClient_new(struct D_String* server, int port) {
-    struct D_TCPClient* self = (struct D_TCPClient*)gc_alloc(T_File);
-    (void)server;
-    (void)port;
-    // TODO
+// working
+struct D_TCPClient* tcpClient_new(struct D_String* remoteAddressString, int port) {
+    struct D_TCPClient* self = (struct D_TCPClient*)gc_alloc(T_TCPClient);
+    self->remoteAddressString = remoteAddressString;
+    self->sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    self->remoteAddress.sin_family = AF_INET;
+    self->remoteAddress.sin_port = htons(port);
+    self->isOpen = false;
     return self;
 }
 
@@ -40,48 +57,39 @@ bool tcpClient_boolValue(struct D_TCPClient* self) {
     return tcpClient_isOpen(self);
 }
 
-void tcpClient_close(struct D_TCPClient* self, struct Evaluator* etor) {
-    /*
-    if (fclose(self->fp) != 0) {
-        evaluator_throwException(
-            etor,
-            any_typeSymbol((struct Any*)self),
-            " unable to close file",
-            (struct Any*)self->fileName
-        );
+int tcpClient_close(struct D_TCPClient* self) {
+    self->isOpen = false;
+    if (close(self->sockfd)) {
+        return errno;
     }
-    else {
-        self->fp = NULL;
+    return 0;
+}
+
+// working
+int tcpClient_connect(struct D_TCPClient* self) {
+    char* addressChars = string_getChars(self->remoteAddressString);
+    self->remoteAddress.sin_addr.s_addr = inet_addr(addressChars);
+    if (connect(self->sockfd, (struct sockaddr*)&self->remoteAddress, sizeof(self->remoteAddress))) {
+        self->isOpen = false;
+        return errno;
     }
-    */
+    self->isOpen = true;
+    return 0;
 }
 
 bool tcpClient_isOpen(struct D_TCPClient* self) {
+    (void)self;
     //return self->fp == NULL ? false : true;
     return false;
 }
 
 void tcpClient_markChildren(struct D_TCPClient* self) {
-    //any_mark((struct Any*)self->fileName);
-}
-
-void tcpClient_open(struct D_TCPClient* self, struct Evaluator* etor) {
-    /*
-    char* fileName = string_getChars(self->fileName);
-    FILE* fp = fopen(fileName, "r");
-    if (fp == NULL) {
-        evaluator_throwException(
-            etor,
-            any_typeSymbol((struct Any*)self),
-            "unable to open file",
-            (struct Any*)self->fileName
-        );
-    }
-    self->fp = fp;
-*/
+    any_mark((struct Any*)self->remoteAddressString);
 }
 
 bool tcpClient_readChar(struct D_TCPClient* self, char* c) {
+    (void)self;
+    (void)c;
     /*
     int c1 = fgetc(self->fp);
     if (c1 == EOF) {
@@ -93,7 +101,12 @@ bool tcpClient_readChar(struct D_TCPClient* self, char* c) {
 }
 
 void tcpClient_show(struct D_TCPClient* self, FILE* fp) {
-    fprintf(fp, "TCPClient{...}");
+    fputs("TCPClient{address=", fp);
+    string_show(self->remoteAddressString, fp);
+    fputs(", ", fp);
+    fprintf(fp, "port=%d, open=", self->port);
+    boolean_show(boolean_from(self->isOpen), fp);
+    fputc('}', fp);
 }
 
 size_t tcpClient_sizeOf(struct D_TCPClient* self) {
@@ -105,6 +118,18 @@ size_t tcpClient_structSize(void) {
 }
 
 bool tcpClient_writeChar(struct D_TCPClient* self, char c) {
-    //fputc(c, self->fp);
-    return false;
+    if (!self->isOpen) {
+        return false;
+    }
+    return write(self->sockfd, &c, 1) == 1 ? true : false;
+}
+
+// working
+int tcpClient_writeString(struct D_TCPClient* self, struct D_String* string) {
+    if (!self->isOpen) {
+        return -1;
+    }
+    char* chars = string_getChars(string);
+    int count = string_count(string);
+    return (int)write(self->sockfd, chars, (size_t)count);
 }
