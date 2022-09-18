@@ -35,6 +35,11 @@ void ns_file_defineAll(struct D_HashTable* env) {
     primitive_define(nsHash, "size", _size);
 }
 
+static void _fileClosedException(struct Evaluator* etor, struct D_File* file) {
+    struct D_Symbol* sym = any_typeSymbol((struct Any*)file);
+    evaluator_throwException(etor, sym, "file is not open", (struct Any*)file);
+}
+
 static void _close(struct Evaluator* etor, struct D_List* args) {
     static enum TypeId paramTypes[] = {T_File};
     struct Any* fileObj;
@@ -62,10 +67,8 @@ static void _open(struct Evaluator* etor, struct D_List* args) {
     struct D_File* file = file_new(fileNameString);
     int errno = file_open(file);
     if (errno != 0) {
-        struct D_Symbol* sym = symbol_new("File");
-        struct D_String* errorReason = string_new(strerror(errno));
-        struct D_Array* args = array_newN(2, fileName, errorReason);
-        evaluator_throwException(etor, sym, "error opening file", (struct Any*)args);
+        struct D_Symbol* sym = any_typeSymbol((struct Any*)file);
+        evaluator_throwException(etor, sym, strerror(errno), (struct Any*)fileName);
     }
     evaluator_pushObj(etor, (struct Any*)file);
 }
@@ -77,8 +80,7 @@ static void _readChar(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     struct D_File* file = (struct D_File*)fileObj;
     if (!file_isOpen(file)) {
-        struct D_Symbol* sym = symbol_new("File");
-        evaluator_throwException(etor, sym, "file is closed", (struct Any*)file);
+        _fileClosedException(etor, file);
     }
     char c;
     struct Any* res;
@@ -98,8 +100,7 @@ static void _readAll(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(1, paramTypes, args, paramVars, etor);
     struct D_File* file = (struct D_File*)fileObj;
     if (!file_isOpen(file)) {
-        struct D_Symbol* sym = symbol_new("File");
-        evaluator_throwException(etor, sym, "file is closed", (struct Any*)file);
+        _fileClosedException(etor, file);
     }
     struct D_StringBuffer* sb = stringBuffer_new();
     file_readAll((struct D_File*)file, sb, etor);
@@ -115,8 +116,7 @@ static void _size(struct Evaluator* etor, struct D_List* args) {
     struct D_File* file = (struct D_File*)fileObj;
     long fileSize = file_size(file);
     if (!file_isOpen(file)) {
-        struct D_Symbol* sym = symbol_new("File");
-        evaluator_throwException(etor, sym, "file is closed", (struct Any*)file);
+        _fileClosedException(etor, file);
     }
     int n1 = (int)(fileSize / INT_MAX);
     int n2 = (int)(fileSize % INT_MAX);

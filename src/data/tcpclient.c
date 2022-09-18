@@ -1,6 +1,7 @@
 #include <errno.h>
+#include <fcntl.h>
 #include <stdbool.h>
-#include <unistd.h>  // for write()
+//#include <unistd.h>  // for write()
 
 #include <arpa/inet.h>  // for inet_addr(), htons()
 #include <netinet/in.h>  // for struct sockaddr_in
@@ -11,6 +12,7 @@
 #include "data/string.h"
 #include "data/tcpclient.h"
 #include "etor/evaluator.h"
+#include "io/tcpclient.h"
 #include "main/globals.h"
 #include "memory/gc.h"
 #include "methods/methods.h"
@@ -38,6 +40,10 @@ struct Methods* tcpClient_methodSetup(void) {
     return methods;
 }
 
+// Examples found here https://jameshfisher.com/2017/04/05/set_socket_nonblocking/
+
+int guard(int n, char * err) { if (n == -1) { perror(err); exit(1); } return n; }
+
 // working
 struct D_TCPClient* tcpClient_new(struct D_String* remoteAddressString, int port) {
     struct D_TCPClient* self = (struct D_TCPClient*)gc_alloc(T_TCPClient);
@@ -46,6 +52,9 @@ struct D_TCPClient* tcpClient_new(struct D_String* remoteAddressString, int port
     self->remoteAddress.sin_family = AF_INET;
     self->remoteAddress.sin_port = htons(port);
     self->isOpen = false;
+    // set the socket to be non-blocking
+    int flags = guard(fcntl(self->sockfd, F_GETFL), "could not get socket flags");
+    guard(fcntl(self->sockfd, F_SETFL, flags | O_NONBLOCK), "could not set socket to be non-blocking");
     return self;
 }
 
@@ -66,21 +75,24 @@ int tcpClient_close(struct D_TCPClient* self) {
 }
 
 // working
-int tcpClient_connect(struct D_TCPClient* self) {
+void tcpClient_connect(struct D_TCPClient* self, struct Evaluator* etor) {
     char* addressChars = string_getChars(self->remoteAddressString);
     self->remoteAddress.sin_addr.s_addr = inet_addr(addressChars);
-    if (connect(self->sockfd, (struct sockaddr*)&self->remoteAddress, sizeof(self->remoteAddress))) {
-        self->isOpen = false;
-        return errno;
-    }
+    self->isOpen = false;
+    io_tcpClient_open(etor, self);
     self->isOpen = true;
-    return 0;
+}
+
+struct sockaddr_in* tcpClient_getRemoteAddress(struct D_TCPClient* self) {
+    return &self->remoteAddress;
+}
+
+int tcpClient_getSockFd(struct D_TCPClient* self) {
+    return self->sockfd;
 }
 
 bool tcpClient_isOpen(struct D_TCPClient* self) {
-    (void)self;
-    //return self->fp == NULL ? false : true;
-    return false;
+    return self->isOpen;
 }
 
 void tcpClient_markChildren(struct D_TCPClient* self) {
@@ -124,6 +136,7 @@ bool tcpClient_writeChar(struct D_TCPClient* self, char c) {
     return write(self->sockfd, &c, 1) == 1 ? true : false;
 }
 
+#if 0
 // working
 int tcpClient_writeString(struct D_TCPClient* self, struct D_String* string) {
     if (!self->isOpen) {
@@ -133,3 +146,9 @@ int tcpClient_writeString(struct D_TCPClient* self, struct D_String* string) {
     int count = string_count(string);
     return (int)write(self->sockfd, chars, (size_t)count);
 }
+#else
+void tcpClient_writeString(struct D_TCPClient* self, struct D_String* string, struct Evaluator* etor) {
+    io_tcpClient_writeString(etor, self, string);
+}
+
+#endif

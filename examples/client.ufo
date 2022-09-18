@@ -1,0 +1,7 @@
+; Enter this command in another terminal window
+; $ nc -l -v -p 8000
+
+let c = tcp:client("127.0.0.1", 8000)
+tcp:connect(c)
+tcp:writeString(c, "Hello, World!\n")
+tcp:close(c)
