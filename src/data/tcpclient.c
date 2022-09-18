@@ -112,6 +112,7 @@ bool tcpClient_readChar(struct D_TCPClient* self, char* c) {
     return false;
 }
 
+// working
 void tcpClient_readString(struct D_TCPClient* self, struct Evaluator* etor) {
     io_tcpClient_readString(etor, self);
 }

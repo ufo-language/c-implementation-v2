@@ -53,9 +53,7 @@ static void _readString_contin(struct E_Continuation* contin, struct Evaluator* 
     int sockfd = tcpClient_getSockFd(tcpClient);
     struct D_StringBuffer* inputBuffer = (struct D_StringBuffer*)array_get_unsafe(argAry, 1);
     char buffer[STRINGBUFFER_SEGMENT_SIZE];
-
     ssize_t res = read(sockfd, buffer, STRINGBUFFER_SEGMENT_SIZE);
-
     if (res >= 0) {
         stringBuffer_writeChars(inputBuffer, buffer);
         if (res == STRINGBUFFER_SEGMENT_SIZE) {
@@ -68,7 +66,6 @@ static void _readString_contin(struct E_Continuation* contin, struct Evaluator* 
         }
         return;
     }
-
     int errorNumber = errno;
     char* errorString = strerror(errorNumber);
     switch (errno) {
