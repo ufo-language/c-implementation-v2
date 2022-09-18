@@ -82,7 +82,7 @@ struct D_Iterator* integer_iterator(struct D_Integer* self) {
 
 static void _operatorCheckArgs(struct D_Integer* self, struct Any* rhs, struct Evaluator* etor, char* opStr, int (*iop)(int, int), double (*dop)(double, double)) {
     enum TypeId rhsType = any_typeId(rhs);
-    struct Any* value;
+    struct Any* value = 0;
     if (rhsType == T_Integer) {
         int ilhs = self->value;
         int irhs = ((struct D_Integer*)rhs)->value;

@@ -66,7 +66,7 @@ double real_getValue(struct D_Real* self) {
 static void _operatorCheckArgs(struct D_Real* self, struct Any* rhs, struct Evaluator* etor, char* opStr, double (*dop)(double, double)) {
     enum TypeId rhsType = any_typeId(rhs);
     double dlhs = self->value;
-    double drhs;
+    double drhs = 0.0;
     if (rhsType == T_Integer) {
         drhs = (double)integer_getValue((struct D_Integer*)rhs);
     }
