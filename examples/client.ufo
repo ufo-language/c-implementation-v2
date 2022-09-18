@@ -1,5 +1,6 @@
 ; Enter this command in another terminal window
 ; $ nc -l -v -p 8000
+; See https://jameshfisher.com/2018/12/31/how-to-make-a-webserver-with-netcat-nc/ for examples!
 
 let c = tcp:client("127.0.0.1", 8000)
 tcp:connect(c)

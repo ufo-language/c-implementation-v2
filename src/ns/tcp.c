@@ -108,6 +108,15 @@ static void _isOpen(struct Evaluator* etor, struct D_List* args) {
     evaluator_pushObj(etor, (struct Any*)boolean_from(isOpen));
 }
 
+static void _readString(struct Evaluator* etor, struct D_List* args) {
+    static enum TypeId paramTypes[] = {T_TCPClient};
+    struct Any* tcpClientObj = NULL;
+    struct Any** paramVars[] = {&tcpClientObj};
+    primitive_checkArgs(1, paramTypes, args, paramVars, etor);
+    struct D_TCPClient* tcpClient = (struct D_TCPClient*)tcpClientObj;
+    tcpClient_readString(tcpClient, etor);
+}
+
 // working
 static void _writeString(struct Evaluator* etor, struct D_List* args) {
     static enum TypeId paramTypes[] = {T_TCPClient, T_String};
@@ -117,26 +126,12 @@ static void _writeString(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(2, paramTypes, args, paramVars, etor);
     struct D_TCPClient* tcpClient = (struct D_TCPClient*)tcpClientObj;
     struct D_String* string = (struct D_String*)stringObj;
-#if 0
-    int res = tcpClient_writeString(tcpClient, string);
-    struct D_Integer* intRes = integer_new(res);
-    evaluator_pushObj(etor, (struct Any*)intRes);
-#else
     tcpClient_writeString(tcpClient, string, etor);
-#endif
 }
 
 // incomplete functions follow
 
 static void _accept(struct Evaluator* etor, struct D_List* args) {
-    static enum TypeId paramTypes[] = {T_String};
-    struct Any* dirNameObj = NULL;
-    struct Any** paramVars[] = {&dirNameObj};
-    primitive_checkArgs2(0, 1, paramTypes, args, paramVars, etor);
-    evaluator_pushObj(etor, (struct Any*)NIL);
-}
-
-static void _readString(struct Evaluator* etor, struct D_List* args) {
     static enum TypeId paramTypes[] = {T_String};
     struct Any* dirNameObj = NULL;
     struct Any** paramVars[] = {&dirNameObj};

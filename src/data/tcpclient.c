@@ -1,7 +1,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <stdbool.h>
-//#include <unistd.h>  // for write()
+#include <unistd.h>  // for close()
 
 #include <arpa/inet.h>  // for inet_addr(), htons()
 #include <netinet/in.h>  // for struct sockaddr_in
@@ -36,7 +36,7 @@ struct Methods* tcpClient_methodSetup(void) {
     methods->m_sizeOf = (size_t (*)(struct Any*))tcpClient_sizeOf;
     //methods->m_streamReadChar = (bool (*)(struct Any*, char*))tcpClient_readChar;
     methods->m_structSize = tcpClient_structSize;
-    methods->m_streamWriteChar = (bool (*)(struct Any* self, char c))tcpClient_writeChar;
+    //methods->m_streamWriteChar = (bool (*)(struct Any* self, char c))tcpClient_writeChar;
     return methods;
 }
 
@@ -112,6 +112,10 @@ bool tcpClient_readChar(struct D_TCPClient* self, char* c) {
     return false;
 }
 
+void tcpClient_readString(struct D_TCPClient* self, struct Evaluator* etor) {
+    io_tcpClient_readString(etor, self);
+}
+
 void tcpClient_show(struct D_TCPClient* self, FILE* fp) {
     fputs("TCPClient{address=", fp);
     string_show(self->remoteAddressString, fp);
@@ -129,26 +133,16 @@ size_t tcpClient_structSize(void) {
     return sizeof(struct D_TCPClient);
 }
 
+#if 0
 bool tcpClient_writeChar(struct D_TCPClient* self, char c) {
     if (!self->isOpen) {
         return false;
     }
     return write(self->sockfd, &c, 1) == 1 ? true : false;
 }
+#endif
 
-#if 0
 // working
-int tcpClient_writeString(struct D_TCPClient* self, struct D_String* string) {
-    if (!self->isOpen) {
-        return -1;
-    }
-    char* chars = string_getChars(string);
-    int count = string_count(string);
-    return (int)write(self->sockfd, chars, (size_t)count);
-}
-#else
 void tcpClient_writeString(struct D_TCPClient* self, struct D_String* string, struct Evaluator* etor) {
     io_tcpClient_writeString(etor, self, string);
 }
-
-#endif
