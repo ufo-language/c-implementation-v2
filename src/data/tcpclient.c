@@ -51,8 +51,9 @@ struct D_TCPClient* tcpClient_new(struct D_String* remoteAddressString, int port
     self->sockfd = socket(AF_INET, SOCK_STREAM, 0);
     self->remoteAddress.sin_family = AF_INET;
     self->remoteAddress.sin_port = htons(port);
+    self->port = port;
     self->isOpen = false;
-    // set the socket to be non-blocking
+    // set the socket to be non-blocking (TODO change this into an exception thrown in the evaluator)
     int flags = guard(fcntl(self->sockfd, F_GETFL), "could not get socket flags");
     guard(fcntl(self->sockfd, F_SETFL, flags | O_NONBLOCK), "could not set socket to be non-blocking");
     return self;

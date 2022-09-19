@@ -31,9 +31,11 @@ static void _open_contin(struct E_Continuation* contin, struct Evaluator* etor) 
             evaluator_pushExpr(etor, (struct Any*)contin);
             break;
         case ECONNREFUSED:
+            tcpClient_close(tcpClient);
             evaluator_throwException(etor, any_typeSymbol((struct Any*)tcpClient), errorString, (struct Any*)tcpClient);
             break;
         default:
+            tcpClient_close(tcpClient);
             evaluator_throwException(etor,
                                      any_typeSymbol((struct Any*)tcpClient),
                                      "tcpclient.c case not handled",
