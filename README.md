@@ -77,7 +77,7 @@ What's so useful about an immuatable array (or any immutable data type, for that
 
 * Written using Emacs. I won't get into a holy war over editors. The best editor is the one you prefer to use.
 * No 3rd party dependencies. I wrote the lexer, parser, and unit test library.
-  * I'll eventually add 3rd party libraries when I get to stuff like JSON and YAML. Now way I'm writing a YAML parser. (Update: but I did write a JSON parser.)
+  * I'll eventually add 3rd party libraries when I get to stuff like JSON and YAML. No way I'm writing a YAML parser. (Update: but I did write a JSON parser.)
 * Compiled using GCC.
 * Built using a pmake.py program that I wrote. It does not use any sort of config file. It scans the source tree and automatically detects dependencies that need to be recompiled. It's faster and simpler than CMake.
 * Unit tested using custom unit testing library written in C.
