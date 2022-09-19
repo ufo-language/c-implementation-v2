@@ -155,6 +155,7 @@ struct D_Array* array_deepCopy(struct D_Array* self) {
     return ary;
 }
 
+// delete an element from within the array
 void array_delete(struct D_Array* self, int index) {
     int n = index;
     for (; n<self->count-1; n++) {
