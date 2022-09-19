@@ -91,7 +91,9 @@ static void _spawn(struct Evaluator* etor, struct D_List* args) {
     struct E_Apply* app = apply_new(expr, (struct D_List*)argObj);
     struct Evaluator* etorNew = evaluator_new();
     evaluator_pushExpr(etorNew, (struct Any*)app);
+    printf("%s adding thread ", __func__); any_show((struct Any*)etorNew, stdout); printf("\n");
     threadManager_addThread(etorNew);
+    printf("%s added thread\n", __func__);
     evaluator_pushObj(etor, (struct Any*)etorNew);
 }
 
