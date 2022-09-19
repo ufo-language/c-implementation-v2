@@ -7,9 +7,13 @@ EXEC_DIR='bin'
 HEADER_DIR='src'
 SOURCE_DIR='src'
 OBJ_DIR='obj'
+GCC='gcc'
+CLANG='/usr/bin/clang'
+C_COMPILER=GCC
 C_VERSION='c11'
 C_OPT_DEBUG="-O0 -g -ggdb"
 C_OPT_SIZE="-Os -ffunction-sections -fdata-sections"
+C_OPT_SPEED="-O2"
 COMPILE_OPTS=f"{C_OPT_DEBUG} -Wall -Wextra -Wswitch-enum -pedantic -std={C_VERSION}"
 LINK_OPTS="-ldl -flto"
 #=====================================================================
@@ -100,7 +104,7 @@ def checkNeedsRecompile():
 def compileSourceFile(sourceFileName):
     normalizedSourceFileName = normalizeFileName(sourceFileName)
     sourceFileName += '.c'
-    cmd = f"gcc -c -o {OBJ_DIR}/{normalizedSourceFileName}.o -I{HEADER_DIR} {COMPILE_OPTS} {SOURCE_DIR}/{sourceFileName}"
+    cmd = f"{C_COMPILER} -c -o {OBJ_DIR}/{normalizedSourceFileName}.o -I{HEADER_DIR} {COMPILE_OPTS} {SOURCE_DIR}/{sourceFileName}"
     #print( cmd)
     print(sourceFileName)
     os.system(cmd)
@@ -118,7 +122,7 @@ def makeExecutable():
     backupName = execName + '-backup'
     if os.path.exists(execName):
         os.rename(execName, backupName)
-    cmd = f"gcc -o {execName} {OBJ_DIR}/*.o {LINK_OPTS}"
+    cmd = f"{C_COMPILER} -o {execName} {OBJ_DIR}/*.o {LINK_OPTS}"
     print(cmd)
     os.system(cmd)
     if os.path.exists(execName):
