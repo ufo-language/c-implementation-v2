@@ -38,6 +38,7 @@ static void _disp(struct Evaluator* etor, struct D_List* args) {
         args = (struct D_List*)list_getRest(args);
     }
     evaluator_pushObj(etor, (struct Any*)NIL);
+    fflush(stdout);
 }
 
 static void _dispLn(struct Evaluator* etor, struct D_List* args) {
@@ -54,9 +55,7 @@ static void _nl(struct Evaluator* etor, struct D_List* args) {
 static void _readLine(struct Evaluator* etor, struct D_List* args) {
     primitive_checkArgs(0, NULL, args, NULL, etor);
     struct D_StringBuffer* sb = stringBuffer_new();
-    //io_readLine(sb);
     io_readLine_nonBlocking(etor, sb);
-    //evaluator_pushObj(etor, (struct Any*)stringBuffer_asString(sb));
 }
 
 static void _show(struct Evaluator* etor, struct D_List* args) {
@@ -65,6 +64,7 @@ static void _show(struct Evaluator* etor, struct D_List* args) {
         args = (struct D_List*)list_getRest(args);
     }
     evaluator_pushObj(etor, (struct Any*)NIL);
+    fflush(stdout);
 }
 
 static void _showLn(struct Evaluator* etor, struct D_List* args) {
