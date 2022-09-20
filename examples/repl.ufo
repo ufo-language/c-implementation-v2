@@ -43,7 +43,7 @@ do
             io:displn("tokens = ", tokens)
             let expr = parser:parse(tokens)
             io:displn("expr = ", expr)
-            let it = any:eval(expr)
+            let it = evaluator:eval(expr)
             replLoop()
         end
 end
