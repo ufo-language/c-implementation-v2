@@ -6,6 +6,7 @@
 #include "data/stringbuffer.h"
 #include "etor/evaluator.h"
 #include "expr/continuation.h"
+#include "main/globals.h"
 
 static bool _fdCanRead(int fd) {
     struct pollfd pfd;
@@ -48,15 +49,19 @@ static enum ReadResult _doRead(struct D_StringBuffer* sb, int sentinel, bool app
 
 static void _readLine_contin(struct E_Continuation* contin, struct Evaluator* etor) {
     struct D_StringBuffer* sb = (struct D_StringBuffer*)continuation_getArg(contin);
+    struct Any* value = NULL;
     switch (_doRead(sb, '\n', false)) {
         case RR_Blocked:
-            evaluator_pushExpr(etor, (struct Any*)contin);
+            value = (struct Any*)contin;
             break;
         case RR_EOF:
+            value = (struct Any*)NIL;
+            break;
         case RR_Sentinel:
-            evaluator_pushExpr(etor, (struct Any*)stringBuffer_asString(sb));
+            value = (struct Any*)stringBuffer_asString(sb);
             break;
     }
+    evaluator_pushExpr(etor, value);
 }
 
 void io_readLine_nonBlocking(struct Evaluator* etor, struct D_StringBuffer* sb) {
