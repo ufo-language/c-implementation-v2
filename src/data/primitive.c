@@ -139,17 +139,17 @@ void primitive_apply(struct D_Primitive* self, struct D_List* args, struct Evalu
     self->primFunc(etor, args);
 }
 
-void primitive_define(struct D_HashTable* namespace, char* name, PrimitiveFunction prim) {
+void primitive_define(struct D_HashTable* nsHash, char* name, PrimitiveFunction prim) {
     hashTable_put_unsafe(
-        namespace,
+        nsHash,
         (struct Any*)identifier_new(name),
         (struct Any*)primitive_new(prim, name, false)
     );
 }
 
-void primitive_defineMacro(struct D_HashTable* namespace, char* name, PrimitiveFunction prim) {
+void primitive_defineMacro(struct D_HashTable* nsHash, char* name, PrimitiveFunction prim) {
     hashTable_put_unsafe(
-        namespace,
+        nsHash,
         (struct Any*)identifier_new(name),
         (struct Any*)primitive_new(prim, name, true)
     );

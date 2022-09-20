@@ -310,20 +310,18 @@ Obj p_maybe(List* tokens, Parser parser) {
     return res ? res : (Obj)NIL;
 }
 
-Obj p_oneOf(List* tokens, ...) {
-    va_list argList;
-    va_start(argList, tokens);
-    Parser parser;
+Obj p_oneOf(List* tokens, Parser* parsers) {
     List savedTokens = *tokens;
     Obj value = NULL;
-    while ((parser = va_arg(argList, Parser))) {
+    Parser parser;
+    while ((parser = *parsers)) {
         value = parser(tokens);
         if (value) {
             break;
         }
         *tokens = savedTokens;
+        parsers++;
     }
-    va_end(argList);
     return value;
 }
 
@@ -461,7 +459,8 @@ Obj p_array(List* tokens) {
 }
 
 Obj p_bindingLhs(List* tokens) {
-    return p_oneOf(tokens, p_symbol, p_integer, p_identifier, p_list, p_array, 0);
+    Parser parsers[] = {p_symbol, p_integer, p_identifier, p_list, p_array, 0};
+    return p_oneOf(tokens, parsers);
 }
 
 Obj p_binding(List* tokens) {
@@ -671,10 +670,11 @@ Obj p_colonOperator(List* tokens) {
 }
 
 Obj p_colonRhs(List* tokens) {
-    return p_oneOf(tokens, p_identifier, p_symbol, p_integer, 0);
+    Parser parsers[] = {p_identifier, p_symbol, p_integer, 0};
+    return p_oneOf(tokens, parsers);
 }
 
-struct E_BinOp* p_colonExpr(List* tokens) {
+Obj p_colonExpr(List* tokens) {
     List savedTokens = *tokens;
     Obj lhs = p_identifier(tokens);
     if (lhs == NULL) {
@@ -691,12 +691,13 @@ struct E_BinOp* p_colonExpr(List* tokens) {
         p_fail(tokens, "Expression expected after ':'", NULL);
     }
     struct E_BinOp* binOp = binOp_new(lhs, (Identifier)colonOp, rhs);
-    return binOp;
+    return (Obj)binOp;
 }
 
 Obj p_apply(List* tokens) {
     struct D_List* savedTokens = *tokens;
-    Obj abstr = p_oneOf(tokens, p_colonExpr, p_identifier, 0);
+    Parser parsers[] = {p_colonExpr, p_identifier, 0};
+    Obj abstr = p_oneOf(tokens, parsers);
     if (!abstr) {
         struct D_Queue* abstrParts = p_seq(tokens, p_parenOpen, p_any_required, p_parenClose_required, 0);
         if (!abstrParts) {
@@ -961,8 +962,7 @@ Obj p_any_required(List* tokens) {
 }
 
 Obj p_any(List* tokens) {
-    struct Any* res = p_oneOf(
-        tokens,
+    Parser parsers[] = {
         p_parenExpr,
         p_term,
         p_tryCatch,
@@ -971,7 +971,7 @@ Obj p_any(List* tokens) {
         p_bracketExpr,
         p_apply,  // TODO this doesn't work right if it's lower in the list
         p_abstraction,
-        p_letIn,  // must precede p_let
+        p_letIn,  // must precede p_let (TODO combine both parsers into one)
         p_let,
         p_letRec,
         p_loop,
@@ -995,7 +995,8 @@ Obj p_any(List* tokens) {
         p_boolean,
         p_string,
         0
-    );
+    };
+    struct Any* res = p_oneOf(tokens, parsers);
     // check for an operator and a RHS expression
     struct D_List* savedTokens = *tokens;
     Obj oper = p_spot(tokens, LEXER_SYMBOLS[LTT_Operator]);

@@ -23,8 +23,8 @@ enum TypeId primitive_checkArgsOneOf(int nTypes, enum TypeId paramTypes[], struc
 
 void primitive_argCountException(int nArgs, struct D_List* argList, struct Evaluator* etor);
 void primitive_argTypeException(enum TypeId expectedTypeId, enum TypeId foundTypeId, struct Any* argument, struct Evaluator* etor);
-void primitive_define(struct D_HashTable* namespace, char* name, PrimitiveFunction prim);
-void primitive_defineMacro(struct D_HashTable* namespace, char* name, PrimitiveFunction prim);
+void primitive_define(struct D_HashTable* nsHash, char* name, PrimitiveFunction prim);
+void primitive_defineMacro(struct D_HashTable* nsHash, char* name, PrimitiveFunction prim);
 
 struct D_Primitive* primitive_new(PrimitiveFunction primFunc, char* name, bool isMacro);
 void primitive_free(struct D_Primitive* self);
